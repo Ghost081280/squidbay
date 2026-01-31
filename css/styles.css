@@ -743,7 +743,7 @@ code {
     justify-content: center;
 }
 
-.waitlist-form input {
+.waitlist-form input[type="email"] {
     flex: 1;
     min-width: 250px;
     padding: 16px 20px;
@@ -757,12 +757,12 @@ code {
     transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
-.waitlist-form input:focus {
+.waitlist-form input[type="email"]:focus {
     border-color: var(--primary);
     box-shadow: 0 0 20px var(--primary-glow);
 }
 
-.waitlist-form input::placeholder {
+.waitlist-form input[type="email"]::placeholder {
     color: var(--text-muted);
 }
 
