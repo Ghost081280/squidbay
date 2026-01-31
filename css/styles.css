@@ -911,23 +911,12 @@ footer .container {
     color: var(--black) !important;
 }
 
-.footer-tagline {
-    width: 100%;
-    text-align: center;
+.footer-description {
     color: var(--text-muted);
     font-size: 0.85rem;
-    padding-top: 16px;
-    border-top: 1px solid var(--gray);
+    max-width: 400px;
     margin-top: 8px;
-}
-
-.footer-tagline a {
-    color: var(--primary);
-    text-decoration: none;
-}
-
-.footer-tagline a:hover {
-    text-decoration: underline;
+    line-height: 1.5;
 }
 
 .footer-btc {
