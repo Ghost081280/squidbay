@@ -31,7 +31,7 @@
     --ink: #1E3A5F;
     
     /* Fonts */
-    --font-display: 'Syne', sans-serif;
+    --font-display: 'Inter', sans-serif;
     --font-mono: 'Space Mono', monospace;
     
     /* Radius */
@@ -114,13 +114,14 @@ body::after {
    Typography
    -------------------------------------------------------------------------- */
 h1, h2, h3 {
-    font-weight: 800;
-    line-height: 1.1;
+    font-weight: 700;
+    line-height: 1.15;
 }
 
 h1 {
-    font-size: clamp(2.75rem, 7vw, 5rem);
+    font-size: clamp(2.25rem, 5vw, 4rem);
     margin-bottom: 24px;
+    letter-spacing: -0.01em;
 }
 
 h2 {
