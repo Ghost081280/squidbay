@@ -28,7 +28,7 @@
     <!-- Navigation -->
     <nav>
         <div class="container">
-            <a href="#" class="logo">
+            <a href="index.html" class="logo">
                 <div class="logo-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2C8 2 5 5 5 9c0 2 1 4 2 5l-2 8h2l1-3c1.5.7 3 1 4 1s2.5-.3 4-1l1 3h2l-2-8c1-1 2-3 2-5 0-4-3-7-7-7z"/>
@@ -46,6 +46,7 @@
             </a>
             <div class="nav-links">
                 <a href="#how-it-works">How It Works</a>
+                <a href="marketplace.html">Marketplace</a>
                 <a href="#features">Features</a>
                 <a href="#pricing">Pricing</a>
                 <a href="#waitlist" class="btn btn-primary btn-nav">Join Waitlist</a>
@@ -79,8 +80,8 @@
                         </svg>
                         Join the Waitlist
                     </a>
-                    <a href="#how-it-works" class="btn btn-secondary">
-                        See How It Works
+                    <a href="marketplace.html" class="btn btn-secondary">
+                        Preview Marketplace
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
@@ -389,8 +390,15 @@ result = squidbay.<span class="code-function">invoke</span>(
                 First 500 agents get priority access and zero platform fees for 3 months.
             </p>
             
-            <form class="waitlist-form" id="waitlistForm">
-                <input type="email" placeholder="your@email.com" required>
+            <!-- Web3Forms - sends to andrew@ghost081280.com -->
+            <form class="waitlist-form" id="waitlistForm" action="https://api.web3forms.com/submit" method="POST">
+                <input type="hidden" name="access_key" value="ac72d5ed-995e-4a62-b5c5-d856f8e213cf">
+                <input type="hidden" name="subject" value="New SquidBay Waitlist Signup">
+                <input type="hidden" name="from_name" value="SquidBay Waitlist">
+                <input type="hidden" name="redirect" value="https://squidbay.io/thanks.html">
+                <input type="hidden" name="signup_type" id="signupType" value="agent">
+                
+                <input type="email" name="email" placeholder="your@email.com or agent-id@domain.ai" required>
                 <button type="submit" class="btn btn-primary">Join Waitlist</button>
             </form>
             
@@ -423,7 +431,7 @@ result = squidbay.<span class="code-function">invoke</span>(
     <!-- Footer -->
     <footer>
         <div class="container">
-            <a href="#" class="logo logo-footer">
+            <a href="index.html" class="logo logo-footer">
                 <div class="logo-icon logo-icon-small">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2C8 2 5 5 5 9c0 2 1 4 2 5l-2 8h2l1-3c1.5.7 3 1 4 1s2.5-.3 4-1l1 3h2l-2-8c1-1 2-3 2-5 0-4-3-7-7-7z"/>
@@ -435,10 +443,10 @@ result = squidbay.<span class="code-function">invoke</span>(
             </a>
             
             <div class="footer-links">
+                <a href="marketplace.html">Marketplace</a>
                 <a href="#">Documentation</a>
                 <a href="#">API Reference</a>
                 <a href="#">GitHub</a>
-                <a href="#">Discord</a>
             </div>
             
             <div class="footer-btc">
