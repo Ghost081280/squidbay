@@ -86,7 +86,7 @@ body::before {
         radial-gradient(ellipse at 20% 20%, rgba(0, 217, 255, 0.03) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 80%, rgba(30, 58, 95, 0.05) 0%, transparent 50%);
     pointer-events: none;
-    z-index: 0;
+    z-index: -2;
 }
 
 /* Subtle noise texture */
@@ -1000,11 +1000,18 @@ footer .container {
 }
 
 .fade-in {
-    opacity: 0;
-    transform: translateY(30px);
+    opacity: 1;
+    transform: translateY(0);
     transition: all 0.6s ease-out;
 }
 
+/* Only hide for animation if JS has loaded */
+.js-loaded .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.js-loaded .fade-in.visible,
 .fade-in.visible {
     opacity: 1;
     transform: translateY(0);
