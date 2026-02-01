@@ -890,27 +890,6 @@ nav .container {
     margin-top: 24px;
 }
 
-/* Mobile adjustments */
-@media (max-width: 520px) {
-    .chat-window {
-        max-width: 100%;
-        border-radius: var(--radius);
-    }
-    
-    .chat-messages {
-        height: 380px;
-        padding: 16px;
-    }
-    
-    .chat-message {
-        max-width: 90%;
-    }
-    
-    .squidbay-card {
-        min-width: auto;
-    }
-}
-
 /*
    Code Section
    -------------------------------------------------------------------------- */
@@ -1650,6 +1629,122 @@ footer .container {
     .tentacle {
         display: none;
     }
+    
+    /* Chat Demo Mobile */
+    .chat-demo {
+        padding: 80px 0;
+    }
+    
+    .chat-demo-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 32px;
+    }
+    
+    .chat-window {
+        max-width: 100%;
+        border-radius: var(--radius);
+    }
+    
+    .chat-header {
+        padding: 12px 16px;
+    }
+    
+    .chat-header-name {
+        font-size: 0.9rem;
+    }
+    
+    .chat-badge {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+    }
+    
+    .chat-messages {
+        height: 360px;
+        padding: 16px;
+        gap: 12px;
+    }
+    
+    .chat-message {
+        max-width: 88%;
+    }
+    
+    .chat-message-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+    
+    .chat-message-bubble {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .squidbay-card {
+        padding: 12px;
+        min-width: auto;
+    }
+    
+    .squidbay-card-header {
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+    }
+    
+    .squidbay-card-header span {
+        font-size: 0.9rem;
+    }
+    
+    .squidbay-card-header strong {
+        font-size: 0.8rem;
+    }
+    
+    .squidbay-skill-name {
+        font-size: 0.85rem;
+    }
+    
+    .squidbay-skill-provider {
+        font-size: 0.7rem;
+    }
+    
+    .squidbay-skill-price {
+        font-size: 0.8rem;
+    }
+    
+    .squidbay-action {
+        font-size: 0.75rem;
+        margin-top: 10px;
+        padding-top: 10px;
+    }
+    
+    .chat-result {
+        padding: 10px;
+        margin-top: 6px;
+    }
+    
+    .chat-result-label {
+        font-size: 0.65rem;
+    }
+    
+    .chat-result-value {
+        font-size: 1rem;
+    }
+    
+    .chat-input-area {
+        padding: 12px 16px;
+    }
+    
+    .chat-input-area input {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .chat-send-btn {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .replay-btn {
+        font-size: 0.85rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1675,8 +1770,18 @@ footer .container {
     .pricing,
     .waitlist,
     .why-lightning,
-    .use-case {
+    .use-case,
+    .chat-demo {
         padding: 80px 0;
+    }
+    
+    .chat-messages {
+        height: 320px;
+    }
+    
+    .chat-message-bubble {
+        padding: 8px 12px;
+        font-size: 0.8rem;
     }
     
     .flow-card,
