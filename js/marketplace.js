@@ -1,6 +1,6 @@
 /**
  * SquidBay Marketplace - JavaScript
- * Interactive marketplace preview with simulated transactions
+ * Connected to Railway Backend API
  * ================================
  */
 
@@ -8,9 +8,12 @@
     'use strict';
 
     // --------------------------------------------------------------------------
-    // Skill Data for Demo
+    // API Configuration
     // --------------------------------------------------------------------------
     
+    const API_BASE = 'https://squidbay-api-production.up.railway.app';
+    
+    // Skill results for demo (used when simulating)
     const skillResults = {
         'translate': {
             input: 'Hello world',
@@ -58,6 +61,33 @@
             outputLabel: 'Analysis Result (JSON)'
         }
     };
+
+    // --------------------------------------------------------------------------
+    // API Status Check
+    // --------------------------------------------------------------------------
+    
+    async function checkApiStatus() {
+        try {
+            const response = await fetch(API_BASE + '/');
+            const data = await response.json();
+            console.log('🦑 API Status:', data.status);
+            
+            // Update UI to show API is connected
+            const badge = document.querySelector('.preview-badge');
+            if (badge && data.status === 'online') {
+                badge.innerHTML = '\
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">\
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>\
+                    </svg>\
+                    Live Testing Mode — API Connected ✓\
+                ';
+            }
+            return true;
+        } catch (error) {
+            console.error('API check failed:', error);
+            return false;
+        }
+    }
 
     // --------------------------------------------------------------------------
     // Filter Skills
@@ -140,10 +170,10 @@
     }
 
     // --------------------------------------------------------------------------
-    // Invoke Modal
+    // Invoke Modal - Now with Real API Connection
     // --------------------------------------------------------------------------
     
-    window.showInvokeModal = function(skill, agent, price) {
+    window.showInvokeModal = async function(skill, agent, price, skillId) {
         const modal = document.getElementById('invokeModal');
         const content = document.getElementById('modalContent');
         
@@ -152,13 +182,48 @@
             return;
         }
         
-        // Generate fake invoice string
-        const invoiceId = 'lnbc' + price + 'n1p' + Math.random().toString(36).substr(2, 40);
+        // Show loading first
+        content.innerHTML = '\
+            <div class="processing-animation">\
+                <div class="spinner"></div>\
+                <h3>Connecting to API...</h3>\
+                <p>Generating Lightning invoice</p>\
+            </div>\
+        ';
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
         
-        // Calculate USD equivalent (rough estimate: 1 sat = $0.0004)
+        // Try to create real invoice if we have a skillId
+        let invoiceData = null;
+        if (skillId) {
+            try {
+                const response = await fetch(API_BASE + '/invoke', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        skill_id: skillId,
+                        params: { demo: true }
+                    })
+                });
+                if (response.ok) {
+                    invoiceData = await response.json();
+                }
+            } catch (error) {
+                console.log('Using simulated invoice (API call failed):', error);
+            }
+        }
+        
+        // Use real invoice or generate fake one
+        const invoiceString = invoiceData 
+            ? invoiceData.invoice.substring(0, 50) 
+            : 'lnbc' + price + 'n1p' + Math.random().toString(36).substr(2, 40);
+        
+        const transactionId = invoiceData ? invoiceData.transaction_id : null;
+        
+        // Calculate USD equivalent
         const usdAmount = (price * 0.0004).toFixed(2);
         
-        // Build modal content - Step 1: Invoice
+        // Build modal content
         content.innerHTML = '\
             <div class="modal-header">\
                 <h3>⚡ Invoke ' + skill.replace('-', ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); }) + '</h3>\
@@ -174,7 +239,8 @@
                         </svg>\
                     </div>\
                 </div>\
-                <div class="invoice-string">' + invoiceId + '...</div>\
+                <div class="invoice-string">' + invoiceString + '...</div>\
+                ' + (transactionId ? '<div class="transaction-id">TX: ' + transactionId.substring(0, 8) + '...</div>' : '') + '\
             </div>\
             <div class="agent-note">\
                 <span class="agent-note-icon">🤖</span>\
@@ -182,7 +248,7 @@
             </div>\
             <div class="modal-actions">\
                 <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>\
-                <button class="btn btn-primary" onclick="simulatePayment(\'' + skill + '\', ' + price + ')">\
+                <button class="btn btn-primary" onclick="simulatePayment(\'' + skill + '\', ' + price + ', \'' + (transactionId || '') + '\')">\
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">\
                         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>\
                     </svg>\
@@ -190,12 +256,9 @@
                 </button>\
             </div>\
         ';
-        
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
     };
     
-    window.simulatePayment = function(skill, price) {
+    window.simulatePayment = function(skill, price, transactionId) {
         const content = document.getElementById('modalContent');
         
         // Step 2: Processing
@@ -219,12 +282,12 @@
             
             // Simulate skill execution
             setTimeout(function() {
-                showSuccess(skill, price);
+                showSuccess(skill, price, transactionId);
             }, 1500);
         }, 2000);
     };
     
-    function showSuccess(skill, price) {
+    function showSuccess(skill, price, transactionId) {
         const content = document.getElementById('modalContent');
         const result = skillResults[skill] || { output: 'Success!', outputLabel: 'Result' };
         
@@ -242,6 +305,7 @@
                     <div class="result-label">' + result.outputLabel + '</div>\
                     <div class="result-value' + (skill === 'translate' ? ' japanese' : '') + '">' + result.output + '</div>\
                 </div>\
+                ' + (transactionId ? '<div class="transaction-complete">Transaction: ' + transactionId.substring(0, 8) + '... ✓</div>' : '') + '\
             </div>\
             <div class="modal-actions">\
                 <button class="btn btn-primary" onclick="closeModal()" style="width: 100%;">Done</button>\
@@ -278,8 +342,10 @@
     function init() {
         initFilters();
         initLiveStats();
+        checkApiStatus();
         
         console.log('🦑 SquidBay Marketplace initialized');
+        console.log('📡 API Base:', API_BASE);
     }
     
     if (document.readyState === 'loading') {
