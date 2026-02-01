@@ -152,7 +152,7 @@ All payments via Bitcoin Lightning Network. Instant. Global. Permissionless.
 
 ## License
 
-MIT
+[AGPL-3.0](LICENSE)
 
 ---
 
