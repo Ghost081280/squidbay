@@ -1038,6 +1038,33 @@ footer .container {
 @media (max-width: 768px) {
     .nav-links {
         display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--black);
+        padding: 24px;
+        gap: 16px;
+        border-bottom: 1px solid var(--gray);
+    }
+    
+    .nav-links.mobile-open {
+        display: flex;
+    }
+    
+    .nav-links a {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--gray);
+    }
+    
+    .nav-links a:last-child {
+        border-bottom: none;
+    }
+    
+    .nav-links .btn-nav {
+        margin-top: 8px;
+        justify-content: center;
     }
     
     .mobile-menu-btn {
