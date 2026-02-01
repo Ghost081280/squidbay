@@ -54,6 +54,48 @@
     50% { box-shadow: 0 0 15px rgba(0, 255, 136, 0.4); }
 }
 
+/* Loading and Empty States */
+.skills-loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.skills-loading .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--gray);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.empty-state .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    margin-bottom: 10px;
+    color: var(--text);
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+
 .marketplace-header h1 {
     margin-bottom: 16px;
 }
