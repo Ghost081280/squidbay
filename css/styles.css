@@ -658,6 +658,103 @@ code {
 }
 
 /* --------------------------------------------------------------------------
+   Use Case Section
+   -------------------------------------------------------------------------- */
+.use-case {
+    padding: 80px 0;
+    overflow: hidden;
+}
+
+.use-case-box {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+    border: 1px solid var(--gray);
+    border-left: 4px solid var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 48px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.use-case-label {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+}
+
+.use-case-box h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.use-case-scenario {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 24px;
+}
+
+.use-case-point {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Why Lightning Section
+   -------------------------------------------------------------------------- */
+.why-lightning {
+    padding: 120px 0;
+    background: var(--darker);
+    overflow: hidden;
+}
+
+.lightning-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-top: 48px;
+}
+
+.lightning-card {
+    background: var(--dark);
+    border: 1px solid var(--gray);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    transition: all var(--transition-slow);
+}
+
+.lightning-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+}
+
+.lightning-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.15) 0%, rgba(0, 217, 255, 0.05) 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    color: var(--primary);
+}
+
+.lightning-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+}
+
+.lightning-card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/*
    Pricing Section
    -------------------------------------------------------------------------- */
 .pricing {
@@ -1124,6 +1221,14 @@ footer .container {
         grid-template-columns: 1fr;
     }
     
+    .lightning-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .use-case-box {
+        padding: 32px 24px;
+    }
+    
     .agent-toggle {
         flex-direction: column;
         align-items: center;
@@ -1160,7 +1265,9 @@ footer .container {
     .code-section,
     .features,
     .pricing,
-    .waitlist {
+    .waitlist,
+    .why-lightning,
+    .use-case {
         padding: 80px 0;
     }
     
