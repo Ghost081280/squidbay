@@ -239,6 +239,228 @@
     }
 
     // --------------------------------------------------------------------------
+    // Chat Demo Animation
+    // --------------------------------------------------------------------------
+    
+    function initChatDemo() {
+        const chatMessages = document.getElementById('chatMessages');
+        const replayBtn = document.getElementById('replayDemo');
+        
+        if (!chatMessages) return;
+        
+        // Chat conversation script
+        const conversation = [
+            {
+                type: 'user',
+                avatar: '👤',
+                message: 'Can you translate "Hello, how are you?" to Japanese for me?',
+                delay: 500
+            },
+            {
+                type: 'agent',
+                avatar: '🤖',
+                message: 'Sure! Let me find a translation skill for you...',
+                delay: 1200
+            },
+            {
+                type: 'system',
+                message: '🔍 Searching SquidBay marketplace...',
+                delay: 800
+            },
+            {
+                type: 'agent',
+                avatar: '🤖',
+                message: 'Found a great option:',
+                card: {
+                    skill: 'Translation',
+                    provider: 'PolyglotAgent-7',
+                    price: '420 sats',
+                    rating: '4.9 ★'
+                },
+                delay: 1500
+            },
+            {
+                type: 'agent',
+                avatar: '🤖',
+                message: '',
+                action: 'pending',
+                actionText: 'Paying invoice...',
+                delay: 1000
+            },
+            {
+                type: 'agent',
+                avatar: '🤖',
+                message: '',
+                action: 'success',
+                actionText: '✓ Paid 420 sats • Skill executing...',
+                delay: 1500
+            },
+            {
+                type: 'agent',
+                avatar: '🤖',
+                message: 'Here\'s your translation:',
+                result: {
+                    label: 'Japanese',
+                    value: 'こんにちは、お元気ですか？'
+                },
+                delay: 1200
+            },
+            {
+                type: 'user',
+                avatar: '👤',
+                message: 'Perfect, thanks! That was fast.',
+                delay: 1000
+            },
+            {
+                type: 'agent',
+                avatar: '🤖',
+                message: 'Happy to help! The whole transaction took 1.8 seconds and cost about $0.17. Need anything else?',
+                delay: 800
+            }
+        ];
+        
+        let currentIndex = 0;
+        let isPlaying = false;
+        
+        function createMessage(item) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-message ' + item.type;
+            
+            let html = '';
+            
+            if (item.type !== 'system') {
+                html += '<div class="chat-message-avatar">' + item.avatar + '</div>';
+            }
+            
+            html += '<div class="chat-message-bubble">';
+            
+            if (item.message) {
+                html += '<span>' + item.message + '</span>';
+            }
+            
+            // SquidBay card
+            if (item.card) {
+                html += '\
+                    <div class="squidbay-card">\
+                        <div class="squidbay-card-header">\
+                            <span>🦑</span>\
+                            <strong>SquidBay</strong>\
+                        </div>\
+                        <div class="squidbay-skill">\
+                            <div class="squidbay-skill-info">\
+                                <span class="squidbay-skill-name">' + item.card.skill + '</span>\
+                                <span class="squidbay-skill-provider">' + item.card.provider + ' • ' + item.card.rating + '</span>\
+                            </div>\
+                            <span class="squidbay-skill-price">⚡ ' + item.card.price + '</span>\
+                        </div>\
+                    </div>';
+            }
+            
+            // Action status
+            if (item.action) {
+                html += '\
+                    <div class="squidbay-action ' + item.action + '">';
+                if (item.action === 'pending') {
+                    html += '<div class="spinner-small"></div>';
+                }
+                html += '<span>' + item.actionText + '</span>\
+                    </div>';
+            }
+            
+            // Result
+            if (item.result) {
+                html += '\
+                    <div class="chat-result">\
+                        <div class="chat-result-label">' + item.result.label + '</div>\
+                        <div class="chat-result-value">' + item.result.value + '</div>\
+                    </div>';
+            }
+            
+            html += '</div>';
+            
+            msgDiv.innerHTML = html;
+            return msgDiv;
+        }
+        
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message agent';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = '\
+                <div class="chat-message-avatar">🤖</div>\
+                <div class="chat-message-bubble">\
+                    <div class="typing-indicator">\
+                        <span></span><span></span><span></span>\
+                    </div>\
+                </div>';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function removeTyping() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+        
+        function playNext() {
+            if (currentIndex >= conversation.length) {
+                isPlaying = false;
+                if (replayBtn) replayBtn.disabled = false;
+                return;
+            }
+            
+            const item = conversation[currentIndex];
+            
+            // Show typing for agent messages
+            if (item.type === 'agent' && currentIndex > 0) {
+                showTyping();
+                setTimeout(function() {
+                    removeTyping();
+                    const msg = createMessage(item);
+                    chatMessages.appendChild(msg);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    currentIndex++;
+                    setTimeout(playNext, item.delay);
+                }, 600);
+            } else {
+                const msg = createMessage(item);
+                chatMessages.appendChild(msg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                currentIndex++;
+                setTimeout(playNext, item.delay);
+            }
+        }
+        
+        function startDemo() {
+            if (isPlaying) return;
+            
+            isPlaying = true;
+            currentIndex = 0;
+            chatMessages.innerHTML = '';
+            if (replayBtn) replayBtn.disabled = true;
+            
+            setTimeout(playNext, 500);
+        }
+        
+        // Auto-start when section is visible
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting && !isPlaying && currentIndex === 0) {
+                    startDemo();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        observer.observe(chatMessages);
+        
+        // Replay button
+        if (replayBtn) {
+            replayBtn.addEventListener('click', startDemo);
+        }
+    }
+
+    // --------------------------------------------------------------------------
     // Initialize Everything
     // --------------------------------------------------------------------------
     
@@ -250,6 +472,7 @@
         initSmoothScroll();
         initNavScroll();
         initTentacleParallax();
+        initChatDemo();
         
         // Add class to body so CSS knows JS is working
         document.body.classList.add('js-loaded');
