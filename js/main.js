@@ -265,6 +265,9 @@
         initNavScroll();
         initTentacleParallax();
         
+        // Add class to body so CSS knows JS is working
+        document.body.classList.add('js-loaded');
+        
         console.log('🦑 SquidBay initialized');
     }
     
