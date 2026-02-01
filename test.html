@@ -229,15 +229,22 @@
                 });
                 
                 const data = await res.json();
-                resultEl.className = 'result ' + (data.success ? 'success' : 'error');
-                resultEl.textContent = JSON.stringify(data, null, 2);
                 
-                if (data.skill && data.skill.id) {
+                if (data.success) {
+                    resultEl.className = 'result success';
+                    resultEl.innerHTML = '✅ <strong>Skill Registered Successfully!</strong>\n\n' +
+                        'Name: ' + data.skill.name + '\n' +
+                        'ID: ' + data.skill.id + '\n' +
+                        'Price: ' + data.skill.price_sats + ' sats\n\n' +
+                        '👉 Check the marketplace to see it live!';
                     document.getElementById('invokeSkillId').value = data.skill.id;
+                } else {
+                    resultEl.className = 'result error';
+                    resultEl.textContent = '❌ Error: ' + (data.error || 'Unknown error');
                 }
             } catch (e) {
                 resultEl.className = 'result error';
-                resultEl.textContent = 'Error: ' + e.message;
+                resultEl.textContent = '❌ Error: ' + e.message;
             }
         }
         
