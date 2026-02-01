@@ -726,6 +726,20 @@ code {
     transition: all var(--transition-slow);
 }
 
+@media (max-width: 768px) {
+    .lightning-card {
+        background: linear-gradient(135deg, var(--dark) 0%, #0d1117 100%);
+        border: 1px solid var(--gray-light);
+        padding: 24px;
+    }
+    
+    .lightning-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 16px;
+    }
+}
+
 .lightning-card:hover {
     border-color: var(--primary);
     transform: translateY(-4px);
