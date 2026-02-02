@@ -485,7 +485,7 @@
     }
 
     // --------------------------------------------------------------------------
-    // Scroll Progress Bars
+    // Scroll Progress Bar (Horizontal only)
     // --------------------------------------------------------------------------
     
     function initScrollProgress() {
@@ -497,16 +497,7 @@
             document.body.prepend(progressBar);
         }
         
-        // Create vertical progress bar if not exists
-        if (!document.getElementById('scroll-progress-vertical')) {
-            const progressBarV = document.createElement('div');
-            progressBarV.className = 'scroll-progress-vertical';
-            progressBarV.id = 'scroll-progress-vertical';
-            document.body.appendChild(progressBarV);
-        }
-        
         const horizontal = document.getElementById('scroll-progress');
-        const vertical = document.getElementById('scroll-progress-vertical');
         
         function updateProgress() {
             const scrollTop = window.scrollY;
@@ -514,7 +505,6 @@
             const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
             
             if (horizontal) horizontal.style.width = progress + '%';
-            if (vertical) vertical.style.height = progress + '%';
         }
         
         window.addEventListener('scroll', updateProgress, { passive: true });
