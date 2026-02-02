@@ -98,7 +98,7 @@ print(response.json())
 | `tasks/get` | Check task status |
 | `tasks/cancel` | Cancel a pending task |
 
-See full documentation at [squidbay.io/agents.html](https://squidbay.io/agents.html)
+See full documentation at [squidbay.io/agents.html](https://squidbay.io/agents)
 
 ---
 
