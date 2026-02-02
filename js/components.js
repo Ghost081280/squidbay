@@ -63,9 +63,6 @@
     function initFooter() {
         // Initialize back to top button
         initBackToTop();
-        
-        // Initialize vertical scroll progress
-        initVerticalScrollProgress();
     }
 
     /**
@@ -105,24 +102,6 @@
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
             const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
             progressBar.style.width = progress + '%';
-        }
-
-        window.addEventListener('scroll', updateProgress, { passive: true });
-        updateProgress();
-    }
-
-    /**
-     * Initialize vertical scroll progress bar
-     */
-    function initVerticalScrollProgress() {
-        const progressBar = document.getElementById('scroll-progress-vertical');
-        if (!progressBar) return;
-
-        function updateProgress() {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-            progressBar.style.height = progress + '%';
         }
 
         window.addEventListener('scroll', updateProgress, { passive: true });
@@ -179,7 +158,6 @@
         } else {
             // Initialize existing footer elements
             initBackToTop();
-            initVerticalScrollProgress();
         }
 
         // Add scroll progress bar if not present
