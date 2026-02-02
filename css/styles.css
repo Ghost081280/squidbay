@@ -1831,32 +1831,18 @@ footer .container {
     width: 0%;
     background: linear-gradient(90deg, var(--primary), var(--green));
     z-index: 10000;
-    transition: width 0.1s ease-out;
+    transition: none;
     box-shadow: 0 0 10px var(--primary-glow);
+    will-change: width;
 }
 
 /* --------------------------------------------------------------------------
-   Scroll Progress Bar (Vertical - Right Side)
-   -------------------------------------------------------------------------- */
-.scroll-progress-vertical {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 3px;
-    height: 0%;
-    background: linear-gradient(180deg, var(--primary), var(--green));
-    z-index: 9999;
-    transition: height 0.1s ease-out;
-    box-shadow: 0 0 10px var(--primary-glow);
-}
-
-/* --------------------------------------------------------------------------
-   Back to Top Button
+   Back to Top Button (Bottom LEFT)
    -------------------------------------------------------------------------- */
 .back-to-top {
     position: fixed;
     bottom: 30px;
-    right: 30px;
+    left: 30px;
     width: 48px;
     height: 48px;
     background: var(--dark);
@@ -1891,7 +1877,7 @@ footer .container {
 @media (max-width: 768px) {
     .back-to-top {
         bottom: 20px;
-        right: 20px;
+        left: 20px;
         width: 44px;
         height: 44px;
     }
