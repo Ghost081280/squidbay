@@ -127,19 +127,32 @@
     }
 
     // --------------------------------------------------------------------------
-    // Mobile Menu
+    // Mobile Menu (Slides from Right)
     // --------------------------------------------------------------------------
     
     function initMobileMenu() {
         const menuBtn = document.querySelector('.mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
         const navLinks = document.querySelector('.nav-links');
         
+        // New slide-from-right menu
+        if (menuBtn && mobileMenu) {
+            console.log('Mobile menu (slide-right) initialized');
+            
+            menuBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.toggleMobileMenu();
+            });
+            return;
+        }
+        
+        // Fallback for old-style menu
         if (!menuBtn || !navLinks) {
             console.log('Mobile menu elements not found');
             return;
         }
         
-        console.log('Mobile menu initialized');
+        console.log('Mobile menu (fallback) initialized');
         
         menuBtn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -163,6 +176,17 @@
             }
         });
     }
+    
+    // Global toggle function for mobile menu
+    window.toggleMobileMenu = window.toggleMobileMenu || function() {
+        const menu = document.getElementById('mobile-menu');
+        const body = document.body;
+        
+        if (menu) {
+            menu.classList.toggle('open');
+            body.classList.toggle('menu-open');
+        }
+    };
 
     // --------------------------------------------------------------------------
     // Smooth Scroll for Anchor Links
@@ -461,6 +485,130 @@
     }
 
     // --------------------------------------------------------------------------
+    // Scroll Progress Bars
+    // --------------------------------------------------------------------------
+    
+    function initScrollProgress() {
+        // Create horizontal progress bar if not exists
+        if (!document.getElementById('scroll-progress')) {
+            const progressBar = document.createElement('div');
+            progressBar.className = 'scroll-progress';
+            progressBar.id = 'scroll-progress';
+            document.body.prepend(progressBar);
+        }
+        
+        // Create vertical progress bar if not exists
+        if (!document.getElementById('scroll-progress-vertical')) {
+            const progressBarV = document.createElement('div');
+            progressBarV.className = 'scroll-progress-vertical';
+            progressBarV.id = 'scroll-progress-vertical';
+            document.body.appendChild(progressBarV);
+        }
+        
+        const horizontal = document.getElementById('scroll-progress');
+        const vertical = document.getElementById('scroll-progress-vertical');
+        
+        function updateProgress() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            
+            if (horizontal) horizontal.style.width = progress + '%';
+            if (vertical) vertical.style.height = progress + '%';
+        }
+        
+        window.addEventListener('scroll', updateProgress, { passive: true });
+        updateProgress();
+    }
+    
+    // --------------------------------------------------------------------------
+    // Back to Top Button
+    // --------------------------------------------------------------------------
+    
+    function initBackToTop() {
+        // Create button if not exists
+        if (!document.getElementById('back-to-top')) {
+            const btn = document.createElement('button');
+            btn.className = 'back-to-top';
+            btn.id = 'back-to-top';
+            btn.setAttribute('aria-label', 'Back to top');
+            btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>';
+            btn.onclick = function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+            document.body.appendChild(btn);
+        }
+        
+        const btn = document.getElementById('back-to-top');
+        
+        function toggleVisibility() {
+            if (window.scrollY > 300) {
+                btn.classList.add('visible');
+            } else {
+                btn.classList.remove('visible');
+            }
+        }
+        
+        window.addEventListener('scroll', toggleVisibility, { passive: true });
+        toggleVisibility();
+    }
+    
+    // --------------------------------------------------------------------------
+    // Cookie Consent
+    // --------------------------------------------------------------------------
+    
+    function initCookieConsent() {
+        // Check if already consented
+        if (localStorage.getItem('squidbay-cookie-consent')) {
+            return;
+        }
+        
+        // Create cookie consent banner
+        const banner = document.createElement('div');
+        banner.className = 'cookie-consent';
+        banner.id = 'cookie-consent';
+        banner.innerHTML = '\
+            <div class="cookie-consent-inner">\
+                <div class="cookie-consent-text">\
+                    <p>We use cookies to improve your experience. By using SquidBay, you agree to our <a href="privacy.html">Privacy Policy</a>.</p>\
+                </div>\
+                <div class="cookie-consent-buttons">\
+                    <button class="btn btn-secondary btn-sm" onclick="declineCookies()">Decline</button>\
+                    <button class="btn btn-primary btn-sm" onclick="acceptCookies()">Accept</button>\
+                </div>\
+            </div>\
+        ';
+        
+        document.body.appendChild(banner);
+        
+        // Show after a short delay
+        setTimeout(function() {
+            banner.classList.add('visible');
+        }, 1000);
+    }
+    
+    // Cookie consent functions
+    window.acceptCookies = function() {
+        localStorage.setItem('squidbay-cookie-consent', 'accepted');
+        hideCookieBanner();
+    };
+    
+    window.declineCookies = function() {
+        localStorage.setItem('squidbay-cookie-consent', 'declined');
+        hideCookieBanner();
+    };
+    
+    function hideCookieBanner() {
+        const banner = document.getElementById('cookie-consent');
+        if (banner) {
+            banner.classList.remove('visible');
+            setTimeout(function() {
+                banner.remove();
+            }, 300);
+        }
+    }
+
+    // --------------------------------------------------------------------------
     // Initialize Everything
     // --------------------------------------------------------------------------
     
@@ -473,6 +621,9 @@
         initNavScroll();
         initTentacleParallax();
         initChatDemo();
+        initScrollProgress();
+        initBackToTop();
+        initCookieConsent();
         
         // Add class to body so CSS knows JS is working
         document.body.classList.add('js-loaded');
