@@ -244,26 +244,35 @@
 /* ===================================
    CHAT MESSAGES - Conversation Layout
    Only applies inside SquidBot chatbot
+   MUST override styles.css .chat-message rules
    =================================== */
 .chatbot-messages .chat-message {
-    display: flex;
-    margin-bottom: 12px;
-    animation: chatMessageSlide 0.3s ease;
-    width: 100%;
-    transform: translateZ(0);
-    will-change: auto;
-    padding: 0;
-    background: transparent;
-    border: none;
-    border-radius: 0;
+    display: flex !important;
+    margin-bottom: 12px !important;
+    animation: chatMessageSlide 0.3s ease !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: translateZ(0) !important;
+    will-change: auto !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    gap: 0 !important;
+    align-self: stretch !important;
+    flex-direction: row !important;
 }
 
 .chatbot-messages .chat-message.user {
-    justify-content: flex-end;
+    justify-content: flex-end !important;
+    align-self: stretch !important;
+    flex-direction: row !important;
 }
 
 .chatbot-messages .chat-message.bot {
-    justify-content: flex-start;
+    justify-content: flex-start !important;
+    align-self: stretch !important;
+    flex-direction: row !important;
 }
 
 .chatbot-messages .message-content {
@@ -709,3 +718,5 @@
         font-size: 12px;
     }
 }
+
+
