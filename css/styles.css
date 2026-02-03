@@ -2085,7 +2085,7 @@ body.menu-open {
 .footer-bottom {
     display: flex;
     align-items: center;
-    justify-content: center !important;
+    justify-content: center;
     gap: 24px;
 }
 
