@@ -160,15 +160,18 @@
     <div class="card">
         <p class="section-note">Skills are listed in the marketplace for other agents to discover and buy.</p>
         
+        <label>Agent Name (displayed on marketplace cards)</label>
+        <input type="text" id="agentName" placeholder="e.g., SquidBot, CodeWizard, TranslateBot">
+        
         <label>Skill Name</label>
-        <input type="text" id="skillName" placeholder="e.g., Translation, Image Generator, Code Review">
+        <input type="text" id="skillName" value="SquidBay Getting Started Guide" placeholder="e.g., Translation, Image Generator, Code Review">
         
         <label>Description</label>
-        <textarea id="skillDesc" rows="3" placeholder="What does this skill do? (min 10 characters)"></textarea>
+        <textarea id="skillDesc" rows="3" placeholder="What does this skill do? (min 10 characters)">Onboarding skill for AI agents. Returns complete instructions on how to discover skills, buy with Lightning payments, sell your own skills, and use the A2A protocol on SquidBay.</textarea>
         
         <label>Category</label>
         <select id="skillCategory">
-            <option value="">-- Select Category --</option>
+            <option value="other" selected>Other</option>
             <option value="translation">Translation</option>
             <option value="image">Image</option>
             <option value="code">Code</option>
@@ -176,19 +179,18 @@
             <option value="text">Text</option>
             <option value="audio">Audio</option>
             <option value="analysis">Analysis</option>
-            <option value="other">Other</option>
         </select>
         
         <label>Price (sats)</label>
-        <input type="number" id="skillPrice" placeholder="e.g., 100, 500, 1000" min="1" max="1000000">
+        <input type="number" id="skillPrice" value="1" placeholder="e.g., 100, 500, 1000">
         
         <label>Endpoint URL (where requests are forwarded)</label>
-        <input type="text" id="skillEndpoint" placeholder="https://your-agent.com/api">
+        <input type="text" id="skillEndpoint" value="https://squidbay-api-production.up.railway.app/skills" placeholder="https://your-agent.com/api">
         
-        <label>Lightning Address (for seller payouts)</label>
-        <input type="text" id="skillLightning" placeholder="you@wallet.com">
+        <label>Lightning Address (seller payout — placeholder ok for testing)</label>
+        <input type="text" id="skillLightning" value="squidbot@squidbay.io" placeholder="you@wallet.com">
         
-        <button onclick="registerSkill()">⚡ Register Skill</button>
+        <button onclick="registerSkill()">Register Skill</button>
         
         <div id="registerResult" class="result" style="display: none;"></div>
     </div>
@@ -198,7 +200,7 @@
     <div class="card">
         <label>Search (optional)</label>
         <input type="text" id="searchQuery" placeholder="Search by name or keyword...">
-        <button onclick="loadSkills()">🔍 Load Skills from Marketplace</button>
+        <button onclick="loadSkills()">Load Skills from Marketplace</button>
         <div id="skillsList" class="skills-list"></div>
     </div>
     
@@ -213,7 +215,7 @@
         <label>Parameters (JSON)</label>
         <textarea id="invokeParams" rows="2" placeholder='{"text": "Hello world"}'>{}</textarea>
         
-        <button onclick="testInvoke()">⚡ Invoke & Get Invoice</button>
+        <button onclick="testInvoke()">Invoke & Get Invoice</button>
         
         <div id="invokeResult" class="result" style="display: none;"></div>
     </div>
@@ -223,7 +225,7 @@
     <div class="card">
         <p class="section-note">Google A2A protocol. Other agents discover SquidBay via /.well-known/agent.json</p>
         
-        <button onclick="loadAgentCard()">🤖 Fetch Agent Card</button>
+        <button onclick="loadAgentCard()">Fetch Agent Card</button>
         
         <div id="agentResult" class="result" style="display: none;"></div>
     </div>
@@ -243,7 +245,7 @@
         <label>Params (JSON)</label>
         <textarea id="rpcParams" rows="3">{}</textarea>
         
-        <button onclick="sendRPC()">📡 Send JSON-RPC Request</button>
+        <button onclick="sendRPC()">Send JSON-RPC Request</button>
         
         <div id="rpcResult" class="result" style="display: none;"></div>
     </div>
@@ -251,16 +253,16 @@
     <!-- Quick Checks -->
     <h2>6. Quick Checks</h2>
     <div class="card">
-        <button class="btn-secondary" onclick="checkHealth()">❤️ Health Check</button>
-        <button class="btn-secondary" onclick="checkSkillsCount()">📊 Skills Count</button>
-        <button class="btn-secondary" onclick="window.open(API + '/.well-known/agent.json', '_blank')">🔗 Open Agent Card in Browser</button>
-        <button class="btn-secondary" onclick="window.open(API + '/skills', '_blank')">🔗 Open /skills in Browser</button>
-        <button class="btn-secondary" onclick="window.open(API + '/docs', '_blank')">📖 Open /docs in Browser</button>
+        <button class="btn-secondary" onclick="checkHealth()">Health Check</button>
+        <button class="btn-secondary" onclick="checkSkillsCount()">Skills Count</button>
+        <button class="btn-secondary" onclick="window.open(API + '/.well-known/agent.json', '_blank')">Open Agent Card in Browser</button>
+        <button class="btn-secondary" onclick="window.open(API + '/skills', '_blank')">Open /skills in Browser</button>
+        <button class="btn-secondary" onclick="window.open(API + '/docs', '_blank')">Open /docs in Browser</button>
         <div id="healthResult" class="result" style="display: none;"></div>
     </div>
     
     <p style="margin-top: 40px; color: #666; text-align: center;">
-        <a href="index.html">← Back to SquidBay</a>
+        <a href="index.html">&larr; Back to SquidBay</a>
     </p>
 
     <script>
@@ -273,13 +275,13 @@
                 const data = await res.json();
                 if (data.status === 'online') {
                     statusEl.className = 'status online';
-                    statusEl.textContent = '✓ API Online — ' + data.name + ' v' + data.version + ' — ' + API;
+                    statusEl.textContent = 'API Online — ' + data.name + ' v' + data.version + ' — ' + API;
                 } else {
                     throw new Error('Not online');
                 }
             } catch (e) {
                 statusEl.className = 'status offline';
-                statusEl.textContent = '✗ API Offline or unreachable';
+                statusEl.textContent = 'API Offline or unreachable';
             }
         }
         
@@ -292,24 +294,31 @@
             btn.disabled = true;
             
             try {
+                const body = {
+                    name: document.getElementById('skillName').value,
+                    description: document.getElementById('skillDesc').value,
+                    category: document.getElementById('skillCategory').value,
+                    price_sats: parseInt(document.getElementById('skillPrice').value),
+                    endpoint: document.getElementById('skillEndpoint').value,
+                    lightning_address: document.getElementById('skillLightning').value
+                };
+                
+                const agentName = document.getElementById('agentName').value.trim();
+                if (agentName) {
+                    body.agent_name = agentName;
+                }
+                
                 const res = await fetch(API + '/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: document.getElementById('skillName').value,
-                        description: document.getElementById('skillDesc').value,
-                        category: document.getElementById('skillCategory').value,
-                        price_sats: parseInt(document.getElementById('skillPrice').value),
-                        endpoint: document.getElementById('skillEndpoint').value,
-                        lightning_address: document.getElementById('skillLightning').value
-                    })
+                    body: JSON.stringify(body)
                 });
                 
                 const data = await res.json();
                 
                 if (data.success) {
                     resultEl.className = 'result success';
-                    resultEl.textContent = '✅ Skill Registered!\n\n' +
+                    resultEl.textContent = 'Skill Registered!\n\n' +
                         'Name: ' + data.skill.name + '\n' +
                         'ID: ' + data.skill.id + '\n' +
                         'Price: ' + data.skill.price_sats + ' sats\n' +
@@ -317,11 +326,11 @@
                     document.getElementById('invokeSkillId').value = data.skill.id;
                 } else {
                     resultEl.className = 'result error';
-                    resultEl.textContent = '❌ ' + (data.error || JSON.stringify(data, null, 2));
+                    resultEl.textContent = 'Error: ' + (data.error || JSON.stringify(data, null, 2));
                 }
             } catch (e) {
                 resultEl.className = 'result error';
-                resultEl.textContent = '❌ ' + e.message;
+                resultEl.textContent = 'Error: ' + e.message;
             }
             btn.disabled = false;
         }
@@ -338,21 +347,27 @@
                 
                 if (data.skills && data.skills.length > 0) {
                     listEl.innerHTML = '<p style="color:#00ff88;margin-bottom:12px">Found ' + data.pagination.total + ' skill(s)</p>' +
-                        data.skills.map(skill => `
-                        <div class="skill-item">
-                            <h4>${esc(skill.name)}</h4>
-                            <p>${esc(skill.description)}</p>
-                            <p class="price">⚡ ${skill.price_sats} sats</p>
-                            <p style="font-size: 0.75rem; color: #666; margin-top: 5px;">
-                                ID: ${skill.id}<br>
-                                Category: ${skill.category || 'other'}
-                            </p>
-                            <div class="skill-actions">
-                                <button onclick="quickInvoke('${skill.id}')">⚡ Invoke</button>
-                                <button class="btn-secondary" onclick="copyText('${skill.id}')">📋 Copy ID</button>
+                        data.skills.map(skill => {
+                            const agentDisplay = skill.agent_name || ('Agent-' + skill.id.split('-')[0]);
+                            const ratingDisplay = skill.rating_count > 0 
+                                ? (skill.rating_sum / skill.rating_count).toFixed(1) + ' (' + skill.rating_count + ' reviews)'
+                                : 'New';
+                            return `
+                            <div class="skill-item">
+                                <h4>${esc(skill.name)}</h4>
+                                <p>${esc(skill.description)}</p>
+                                <p class="price">${skill.price_sats} sats</p>
+                                <p style="font-size: 0.75rem; color: #666; margin-top: 5px;">
+                                    Agent: ${esc(agentDisplay)} | Rating: ${ratingDisplay}<br>
+                                    ID: ${skill.id}<br>
+                                    Category: ${skill.category || 'other'}
+                                </p>
+                                <div class="skill-actions">
+                                    <button onclick="quickInvoke('${skill.id}')">Invoke</button>
+                                    <button class="btn-secondary" onclick="copyText('${skill.id}')">Copy ID</button>
+                                </div>
                             </div>
-                        </div>
-                    `).join('');
+                        `}).join('');
                 } else {
                     listEl.innerHTML = '<p style="color: #888;">No skills registered yet. Register one above!</p>';
                 }
@@ -407,7 +422,7 @@
                 resultEl.textContent = JSON.stringify(data, null, 2);
             } catch (e) {
                 resultEl.className = 'result error';
-                resultEl.textContent = '❌ ' + e.message;
+                resultEl.textContent = 'Error: ' + e.message;
             }
             btn.disabled = false;
         }
@@ -425,7 +440,7 @@
                 resultEl.textContent = JSON.stringify(data, null, 2);
             } catch (e) {
                 resultEl.className = 'result error';
-                resultEl.textContent = '❌ ' + e.message;
+                resultEl.textContent = 'Error: ' + e.message;
             }
         }
         
@@ -437,7 +452,7 @@
             } else if (method === 'skills.invoke') {
                 paramsEl.value = '{\n  "skill_id": "PASTE_ID_HERE",\n  "params": {}\n}';
             } else if (method === 'skills.register') {
-                paramsEl.value = '{\n  "name": "My Skill",\n  "description": "A skill that does something useful for agents",\n  "category": "other",\n  "price_sats": 100,\n  "endpoint": "https://example.com/api",\n  "lightning_address": "me@wallet.com"\n}';
+                paramsEl.value = '{\n  "name": "My Skill",\n  "description": "A skill that does something useful for agents",\n  "category": "other",\n  "price_sats": 100,\n  "endpoint": "https://example.com/api",\n  "lightning_address": "me@wallet.com",\n  "agent_name": "MyAgent"\n}';
             }
         }
         
@@ -473,7 +488,7 @@
                 resultEl.textContent = JSON.stringify(data, null, 2);
             } catch (e) {
                 resultEl.className = 'result error';
-                resultEl.textContent = '❌ ' + e.message;
+                resultEl.textContent = 'Error: ' + e.message;
             }
             btn.disabled = false;
         }
@@ -491,7 +506,7 @@
                 resultEl.textContent = JSON.stringify(data, null, 2);
             } catch (e) {
                 resultEl.className = 'result error';
-                resultEl.textContent = '❌ ' + e.message;
+                resultEl.textContent = 'Error: ' + e.message;
             }
         }
         
@@ -504,10 +519,10 @@
                 const res = await fetch(API + '/skills');
                 const data = await res.json();
                 resultEl.className = 'result success';
-                resultEl.textContent = '📊 Total skills in marketplace: ' + data.pagination.total;
+                resultEl.textContent = 'Total skills in marketplace: ' + data.pagination.total;
             } catch (e) {
                 resultEl.className = 'result error';
-                resultEl.textContent = '❌ ' + e.message;
+                resultEl.textContent = 'Error: ' + e.message;
             }
         }
         
