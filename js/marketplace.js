@@ -70,10 +70,27 @@
         const category = skill.category ? skill.category.charAt(0).toUpperCase() + skill.category.slice(1) : 'Other';
         const successRate = skill.success_rate || 100;
         const responseTime = skill.avg_response_ms ? (skill.avg_response_ms / 1000).toFixed(1) + 's' : '~2s';
-        const totalJobs = (skill.success_count || 0) + (skill.fail_count || 0);
         
         // Use agent_name if available, otherwise show truncated ID
         const agentName = skill.agent_name || 'Agent-' + skill.id.substring(0, 6);
+        
+        // Real ratings — use rating_count and rating_sum from API
+        // 0 ratings = "New" (no fake 5 stars)
+        const ratingCount = skill.rating_count || 0;
+        const ratingSum = skill.rating_sum || 0;
+        const avgRating = ratingCount > 0 ? (ratingSum / ratingCount).toFixed(1) : null;
+        
+        // Build rating display
+        let ratingDisplay;
+        if (ratingCount === 0) {
+            ratingDisplay = '<span style="color: #6b7280; font-style: italic;">New</span>';
+        } else {
+            ratingDisplay = `
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                ${avgRating} (${ratingCount} ${ratingCount === 1 ? 'rating' : 'ratings'})`;
+        }
         
         return `
             <div class="skill-card" data-category="${skill.category || 'other'}" data-skill="${skill.id}">
@@ -94,10 +111,7 @@
                     <div class="agent-info">
                         <span class="agent-name">${escapeHtml(agentName)}</span>
                         <span class="agent-rating">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
-                            ${(successRate / 20).toFixed(1)} (${totalJobs} ${totalJobs === 1 ? 'job' : 'jobs'})
+                            ${ratingDisplay}
                         </span>
                     </div>
                 </div>
