@@ -103,37 +103,43 @@
         const grid = document.getElementById('skillsGrid');
         if (!grid) return;
         
-        const start = 0;
-        const end = (currentPage + 1) * PAGE_SIZE;
+        const totalPages = Math.ceil(allSkills.length / PAGE_SIZE);
+        const start = currentPage * PAGE_SIZE;
+        const end = start + PAGE_SIZE;
         const visible = allSkills.slice(start, end);
         
         grid.innerHTML = visible.map(skill => renderSkillCard(skill)).join('');
         
-        // Remove old load more button if exists
-        const oldBtn = document.getElementById('loadMoreBtn');
-        if (oldBtn) oldBtn.remove();
+        // Remove old pagination if exists
+        const oldNav = document.getElementById('paginationNav');
+        if (oldNav) oldNav.remove();
         
-        // Add Load More button if there are more skills
-        if (end < allSkills.length) {
-            const remaining = allSkills.length - end;
-            const btn = document.createElement('div');
-            btn.id = 'loadMoreBtn';
-            btn.style.cssText = 'text-align: center; padding: 30px 0; grid-column: 1 / -1;';
-            btn.innerHTML = `<button onclick="window.loadMoreSkills()" style="background: linear-gradient(135deg, #00d9ff, #00ff88); color: #000; border: none; padding: 14px 40px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s;"
-                onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"
-                >Load More Skills (${remaining} remaining)</button>`;
-            grid.appendChild(btn);
+        // Add pagination controls if more than one page
+        if (totalPages > 1) {
+            const nav = document.createElement('div');
+            nav.id = 'paginationNav';
+            nav.style.cssText = 'text-align: center; padding: 30px 0; grid-column: 1 / -1; display: flex; justify-content: center; align-items: center; gap: 12px;';
+            
+            const prevDisabled = currentPage === 0;
+            const nextDisabled = currentPage >= totalPages - 1;
+            
+            nav.innerHTML = `
+                <button onclick="window.goToPage(${currentPage - 1})" ${prevDisabled ? 'disabled' : ''} style="background: ${prevDisabled ? '#333' : 'linear-gradient(135deg, #00d9ff, #00ff88)'}; color: ${prevDisabled ? '#666' : '#000'}; border: none; padding: 12px 24px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: ${prevDisabled ? 'not-allowed' : 'pointer'}; transition: transform 0.2s;" ${!prevDisabled ? 'onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'"' : ''}>← Previous</button>
+                <span style="color: #888; font-size: 0.9rem;">Page ${currentPage + 1} of ${totalPages} <span style="color: #555;">(${allSkills.length} skills)</span></span>
+                <button onclick="window.goToPage(${currentPage + 1})" ${nextDisabled ? 'disabled' : ''} style="background: ${nextDisabled ? '#333' : 'linear-gradient(135deg, #00d9ff, #00ff88)'}; color: ${nextDisabled ? '#666' : '#000'}; border: none; padding: 12px 24px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: ${nextDisabled ? 'not-allowed' : 'pointer'}; transition: transform 0.2s;" ${!nextDisabled ? 'onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'"' : ''}>Next →</button>
+            `;
+            grid.appendChild(nav);
         }
     }
     
-    window.loadMoreSkills = function() {
-        currentPage++;
+    window.goToPage = function(page) {
+        const totalPages = Math.ceil(allSkills.length / PAGE_SIZE);
+        if (page < 0 || page >= totalPages) return;
+        currentPage = page;
         renderPage();
-        // Scroll to where new skills start
-        const cards = document.querySelectorAll('.skill-card');
-        if (cards.length > PAGE_SIZE * currentPage) {
-            cards[PAGE_SIZE * currentPage].scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        // Scroll to top of grid
+        const grid = document.getElementById('skillsGrid');
+        if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
     
     function renderSkillCard(skill) {
@@ -286,9 +292,9 @@
         
         if (grid) {
             grid.innerHTML = matches.map(skill => renderSkillCard(skill)).join('');
-            // Remove load more button during search
-            const oldBtn = document.getElementById('loadMoreBtn');
-            if (oldBtn) oldBtn.remove();
+            // Remove pagination during search
+            const oldNav = document.getElementById('paginationNav');
+            if (oldNav) oldNav.remove();
         }
     }
 
