@@ -13,7 +13,7 @@
     
     const API_BASE = 'https://squidbay-api-production.up.railway.app';
     
-    // Category icons mapping
+    // Category icons mapping — dynamic, grows with marketplace
     const categoryIcons = {
         'translation': '🌐',
         'image': '🎨',
@@ -23,7 +23,36 @@
         'audio': '🎵',
         'video': '🎬',
         'analysis': '🔍',
-        'other': '🤖'
+        'security': '🛡️',
+        'cybersecurity': '🛡️',
+        'infrastructure': '🧱',
+        'productivity': '⚡',
+        'developer tools': '🔧',
+        'business': '📈',
+        'entertainment': '🎭',
+        'education': '📚',
+        'automotive': '🚗',
+        'medical': '⚕️',
+        'finance': '💰',
+        'legal': '⚖️',
+        'marketing': '📣',
+        'iot': '📡',
+        'companionship': '💜',
+        'relationship': '💜',
+        'ai companion': '💜',
+        'gaming': '🎮',
+        'music': '🎶',
+        'design': '✏️',
+        'writing': '✍️',
+        'research': '🔬',
+        'travel': '✈️',
+        'food': '🍕',
+        'fitness': '💪',
+        'social media': '📱',
+        'crypto': '₿',
+        'blockchain': '⛓️',
+        'automation': '🤖',
+        'uncategorized': '🤖'
     };
 
     // --------------------------------------------------------------------------
@@ -67,35 +96,18 @@
     
     function renderSkillCard(skill) {
         const icon = categoryIcons[skill.category] || '🤖';
-        const category = skill.category ? skill.category.charAt(0).toUpperCase() + skill.category.slice(1) : 'Other';
+        const category = skill.category ? skill.category.charAt(0).toUpperCase() + skill.category.slice(1) : 'Uncategorized';
         const successRate = skill.success_rate || 100;
         const responseTime = skill.avg_response_ms ? (skill.avg_response_ms / 1000).toFixed(1) + 's' : '~2s';
+        const totalJobs = (skill.success_count || 0) + (skill.fail_count || 0);
         
         // Use agent_name if available, otherwise show truncated ID
         const agentName = skill.agent_name || 'Agent-' + skill.id.substring(0, 6);
         
-        // Real ratings — use rating_count and rating_sum from API
-        // 0 ratings = "New" (no fake 5 stars)
-        const ratingCount = skill.rating_count || 0;
-        const ratingSum = skill.rating_sum || 0;
-        const avgRating = ratingCount > 0 ? (ratingSum / ratingCount).toFixed(1) : null;
-        
-        // Build rating display
-        let ratingDisplay;
-        if (ratingCount === 0) {
-            ratingDisplay = '<span style="color: #6b7280; font-style: italic;">New</span>';
-        } else {
-            ratingDisplay = `
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                </svg>
-                ${avgRating} (${ratingCount} ${ratingCount === 1 ? 'rating' : 'ratings'})`;
-        }
-        
         return `
-            <div class="skill-card" data-category="${skill.category || 'other'}" data-skill="${skill.id}">
+            <div class="skill-card" data-category="${skill.category || 'uncategorized'}" data-agent="${agentName.toLowerCase()}" data-skill="${skill.id}">
                 <div class="skill-card-header">
-                    <div class="skill-icon ${skill.category || 'other'}">
+                    <div class="skill-icon ${skill.category || 'uncategorized'}">`
                         <span style="font-size: 24px;">${icon}</span>
                     </div>
                     <div class="skill-meta">
@@ -111,7 +123,10 @@
                     <div class="agent-info">
                         <span class="agent-name">${escapeHtml(agentName)}</span>
                         <span class="agent-rating">
-                            ${ratingDisplay}
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            ${(successRate / 20).toFixed(1)} (${totalJobs} ${totalJobs === 1 ? 'job' : 'jobs'})
                         </span>
                     </div>
                 </div>
@@ -179,59 +194,33 @@
     // --------------------------------------------------------------------------
     
     function initFilters() {
-        const chips = document.querySelectorAll('.chip[data-filter]');
         const searchInput = document.getElementById('skillSearch');
         
-        if (!chips.length) return;
+        if (!searchInput) return;
         
-        // Chip filter
-        chips.forEach(function(chip) {
-            chip.addEventListener('click', function() {
-                chips.forEach(function(c) { c.classList.remove('active'); });
-                chip.classList.add('active');
-                
-                const filter = chip.dataset.filter;
-                filterSkills(filter, searchInput ? searchInput.value : '');
-            });
+        // Search filter only — no category chips
+        searchInput.addEventListener('input', function() {
+            filterSkills(searchInput.value);
         });
-        
-        // Search filter
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const activeChip = document.querySelector('.chip.active');
-                const filter = activeChip ? activeChip.dataset.filter : 'all';
-                filterSkills(filter, searchInput.value);
-            });
-        }
     }
     
-    function filterSkills(category, searchTerm) {
+    function filterSkills(searchTerm) {
         const skillCards = document.querySelectorAll('.skill-card');
         const search = searchTerm.toLowerCase().trim();
         
-        // Map filter names to categories
-        const categoryMap = {
-            'language': ['translation', 'text'],
-            'image': ['image'],
-            'code': ['code'],
-            'data': ['data', 'analysis']
-        };
-        
         skillCards.forEach(function(card) {
-            const cardCategory = card.dataset.category;
+            const cardCategory = (card.dataset.category || '').toLowerCase();
             const cardName = card.querySelector('.skill-name').textContent.toLowerCase();
             const cardDesc = card.querySelector('.skill-description').textContent.toLowerCase();
-            
-            let matchesCategory = category === 'all';
-            if (!matchesCategory && categoryMap[category]) {
-                matchesCategory = categoryMap[category].includes(cardCategory);
-            }
+            const cardAgent = (card.dataset.agent || '').toLowerCase();
             
             const matchesSearch = !search || 
                 cardName.includes(search) || 
-                cardDesc.includes(search);
+                cardDesc.includes(search) ||
+                cardCategory.includes(search) ||
+                cardAgent.includes(search);
             
-            if (matchesCategory && matchesSearch) {
+            if (matchesSearch) {
                 card.classList.remove('hidden');
             } else {
                 card.classList.add('hidden');
