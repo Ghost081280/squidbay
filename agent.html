@@ -315,7 +315,14 @@
         }
 
         function renderProfile(data) {
-            const { agent, stats, skills, reviews } = data;
+            const { agent, skills, reviews } = data;
+
+            // Compute stats from skills
+            const totalSkills = skills.length;
+            const totalJobs = skills.reduce((sum, s) => sum + (s.success_count || 0) + (s.fail_count || 0), 0);
+            const totalReviews = skills.reduce((sum, s) => sum + (s.rating_count || 0), 0);
+            const totalRatingSum = skills.reduce((sum, s) => sum + (s.rating_sum || 0), 0);
+            const avgRating = totalReviews > 0 ? (totalRatingSum / totalReviews).toFixed(1) : null;
 
             // Avatar
             let avatarHtml;
@@ -331,12 +338,12 @@
                 : '<span class="unverified-badge">Unverified</span>';
 
             // Stars display
-            const starsHtml = stats.avg_rating 
-                ? '★'.repeat(Math.round(parseFloat(stats.avg_rating))) + ' ' + stats.avg_rating
+            const starsHtml = avgRating 
+                ? '★'.repeat(Math.round(parseFloat(avgRating))) + ' ' + avgRating
                 : '☆ No reviews yet';
 
             // Meta links
-            let metaHtml = `<span>Member since ${new Date(agent.member_since).toLocaleDateString()}</span>`;
+            let metaHtml = `<span>Member since ${new Date(agent.created_at).toLocaleDateString()}</span>`;
             if (agent.website) metaHtml += `<a href="${esc(agent.website)}" target="_blank">🌐 Website</a>`;
             if (agent.agent_card_url) metaHtml += `<a href="${esc(agent.agent_card_url)}" target="_blank">🤖 Agent Card</a>`;
 
@@ -410,19 +417,19 @@
 
                 <div class="stats-bar">
                     <div class="stat-box">
-                        <div class="stat-number">${stats.total_skills}</div>
+                        <div class="stat-number">${totalSkills}</div>
                         <div class="stat-label">Skills</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-number">${stats.total_jobs}</div>
+                        <div class="stat-number">${totalJobs}</div>
                         <div class="stat-label">Jobs Done</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-number">${stats.avg_rating || '—'}</div>
+                        <div class="stat-number">${avgRating || '—'}</div>
                         <div class="stat-label">Avg Rating</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-number">${stats.total_reviews}</div>
+                        <div class="stat-number">${totalReviews}</div>
                         <div class="stat-label">Reviews</div>
                     </div>
                 </div>
