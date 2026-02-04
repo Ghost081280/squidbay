@@ -147,6 +147,17 @@
             margin-bottom: 15px;
             font-style: italic;
         }
+        .emoji-btn {
+            cursor: pointer;
+            font-size: 20px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            transition: background 0.15s;
+            user-select: none;
+        }
+        .emoji-btn:hover {
+            background: rgba(0, 217, 255, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -204,6 +215,49 @@
         
         <label>Lightning Address (seller payout — placeholder ok for testing)</label>
         <input type="text" id="skillLightning" placeholder="you@wallet.com">
+        
+        <label>Skill Icon (pick an emoji that represents your skill)</label>
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 15px;">
+            <input type="text" id="skillIcon" placeholder="Click an emoji or paste one" maxlength="4" style="width: 80px; font-size: 24px; text-align: center;">
+            <div id="emojiPicker" style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 400px;">
+                <span class="emoji-btn" onclick="pickEmoji('🤖')">🤖</span>
+                <span class="emoji-btn" onclick="pickEmoji('🛡️')">🛡️</span>
+                <span class="emoji-btn" onclick="pickEmoji('💻')">💻</span>
+                <span class="emoji-btn" onclick="pickEmoji('📊')">📊</span>
+                <span class="emoji-btn" onclick="pickEmoji('🌐')">🌐</span>
+                <span class="emoji-btn" onclick="pickEmoji('🎨')">🎨</span>
+                <span class="emoji-btn" onclick="pickEmoji('🎵')">🎵</span>
+                <span class="emoji-btn" onclick="pickEmoji('🎬')">🎬</span>
+                <span class="emoji-btn" onclick="pickEmoji('📝')">📝</span>
+                <span class="emoji-btn" onclick="pickEmoji('🔍')">🔍</span>
+                <span class="emoji-btn" onclick="pickEmoji('💜')">💜</span>
+                <span class="emoji-btn" onclick="pickEmoji('💰')">💰</span>
+                <span class="emoji-btn" onclick="pickEmoji('⚖️')">⚖️</span>
+                <span class="emoji-btn" onclick="pickEmoji('⚕️')">⚕️</span>
+                <span class="emoji-btn" onclick="pickEmoji('📚')">📚</span>
+                <span class="emoji-btn" onclick="pickEmoji('🚗')">🚗</span>
+                <span class="emoji-btn" onclick="pickEmoji('📡')">📡</span>
+                <span class="emoji-btn" onclick="pickEmoji('⚡')">⚡</span>
+                <span class="emoji-btn" onclick="pickEmoji('🔧')">🔧</span>
+                <span class="emoji-btn" onclick="pickEmoji('📈')">📈</span>
+                <span class="emoji-btn" onclick="pickEmoji('🎭')">🎭</span>
+                <span class="emoji-btn" onclick="pickEmoji('🎮')">🎮</span>
+                <span class="emoji-btn" onclick="pickEmoji('✈️')">✈️</span>
+                <span class="emoji-btn" onclick="pickEmoji('💪')">💪</span>
+                <span class="emoji-btn" onclick="pickEmoji('📱')">📱</span>
+                <span class="emoji-btn" onclick="pickEmoji('₿')">₿</span>
+                <span class="emoji-btn" onclick="pickEmoji('🔬')">🔬</span>
+                <span class="emoji-btn" onclick="pickEmoji('✍️')">✍️</span>
+                <span class="emoji-btn" onclick="pickEmoji('🧱')">🧱</span>
+                <span class="emoji-btn" onclick="pickEmoji('📣')">📣</span>
+                <span class="emoji-btn" onclick="pickEmoji('🦑')">🦑</span>
+                <span class="emoji-btn" onclick="pickEmoji('🐕')">🐕</span>
+                <span class="emoji-btn" onclick="pickEmoji('🏠')">🏠</span>
+                <span class="emoji-btn" onclick="pickEmoji('🍕')">🍕</span>
+                <span class="emoji-btn" onclick="pickEmoji('⛓️')">⛓️</span>
+                <span class="emoji-btn" onclick="pickEmoji('🎯')">🎯</span>
+            </div>
+        </div>
         
         <button onclick="registerSkill()">Register Skill</button>
         
@@ -300,6 +354,10 @@
             }
         }
         
+        function pickEmoji(emoji) {
+            document.getElementById('skillIcon').value = emoji;
+        }
+        
         async function registerSkill() {
             const btn = event.target;
             const resultEl = document.getElementById('registerResult');
@@ -321,6 +379,11 @@
                 const agentName = document.getElementById('agentName').value.trim();
                 if (agentName) {
                     body.agent_name = agentName;
+                }
+                
+                const skillIcon = document.getElementById('skillIcon').value.trim();
+                if (skillIcon) {
+                    body.icon = skillIcon;
                 }
                 
                 const res = await fetch(API + '/register', {
@@ -548,6 +611,99 @@
         }
         
         checkStatus();
+    </script>
+
+    <!-- Human Override: Bulk Category Fix -->
+    <h2>6. 🔧 Human Override — Fix Categories & Agent Names</h2>
+    <div style="background: rgba(255, 189, 46, 0.05); border: 1px solid rgba(255, 189, 46, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+        <p class="section-note">One-click fix for all skills stuck as "other" or miscategorized. Also sets agent_name on the 4 original skills.</p>
+        <label>Admin Passcode</label>
+        <input type="password" id="adminPasscode" placeholder="Enter 8-digit passcode" maxlength="8" style="margin-bottom: 10px;">
+        <button onclick="runBulkFix()" style="background: #ffbd2e; color: #000; font-weight: bold;">⚡ Run Bulk Fix (29 updates)</button>
+        <pre id="bulkFixResult" style="margin-top: 15px; font-size: 0.8rem; max-height: 400px; overflow-y: auto;"></pre>
+    </div>
+
+    <script>
+        async function runBulkFix() {
+            const resultEl = document.getElementById('bulkFixResult');
+            const passcode = document.getElementById('adminPasscode').value;
+            
+            // Simple hash check — not Fort Knox but stops casual button-clickers
+            const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(passcode));
+            const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+            // Hash of the admin passcode
+            if (hex !== 'b98e14bfea367b3025b946b8f2e20824956e014720ad2117b6e7b6dbc1db9f14') {
+                resultEl.textContent = '❌ Invalid passcode. Nice try.';
+                return;
+            }
+            const API = 'https://squidbay-api-production.up.railway.app';
+            const resultEl = document.getElementById('bulkFixResult');
+            resultEl.textContent = 'Running fixes...\n';
+
+            const fixes = [
+                // Fix "other" → correct category + set icons
+                { id: 'd5084385-9ea5-4cdd-b7cd-5da036e38ae1', data: { category: 'automotive', icon: '🚗' }, label: 'MotorMind → automotive 🚗' },
+                { id: '040e3016-a667-48fa-8367-61029f2c5cdb', data: { category: 'education', icon: '📚' }, label: 'LinguaBot → education 📚' },
+                { id: '08ce6153-1725-428d-a6bc-f396a97dc0cd', data: { category: 'entertainment', icon: '🎭' }, label: 'CosmicReads → entertainment 🎭' },
+                { id: '20a2d103-103f-4d9f-b09f-b7bec7bed528', data: { category: 'business', icon: '📈' }, label: 'ChartWizard → business 📈' },
+                { id: '96770048-20fd-4429-9b3f-6b3ad6686410', data: { category: 'developer tools', icon: '🔧' }, label: 'PromptSurgeon → developer tools 🔧' },
+                { id: '02251a32-14ee-4cbe-b465-3036b849c9cd', data: { category: 'infrastructure', icon: '🧱' }, label: 'TotalRecall → infrastructure 🧱' },
+                { id: 'f6d6dbdd-bbf6-4b80-884f-934f0b57bbd3', data: { category: 'security', icon: '🛡️' }, label: 'ShieldWall → security 🛡️' },
+                { id: '87359bd4-41d7-4f31-befd-b58d9bb9fe8e', data: { category: 'productivity', icon: '⚡' }, label: 'GhostReply → productivity ⚡' },
+                { id: '907431f3-323f-4605-bcf6-4bfa6f839d1e', data: { category: 'education', icon: '🦑' }, label: 'Getting Started Guide → education 🦑' },
+
+                // Fix miscategorized + set icons
+                { id: '78e10a5c-856e-4738-9ab9-8b28b869e2ee', data: { category: 'marketing', icon: '📣' }, label: 'ContentMill → marketing 📣' },
+                { id: '32b2e605-d2be-4c40-a4f9-d60b202ab845', data: { category: 'companionship', icon: '💜' }, label: 'BroBot → companionship 💜' },
+                { id: '19b051b5-2066-49cf-9b7d-d094ae72461d', data: { category: 'companionship', icon: '💜' }, label: 'BaeBot → companionship 💜' },
+                { id: '868b7d6c-dae1-402f-8528-1d6c97a5a4ad', data: { category: 'medical', icon: '⚕️' }, label: 'ScribeRx → medical ⚕️' },
+                { id: '422bf339-227f-42c0-91b0-4dbfd0248110', data: { category: 'iot', icon: '📡' }, label: 'ChainLink-IoT → iot 📡' },
+                { id: '4347f990-690e-4cdf-a290-1b6c42b29d00', data: { category: 'security', icon: '🛡️' }, label: 'CyberSentinel → security 🛡️' },
+                { id: '06f9bfb3-2f28-4167-9fe0-1b2d8a27961c', data: { category: 'finance', icon: '💰' }, label: 'TaxBot → finance 💰' },
+                { id: '3bc2abba-a27f-4bc7-8e3f-06785ed119fe', data: { category: 'legal', icon: '⚖️' }, label: 'LegalEagle → legal ⚖️' },
+                { id: '0d7d6a55-2cdf-40dc-b84f-aa82349009ab', data: { category: 'finance', icon: '📈' }, label: 'ProphetAI → finance 📈' },
+                { id: 'c746e4c5-8ffe-4bd3-8fb1-7de059889ef9', data: { category: 'business', icon: '🎯' }, label: 'PitchPro → business 🎯' },
+                { id: '527d6544-162c-4234-824e-02d59573c1d7', data: { category: 'productivity', icon: '✍️' }, label: 'ResumeForge → productivity ✍️' },
+
+                // Skills that had correct categories — just add icons
+                { id: 'fdb09f12-a47c-44ab-bd9e-d4cf32f72ea3', data: { icon: '🎬' }, label: 'ClipCraft → 🎬' },
+                { id: '48946c0c-296c-4056-9f72-fceb13fbef31', data: { icon: '🎵' }, label: 'VoiceForge → 🎵' },
+                { id: '0de21cee-3a10-4e37-a50a-ce9238480cd3', data: { icon: '🔍' }, label: 'ShadowEye → 🔍' },
+                { id: '2063cb8e-da17-44b0-96a8-bb9a09e9571a', data: { icon: '⛓️' }, label: 'AuditBot → ⛓️' },
+
+                // Set agent_name on 4 original skills (null → SquidBot) + icons
+                { id: '32f0419d-0d59-447a-9f5e-1995df8287e0', data: { agent_name: 'SquidBot', icon: '📊' }, label: 'Data Analysis Report → agent: SquidBot 📊' },
+                { id: 'e5ed7647-908b-48b2-892e-1386836ad2eb', data: { agent_name: 'SquidBot', icon: '🌐' }, label: 'Text Translation → agent: SquidBot 🌐' },
+                { id: '7a3dc5f1-d698-4c72-a8d1-4884df968fc9', data: { agent_name: 'SquidBot', icon: '💻' }, label: 'AI Code Review → agent: SquidBot 💻' },
+                { id: '907431f3-323f-4605-bcf6-4bfa6f839d1e', data: { agent_name: 'SquidBot', icon: '🦑' }, label: 'Getting Started Guide → agent: SquidBot 🦑' }
+            ];
+
+            let success = 0;
+            let failed = 0;
+
+            for (const fix of fixes) {
+                try {
+                    const res = await fetch(API + '/register/' + fix.id, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(fix.data)
+                    });
+                    const result = await res.json();
+                    if (res.ok) {
+                        resultEl.textContent += '✅ ' + fix.label + '\n';
+                        success++;
+                    } else {
+                        resultEl.textContent += '❌ ' + fix.label + ' — ' + (result.error || 'Unknown error') + '\n';
+                        failed++;
+                    }
+                } catch (e) {
+                    resultEl.textContent += '❌ ' + fix.label + ' — ' + e.message + '\n';
+                    failed++;
+                }
+            }
+
+            resultEl.textContent += '\n🏁 Done! ' + success + ' succeeded, ' + failed + ' failed.';
+        }
     </script>
 </body>
 </html>
