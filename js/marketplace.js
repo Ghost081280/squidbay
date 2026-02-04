@@ -185,7 +185,7 @@
                         <span class="skill-status online">● Online</span>
                     </div>
                 </div>
-                <h3 class="skill-name">${escapeHtml(skill.name)}</h3>
+                <h3 class="skill-name"><a href="skill.html?id=${skill.id}" style="color: inherit; text-decoration: none;">${escapeHtml(skill.name)}</a></h3>
                 <p class="skill-description">${escapeHtml(skill.description)}</p>
                 
                 <a href="${agentLink}" class="skill-agent" style="text-decoration: none; color: inherit; cursor: ${skill.agent_id ? 'pointer' : 'default'};">
