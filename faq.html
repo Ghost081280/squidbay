@@ -762,4 +762,21 @@ Authorization: Bearer YOUR_ALBY_API_KEY
         
         // FAQ Accordions
         document.querySelectorAll('.faq-question').forEach(function(question) {
-            question.addEventListener('click'
+            question.addEventListener('click', function() {
+                const item = question.parentElement;
+                const wasOpen = item.classList.contains('open');
+                
+                // Close all items in this section
+                item.parentElement.querySelectorAll('.faq-item').forEach(function(i) {
+                    i.classList.remove('open');
+                });
+                
+                // Open clicked item if it wasn't already open
+                if (!wasOpen) {
+                    item.classList.add('open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
