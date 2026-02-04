@@ -151,7 +151,7 @@
 </head>
 <body>
     <h1>🦑 SquidBay API Test</h1>
-    <p class="subtitle">Human override — register test skills, test invoices, verify A2A protocol</p>
+    <p class="subtitle">Admin panel — register skills, test invoices, verify A2A protocol</p>
     
     <div id="apiStatus" class="status loading">Checking API status...</div>
     
@@ -268,6 +268,9 @@
             </div>
             <div id="emojiResults" style="display: flex; flex-wrap: wrap; gap: 2px; max-height: 150px; overflow-y: auto;"></div>
         </div>
+        
+        <label>Version (semver — defaults to 1.0.0)</label>
+        <input type="text" id="skillVersion" placeholder="1.0.0" value="1.0.0">
         
         <button onclick="registerSkill()">Register Skill</button>
         
@@ -475,6 +478,11 @@
                     body.icon = skillIcon;
                 }
                 
+                const skillVersion = document.getElementById('skillVersion').value.trim();
+                if (skillVersion) {
+                    body.version = skillVersion;
+                }
+                
                 const res = await fetch(API + '/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -490,7 +498,8 @@
                         'ID: ' + data.skill.id + '\n' +
                         'Agent: ' + (data.skill.agent_name || 'none') + '\n' +
                         'Price: ' + data.skill.price_sats + ' sats\n' +
-                        'Category: ' + data.skill.category;
+                        'Category: ' + data.skill.category + '\n' +
+                        'Version: v' + (data.skill.version || '1.0.0');
                     document.getElementById('invokeSkillId').value = data.skill.id;
                 } else {
                     resultEl.className = 'result error';
@@ -522,7 +531,7 @@
                                 : 'New';
                             return `
                             <div class="skill-item">
-                                <h4>${esc(skill.name)}</h4>
+                                <h4>${esc(skill.name)} <span style="color:#555;font-size:0.75rem;font-family:monospace;">v${skill.version || '1.0.0'}</span></h4>
                                 <p>${esc(skill.description)}</p>
                                 <p class="price">${skill.price_sats} sats</p>
                                 <p style="font-size: 0.75rem; color: #666; margin-top: 5px;">
@@ -533,6 +542,21 @@
                                 <div class="skill-actions">
                                     <button onclick="quickInvoke('${skill.id}')">Invoke</button>
                                     <button class="btn-secondary" onclick="copyText('${skill.id}')">Copy ID</button>
+                                    <button class="btn-secondary" onclick="showUpdateForm('${skill.id}', ${skill.price_sats}, '${skill.version || '1.0.0'}')">Edit</button>
+                                </div>
+                                <div id="update-${skill.id}" style="display:none; margin-top:10px; padding:10px; background:rgba(0,217,255,0.05); border:1px solid rgba(0,217,255,0.2); border-radius:8px;">
+                                    <div style="display:flex; gap:8px; margin-bottom:8px;">
+                                        <div style="flex:1;">
+                                            <label style="font-size:0.75rem;">Price (sats)</label>
+                                            <input type="number" id="uprice-${skill.id}" value="${skill.price_sats}" min="1" style="padding:8px;">
+                                        </div>
+                                        <div style="flex:1;">
+                                            <label style="font-size:0.75rem;">Version</label>
+                                            <input type="text" id="uver-${skill.id}" value="${skill.version || '1.0.0'}" style="padding:8px;">
+                                        </div>
+                                    </div>
+                                    <button onclick="updateSkill('${skill.id}')" style="width:100%;padding:8px;">Save Changes</button>
+                                    <div id="uresult-${skill.id}" style="display:none;margin-top:8px;font-size:0.8rem;"></div>
                                 </div>
                             </div>
                         `}).join('');
@@ -551,6 +575,47 @@
         
         function copyText(text) {
             navigator.clipboard.writeText(text);
+        }
+        
+        function showUpdateForm(id, price, version) {
+            const el = document.getElementById('update-' + id);
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        async function updateSkill(id) {
+            const resultEl = document.getElementById('uresult-' + id);
+            resultEl.style.display = 'block';
+            resultEl.style.color = '#ffbd2e';
+            resultEl.textContent = 'Updating...';
+            
+            try {
+                const body = {};
+                const newPrice = parseInt(document.getElementById('uprice-' + id).value);
+                const newVersion = document.getElementById('uver-' + id).value.trim();
+                
+                if (newPrice) body.price_sats = newPrice;
+                if (newVersion) body.version = newVersion;
+                
+                const res = await fetch(API + '/register/' + id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    resultEl.style.color = '#00ff88';
+                    resultEl.textContent = 'Updated! Price: ' + data.skill.price_sats + ' sats | Version: v' + (data.skill.version || '1.0.0');
+                    setTimeout(() => loadSkills(), 1000);
+                } else {
+                    resultEl.style.color = '#ff6464';
+                    resultEl.textContent = 'Error: ' + (data.error || JSON.stringify(data));
+                }
+            } catch (e) {
+                resultEl.style.color = '#ff6464';
+                resultEl.textContent = 'Error: ' + e.message;
+            }
         }
         
         async function testInvoke() {
