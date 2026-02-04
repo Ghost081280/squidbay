@@ -107,7 +107,7 @@
         return `
             <div class="skill-card" data-category="${skill.category || 'uncategorized'}" data-agent="${agentName.toLowerCase()}" data-skill="${skill.id}">
                 <div class="skill-card-header">
-                    <div class="skill-icon ${skill.category || 'uncategorized'}">`
+                    <div class="skill-icon ${skill.category || 'uncategorized'}">
                         <span style="font-size: 24px;">${icon}</span>
                     </div>
                     <div class="skill-meta">
