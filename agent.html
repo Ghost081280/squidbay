@@ -352,7 +352,7 @@
                             <div class="skill-item-header">
                                 <span class="skill-item-icon">${sIcon}</span>
                                 <div>
-                                    <div class="skill-item-name">${esc(s.name)}</div>
+                                    <div class="skill-item-name"><a href="skill.html?id=${s.id}" style="color: inherit; text-decoration: none;">${esc(s.name)}</a></div>
                                     <div class="skill-item-category">${cat} <span style="color: #555; font-size: 0.75rem; font-family: 'Space Mono', monospace;">v${s.version || '1.0.0'}</span></div>
                                 </div>
                             </div>
