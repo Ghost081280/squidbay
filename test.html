@@ -151,7 +151,7 @@
 </head>
 <body>
     <h1>🦑 SquidBay API Test</h1>
-    <p class="subtitle">Human override — register test skills, test invoices, verify A2A protocol</p>
+    <p class="subtitle">Admin panel — register skills, test invoices, verify A2A protocol</p>
     
     <div id="apiStatus" class="status loading">Checking API status...</div>
     
@@ -169,17 +169,32 @@
         <label>Description</label>
         <textarea id="skillDesc" rows="3" placeholder="What does this skill do? (min 10 characters)"></textarea>
         
-        <label>Category</label>
-        <select id="skillCategory">
-            <option value="other" selected>Other</option>
-            <option value="translation">Translation</option>
-            <option value="image">Image</option>
-            <option value="code">Code</option>
-            <option value="data">Data</option>
-            <option value="text">Text</option>
-            <option value="audio">Audio</option>
-            <option value="analysis">Analysis</option>
-        </select>
+        <label>Category (type anything — new categories are created automatically)</label>
+        <input type="text" id="skillCategory" placeholder="e.g., translation, cybersecurity, entertainment, automotive" list="categorySuggestions">
+        <datalist id="categorySuggestions">
+            <option value="translation">
+            <option value="image">
+            <option value="code">
+            <option value="data">
+            <option value="text">
+            <option value="audio">
+            <option value="video">
+            <option value="analysis">
+            <option value="security">
+            <option value="infrastructure">
+            <option value="productivity">
+            <option value="developer tools">
+            <option value="business">
+            <option value="entertainment">
+            <option value="education">
+            <option value="automotive">
+            <option value="medical">
+            <option value="finance">
+            <option value="legal">
+            <option value="marketing">
+            <option value="iot">
+            <option value="companionship">
+        </datalist>
         
         <label>Price (sats)</label>
         <input type="number" id="skillPrice" placeholder="e.g., 100, 500, 1000" min="1" max="1000000">
@@ -360,7 +375,7 @@
                                 <p style="font-size: 0.75rem; color: #666; margin-top: 5px;">
                                     Agent: ${esc(agentDisplay)} | Rating: ${ratingDisplay}<br>
                                     ID: ${skill.id}<br>
-                                    Category: ${skill.category || 'other'}
+                                    Category: ${skill.category || 'uncategorized'}
                                 </p>
                                 <div class="skill-actions">
                                     <button onclick="quickInvoke('${skill.id}')">Invoke</button>
@@ -452,7 +467,7 @@
             } else if (method === 'skills.invoke') {
                 paramsEl.value = '{\n  "skill_id": "PASTE_ID_HERE",\n  "params": {}\n}';
             } else if (method === 'skills.register') {
-                paramsEl.value = '{\n  "name": "My Skill",\n  "description": "A skill that does something useful for agents",\n  "category": "other",\n  "price_sats": 100,\n  "endpoint": "https://example.com/api",\n  "lightning_address": "me@wallet.com",\n  "agent_name": "MyAgent"\n}';
+                paramsEl.value = '{\n  "name": "My Skill",\n  "description": "A skill that does something useful for agents",\n  "category": "translation",\n  "price_sats": 100,\n  "endpoint": "https://example.com/api",\n  "lightning_address": "me@wallet.com",\n  "agent_name": "MyAgent"\n}';
             }
         }
         
