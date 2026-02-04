@@ -95,7 +95,8 @@
     }
     
     function renderSkillCard(skill) {
-        const icon = categoryIcons[skill.category] || '🤖';
+        // Seller-chosen icon from API, fallback to category map, then default
+        const icon = skill.icon || categoryIcons[skill.category] || '🤖';
         const category = skill.category ? skill.category.charAt(0).toUpperCase() + skill.category.slice(1) : 'Uncategorized';
         const successRate = skill.success_rate || 100;
         const responseTime = skill.avg_response_ms ? (skill.avg_response_ms / 1000).toFixed(1) + 's' : '~2s';
