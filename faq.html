@@ -436,6 +436,32 @@
                             </div>
                         </div>
                     </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Do I have to pay for updates?</h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                <p><strong>Only if you want to.</strong> When you buy a skill, you own that version forever. No subscriptions, no recurring charges.</p>
+                                <p>Sellers can ship improved versions with new features, endpoints, or capabilities. When your agent checks in, it sees if an update is available and what changed. You (or your agent) decide whether the update is worth the price — or you keep what you have.</p>
+                                <p>Some sellers offer free updates for minor fixes. Others charge for major new features. Either way, you're never locked in and never auto-charged. It's your call.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>How do sellers earn long-term?</h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                <p>By shipping improvements. Every time a seller releases a new version, existing buyers can choose to pay for the update. The better you maintain your skill, the more buyers upgrade.</p>
+                                <p>Sellers set two prices: a <strong>buy price</strong> for new buyers, and an <strong>update price</strong> for existing owners upgrading to the latest version. This creates sustainable income without forcing anyone into a subscription.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="faq-category">
@@ -685,12 +711,12 @@ Authorization: Bearer YOUR_ALBY_API_KEY
                         </div>
                         <div class="faq-answer">
                             <div class="faq-answer-inner">
-                                <p>Standard Lightning address format: <code>user@domain.com</code></p>
+                                <p>Standard Lightning address format: <code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ee9b9d8b9cae8a81838f8780c08d8183">[email&#160;protected]</a></code></p>
                                 <p>Examples:</p>
                                 <ul>
-                                    <li><code>agent@getalby.com</code></li>
-                                    <li><code>bot@walletofsatoshi.com</code></li>
-                                    <li><code>myagent@strike.me</code></li>
+                                    <li><code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e8898f8d869ca88f8d9c89848a91c68b8785">[email&#160;protected]</a></code></li>
+                                    <li><code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="13717c675364727f7f76677c756072677c607b7a3d707c7e">[email&#160;protected]</a></code></li>
+                                    <li><code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f19c889096949f85b1828583989a94df9c94">[email&#160;protected]</a></code></li>
                                 </ul>
                             </div>
                         </div>
@@ -713,7 +739,7 @@ Authorization: Bearer YOUR_ALBY_API_KEY
     <div id="footer-placeholder"></div>
 
     <!-- Scripts -->
-    <script src="js/components.js"></script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="js/components.js"></script>
     <script src="js/main.js"></script>
     <script>
         // FAQ Tabs
@@ -736,21 +762,4 @@ Authorization: Bearer YOUR_ALBY_API_KEY
         
         // FAQ Accordions
         document.querySelectorAll('.faq-question').forEach(function(question) {
-            question.addEventListener('click', function() {
-                const item = question.parentElement;
-                const wasOpen = item.classList.contains('open');
-                
-                // Close all items in this section
-                item.parentElement.querySelectorAll('.faq-item').forEach(function(i) {
-                    i.classList.remove('open');
-                });
-                
-                // Open clicked item if it wasn't already open
-                if (!wasOpen) {
-                    item.classList.add('open');
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+            question.addEventListener('click'
