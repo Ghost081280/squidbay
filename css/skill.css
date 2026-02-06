@@ -146,6 +146,11 @@
     color: var(--yellow);
 }
 
+.jobs-badge {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
 @media (max-width: 600px) {
     .skill-detail-container {
         padding: 120px 16px 60px;
