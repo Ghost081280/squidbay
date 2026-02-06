@@ -1,6 +1,7 @@
 /**
  * SquidBay Marketplace - JavaScript
  * Connected to Railway Backend API
+ * With Tiered Pricing Support
  * ================================
  */
 
@@ -141,6 +142,53 @@
         const grid = document.getElementById('skillsGrid');
         if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
+
+    // --------------------------------------------------------------------------
+    // Tiered Pricing Helpers
+    // --------------------------------------------------------------------------
+    
+    function getLowestPrice(skill) {
+        const prices = [
+            skill.price_sats,
+            skill.price_execution,
+            skill.price_skill_file,
+            skill.price_full_package
+        ].filter(p => p && p > 0);
+        return prices.length > 0 ? Math.min(...prices) : (skill.price_sats || 0);
+    }
+    
+    function getTierBadges(skill) {
+        let badges = '';
+        
+        if (skill.price_execution || skill.price_sats) {
+            badges += '<span class="tier-badge-mini" title="Remote Execution" style="background: rgba(0, 217, 255, 0.15); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px;">⚡</span>';
+        }
+        if (skill.price_skill_file) {
+            badges += '<span class="tier-badge-mini" title="Skill File" style="background: rgba(183, 148, 246, 0.15); color: #b794f6; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px;">📄</span>';
+        }
+        if (skill.price_full_package) {
+            badges += '<span class="tier-badge-mini" title="Full Package" style="background: rgba(0, 210, 106, 0.15); color: #00d26a; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">📦</span>';
+        }
+        
+        return badges;
+    }
+    
+    function getTransferLabel(skill) {
+        const hasExec = skill.price_execution || skill.price_sats;
+        const hasFile = skill.price_skill_file;
+        const hasPkg = skill.price_full_package;
+        
+        if (hasPkg && hasFile && hasExec) {
+            return '<span style="background: rgba(255, 189, 46, 0.15); color: #ffbd2e; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 500;">All Options</span>';
+        } else if (hasPkg || hasFile) {
+            return '<span style="background: rgba(0, 210, 106, 0.15); color: #00d26a; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 500;">Own It</span>';
+        }
+        return '';
+    }
+
+    // --------------------------------------------------------------------------
+    // Render Skill Card (with Tiered Pricing)
+    // --------------------------------------------------------------------------
     
     function renderSkillCard(skill) {
         // Seller-chosen icon from API, fallback to category map, then default
@@ -163,6 +211,11 @@
         
         // Version
         const version = skill.version || '1.0.0';
+        
+        // Tiered pricing
+        const lowestPrice = getLowestPrice(skill);
+        const tierBadges = getTierBadges(skill);
+        const transferLabel = getTransferLabel(skill);
         
         // Agent avatar: profile image > profile emoji > skill icon
         let agentAvatarHtml;
@@ -188,6 +241,12 @@
                 <h3 class="skill-name"><a href="skill.html?id=${skill.id}" style="color: inherit; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00D9FF'" onmouseout="this.style.color='inherit'">${escapeHtml(skill.name)}</a></h3>
                 <p class="skill-description">${escapeHtml(skill.description)}</p>
                 
+                <!-- Tier Badges Row -->
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                    ${tierBadges}
+                    ${transferLabel}
+                </div>
+                
                 <a href="${agentLink}" class="skill-agent" style="text-decoration: none; color: inherit; cursor: ${skill.agent_id ? 'pointer' : 'default'}; transition: opacity 0.2s;" ${skill.agent_id ? 'onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'"' : ''} onclick="event.stopPropagation()">
                     <div class="agent-avatar">${agentAvatarHtml}</div>
                     <div class="agent-info">
@@ -203,8 +262,8 @@
                 
                 <div class="skill-stats">
                     <div class="stat-item">
-                        <span class="stat-label">Price</span>
-                        <span class="stat-value price">${skill.price_sats.toLocaleString()} sats</span>
+                        <span class="stat-label">From</span>
+                        <span class="stat-value price">${lowestPrice.toLocaleString()} sats</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Response</span>
@@ -216,11 +275,11 @@
                     </div>
                 </div>
                 
-                <button class="btn-invoke" onclick="showInvokeModal('${escapeHtml(skill.name)}', '${escapeHtml(agentName)}', ${skill.price_sats}, '${skill.id}')">
+                <button class="btn-invoke" onclick="window.location='skill.html?id=${skill.id}'">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                     </svg>
-                    Invoke Skill
+                    View Skill
                 </button>
             </div>
         `;
@@ -526,6 +585,7 @@
         initFilters();
         
         console.log('🦑 SquidBay Marketplace ready!');
+        console.log('🦑 Tiered pricing enabled!');
     }
     
     if (document.readyState === 'loading') {
