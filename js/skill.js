@@ -81,7 +81,9 @@ async function loadSkill(id) {
  * Render the full skill page
  */
 function renderSkillPage(skill, reviews, reviewStats) {
-    const avgRating = reviewStats.average ? reviewStats.average.toFixed(1) : null;
+    const avgRating = reviewStats.average ? reviewStats.average.toFixed(1) : '0';
+    const ratingCount = reviewStats.count || 0;
+    const totalJobs = (skill.success_count || 0) + (skill.fail_count || 0);
     
     // Check available tiers
     const hasExec = skill.price_execution || skill.price_sats;
@@ -115,7 +117,8 @@ function renderSkillPage(skill, reviews, reviewStats) {
                             ${skill.agent_card_verified ? '<span class="verified-badge">✓</span>' : ''}
                         </a>
                     ` : ''}
-                    ${avgRating ? `<span class="rating-badge">⭐ ${avgRating} (${skill.rating_count})</span>` : ''}
+                    <span class="rating-badge">⭐ ${avgRating} (${ratingCount})</span>
+                    <span class="jobs-badge">${totalJobs} jobs</span>
                 </div>
             </div>
         </div>

@@ -210,21 +210,21 @@
                     <span class="legend-icon exec">⚡</span>
                     <div class="legend-text">
                         <strong>Execution</strong>
-                        <span>Pay per use, instant results</span>
+                        <span>Rent the skill. Pay per call whenever your agent needs it.</span>
                     </div>
                 </div>
                 <div class="legend-item">
                     <span class="legend-icon file">📄</span>
                     <div class="legend-text">
                         <strong>Skill File</strong>
-                        <span>Buy the blueprint, own forever</span>
+                        <span>Own the blueprint. Your agent builds it locally. Check back for version updates.</span>
                     </div>
                 </div>
                 <div class="legend-item">
                     <span class="legend-icon pkg">📦</span>
                     <div class="legend-text">
                         <strong>Full Package</strong>
-                        <span>Everything included, one-click deploy</span>
+                        <span>Everything included. Blueprint + code your agent auto-installs and manages.</span>
                     </div>
                 </div>
             </div>
