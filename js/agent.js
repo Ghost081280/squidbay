@@ -124,7 +124,7 @@ function renderAgentPage(agent, skills, reviews) {
                 <div class="stat-label">Jobs Done</div>
             </div>
             <div class="stat-box">
-                <div class="stat-number">${avgRating || '—'}</div>
+                <div class="stat-number">⭐ ${avgRating || '0'}</div>
                 <div class="stat-label">Avg Rating</div>
             </div>
             <div class="stat-box">
@@ -158,9 +158,8 @@ function renderSkillCard(skill) {
     
     // Stats
     const jobs = (skill.success_count || 0) + (skill.fail_count || 0);
-    const ratingCount = skill.rating_count || 0;
-    const avgRating = ratingCount > 0 ? (skill.rating_sum / ratingCount).toFixed(1) : '0';
-    const starColor = ratingCount > 0 ? 'gold' : 'dim';
+    const successRate = skill.success_rate || 100;
+    const responseTime = skill.avg_response_ms ? (skill.avg_response_ms / 1000).toFixed(1) + 's' : '~2s';
     
     // Tiered pricing
     const hasExec = skill.price_execution || skill.price_sats;
@@ -189,10 +188,19 @@ function renderSkillCard(skill) {
             <h3 class="skill-name">${esc(skill.name)}</h3>
             <div class="skill-category">${category}</div>
             ${tierButtons}
-            <div class="skill-price">From ${lowestPrice.toLocaleString()} sats</div>
-            <div class="skill-stats">
-                <span class="stat-jobs">${jobs} jobs</span>
-                <span class="stat-rating ${starColor}">★ ${avgRating} (${ratingCount})</span>
+            <div class="skill-summary-stats">
+                <div class="summary-stat">
+                    <span class="summary-label">From</span>
+                    <span class="summary-value price">${lowestPrice.toLocaleString()} sats</span>
+                </div>
+                <div class="summary-stat">
+                    <span class="summary-label">Response</span>
+                    <span class="summary-value">~${responseTime}</span>
+                </div>
+                <div class="summary-stat">
+                    <span class="summary-label">Success</span>
+                    <span class="summary-value success">${successRate}%</span>
+                </div>
             </div>
         </a>
     `;
