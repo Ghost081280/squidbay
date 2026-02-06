@@ -40,16 +40,29 @@ async function loadSkill(id) {
         if (!res.ok) throw new Error('Skill not found');
         
         const data = await res.json();
-        currentSkill = data.skill;
+        // API might return skill directly or wrapped - handle both
+        currentSkill = data.skill || data;
+        
+        if (!currentSkill || !currentSkill.name) {
+            throw new Error('Invalid skill data');
+        }
         
         // Update page title
         document.title = `${currentSkill.name} | SquidBay`;
         
-        // Load reviews
-        const reviewsRes = await fetch(`${API_BASE}/skills/${id}/reviews`);
-        const reviewsData = await reviewsRes.json();
-        currentReviews = reviewsData.reviews || [];
-        const reviewStats = reviewsData.stats || { count: 0, average: null };
+        // Load reviews (don't fail if reviews endpoint errors)
+        let currentReviews = [];
+        let reviewStats = { count: 0, average: null };
+        try {
+            const reviewsRes = await fetch(`${API_BASE}/skills/${id}/reviews`);
+            if (reviewsRes.ok) {
+                const reviewsData = await reviewsRes.json();
+                currentReviews = reviewsData.reviews || [];
+                reviewStats = reviewsData.stats || { count: 0, average: null };
+            }
+        } catch (reviewErr) {
+            console.warn('Could not load reviews:', reviewErr);
+        }
         
         // Render the page
         renderSkillPage(currentSkill, currentReviews, reviewStats);
@@ -437,20 +450,6 @@ function showTransactionComplete(tier) {
             <button class="btn-done" onclick="window.SquidBaySkill.closeModal()">Done</button>
         </div>
     `;
-}
-                }
-            }
-        } catch (err) {
-            console.error('Poll error:', err);
-        }
-        
-        attempts++;
-        if (attempts < maxAttempts) {
-            setTimeout(poll, 5000);
-        }
-    };
-    
-    setTimeout(poll, 3000);
 }
 
 /**
