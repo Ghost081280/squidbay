@@ -81,10 +81,6 @@ async function loadSkill(id) {
  * Render the full skill page
  */
 function renderSkillPage(skill, reviews, reviewStats) {
-    const avgRating = reviewStats.average ? reviewStats.average.toFixed(1) : '0';
-    const ratingCount = reviewStats.count || 0;
-    const totalJobs = (skill.success_count || 0) + (skill.fail_count || 0);
-    
     // Check available tiers
     const hasExec = skill.price_execution || skill.price_sats;
     const hasFile = skill.price_skill_file;
@@ -100,6 +96,19 @@ function renderSkillPage(skill, reviews, reviewStats) {
     const versionExec = skill.version_execution || skill.version || '1.0.0';
     const versionFile = skill.version_skill_file || skill.version || '1.0.0';
     const versionPkg = skill.version_full_package || skill.version || '1.0.0';
+    
+    // Per-tier ratings and jobs (default to 0 if not set)
+    const execRating = skill.rating_execution || 0;
+    const execRatingCount = skill.rating_count_execution || 0;
+    const execJobs = skill.jobs_execution || 0;
+    
+    const fileRating = skill.rating_skill_file || 0;
+    const fileRatingCount = skill.rating_count_skill_file || 0;
+    const fileJobs = skill.jobs_skill_file || 0;
+    
+    const pkgRating = skill.rating_full_package || 0;
+    const pkgRatingCount = skill.rating_count_full_package || 0;
+    const pkgJobs = skill.jobs_full_package || 0;
     
     const content = document.getElementById('skill-content');
     content.innerHTML = `
@@ -117,8 +126,6 @@ function renderSkillPage(skill, reviews, reviewStats) {
                             ${skill.agent_card_verified ? '<span class="verified-badge">✓</span>' : ''}
                         </a>
                     ` : ''}
-                    <span class="rating-badge">⭐ ${avgRating} (${ratingCount})</span>
-                    <span class="jobs-badge">${totalJobs} jobs</span>
                 </div>
             </div>
         </div>
@@ -191,6 +198,10 @@ function renderSkillPage(skill, reviews, reviewStats) {
                                 <span class="tier-price">${hasExec ? fmtSats(skill.price_execution || skill.price_sats) : '—'} <span class="sats">sats</span></span>
                                 <span class="tier-model">per call</span>
                             </div>
+                            <div class="tier-stats">
+                                <span class="tier-rating">⭐ ${execRating.toFixed ? execRating.toFixed(1) : execRating} (${execRatingCount})</span>
+                                <span class="tier-jobs">${execJobs} jobs</span>
+                            </div>
                             <p class="tier-description">Pay per use. Your agent calls the seller's agent and gets results back instantly.</p>
                             <ul class="tier-features">
                                 <li>Instant execution</li>
@@ -212,6 +223,10 @@ function renderSkillPage(skill, reviews, reviewStats) {
                                 <span class="tier-price">${hasFile ? fmtSats(skill.price_skill_file) : '—'} <span class="sats">sats</span></span>
                                 <span class="tier-model">own forever</span>
                             </div>
+                            <div class="tier-stats">
+                                <span class="tier-rating">⭐ ${fileRating.toFixed ? fileRating.toFixed(1) : fileRating} (${fileRatingCount})</span>
+                                <span class="tier-jobs">${fileJobs} jobs</span>
+                            </div>
                             <p class="tier-description">Get the blueprint. Step-by-step instructions your AI agent can follow to build it.</p>
                             <ul class="tier-features">
                                 <li>Own forever</li>
@@ -232,6 +247,10 @@ function renderSkillPage(skill, reviews, reviewStats) {
                             <div class="tier-price-row">
                                 <span class="tier-price">${hasPkg ? fmtSats(skill.price_full_package) : '—'} <span class="sats">sats</span></span>
                                 <span class="tier-model">own forever</span>
+                            </div>
+                            <div class="tier-stats">
+                                <span class="tier-rating">⭐ ${pkgRating.toFixed ? pkgRating.toFixed(1) : pkgRating} (${pkgRatingCount})</span>
+                                <span class="tier-jobs">${pkgJobs} jobs</span>
                             </div>
                             <p class="tier-description">Everything included. Blueprint + all code, configs, and templates. One-click deploy to your infrastructure.</p>
                             <ul class="tier-features">
