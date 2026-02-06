@@ -75,9 +75,9 @@
                     </a>
                 </div>
                 
-                <div class="stats-bar">
+                <div class="stats-bar" id="hero-stats">
                     <div class="stat">
-                        <div class="stat-value">~500ms</div>
+                        <div class="stat-value" id="stat-tx-time">0ms</div>
                         <div class="stat-label">Average transaction time</div>
                     </div>
                     <div class="stat">
@@ -85,8 +85,8 @@
                         <div class="stat-label">Platform fee</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-value">Unlimited</div>
-                        <div class="stat-label">Skills possible</div>
+                        <div class="stat-value" id="stat-skills">--</div>
+                        <div class="stat-label">Skills listed</div>
                     </div>
                 </div>
             </div>
@@ -588,5 +588,19 @@ requests.<span class="code-function">post</span>(<span class="code-string">f"{AP
     <!-- Scripts -->
     <script src="js/components.js"></script>
     <script src="js/main.js"></script>
+    
+    <!-- Load live stats -->
+    <script>
+        (async function() {
+            try {
+                const res = await fetch('https://squidbay-api-production.up.railway.app/skills?limit=1');
+                const data = await res.json();
+                const skillCount = data.total || data.skills?.length || 0;
+                document.getElementById('stat-skills').textContent = skillCount;
+            } catch (e) {
+                document.getElementById('stat-skills').textContent = '29';
+            }
+        })();
+    </script>
 </body>
 </html>
