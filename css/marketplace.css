@@ -1398,3 +1398,234 @@ a.btn-invoke {
     gap: 8px;
     text-decoration: none;
 }
+/* ==========================================================================
+   TIERED PRICING ADDITIONS FOR MARKETPLACE
+   Append this to the bottom of your existing css/marketplace.css
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Tier Legend at Top of Marketplace
+   -------------------------------------------------------------------------- */
+.tier-legend {
+    background: rgba(0, 217, 255, 0.05);
+    border: 1px solid rgba(0, 217, 255, 0.15);
+    border-radius: 12px;
+    padding: 20px 32px;
+    margin-bottom: 24px;
+}
+
+.legend-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted, #888);
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.legend-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+.legend-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.legend-icon.exec {
+    background: rgba(0, 217, 255, 0.15);
+}
+
+.legend-icon.file {
+    background: rgba(183, 148, 246, 0.15);
+}
+
+.legend-icon.pkg {
+    background: rgba(0, 210, 106, 0.15);
+}
+
+.legend-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.legend-text strong {
+    font-size: 0.9rem;
+    color: var(--white, #fff);
+}
+
+.legend-text span {
+    font-size: 0.75rem;
+    color: var(--text-muted, #888);
+    line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+    .legend-items {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .tier-legend {
+        padding: 16px 20px;
+    }
+    
+    .legend-item {
+        padding: 10px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Tier Buttons on Skill Cards
+   -------------------------------------------------------------------------- */
+.tier-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.tier-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.tier-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.tier-btn.tier-exec {
+    background: rgba(0, 217, 255, 0.15);
+    color: #00d9ff;
+    border: 1px solid rgba(0, 217, 255, 0.3);
+}
+
+.tier-btn.tier-exec:hover {
+    background: rgba(0, 217, 255, 0.25);
+    border-color: #00d9ff;
+}
+
+.tier-btn.tier-file {
+    background: rgba(183, 148, 246, 0.15);
+    color: #b794f6;
+    border: 1px solid rgba(183, 148, 246, 0.3);
+}
+
+.tier-btn.tier-file:hover {
+    background: rgba(183, 148, 246, 0.25);
+    border-color: #b794f6;
+}
+
+.tier-btn.tier-pkg {
+    background: rgba(0, 210, 106, 0.15);
+    color: #00d26a;
+    border: 1px solid rgba(0, 210, 106, 0.3);
+}
+
+.tier-btn.tier-pkg:hover {
+    background: rgba(0, 210, 106, 0.25);
+    border-color: #00d26a;
+}
+
+/* --------------------------------------------------------------------------
+   Online/Offline Status
+   -------------------------------------------------------------------------- */
+.skill-status.online {
+    color: #00ff88;
+}
+
+.skill-status.offline {
+    color: #ff6464;
+}
+
+/* Offline card styling */
+.skill-card-offline {
+    opacity: 0.6;
+    filter: grayscale(30%);
+}
+
+.skill-card-offline .btn-invoke {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.skill-card-offline .tier-btn {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* --------------------------------------------------------------------------
+   Transfer Type Labels (keeping for backwards compat)
+   -------------------------------------------------------------------------- */
+.transfer-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--radius-full, 50px);
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.transfer-label.ownable {
+    background: rgba(0, 210, 106, 0.15);
+    color: #00d26a;
+}
+
+.transfer-label.hybrid {
+    background: rgba(255, 189, 46, 0.15);
+    color: #ffbd2e;
+}
+
+/* --------------------------------------------------------------------------
+   Price Display Updates
+   -------------------------------------------------------------------------- */
+.skill-card .price-from {
+    font-size: 0.7rem;
+    color: var(--text-muted, #888);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.skill-card .price-value {
+    font-family: var(--font-mono, 'Space Mono', monospace);
+    font-weight: 700;
+    color: var(--primary, #00d9ff);
+}
+
+/* --------------------------------------------------------------------------
+   Invoke Button as Link
+   -------------------------------------------------------------------------- */
+a.btn-invoke {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+}
