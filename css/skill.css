@@ -1003,3 +1003,471 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 20px var(--primary-glow);
 }
+
+/* === New Agent Flow Modal === */
+.invoice-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.invoice-header h3 {
+    margin: 0 0 8px 0;
+    color: var(--primary);
+    font-size: 1.3rem;
+}
+
+.invoice-tier-badge {
+    display: inline-block;
+    background: rgba(0, 217, 255, 0.15);
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    color: var(--primary);
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.invoice-amount-display {
+    text-align: center;
+    margin: 24px 0;
+}
+
+.invoice-amount-display .amount {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--green);
+    font-family: var(--font-mono);
+}
+
+.invoice-amount-display .currency {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-left: 8px;
+}
+
+/* Agent Flow Visualization */
+.agent-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px 16px;
+    background: rgba(0, 217, 255, 0.05);
+    border: 1px solid rgba(0, 217, 255, 0.15);
+    border-radius: var(--radius-lg);
+    margin: 24px 0;
+}
+
+.agent-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 70px;
+}
+
+.agent-node .agent-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: var(--dark);
+    border: 2px solid var(--gray);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.agent-node .agent-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.agent-node .agent-status {
+    font-size: 0.65rem;
+    color: var(--green);
+    font-weight: 600;
+}
+
+.agent-node.buyer .agent-icon {
+    border-color: var(--primary);
+}
+
+.agent-node.store .agent-icon {
+    border-color: var(--purple);
+}
+
+.agent-node.seller .agent-icon {
+    border-color: var(--green);
+}
+
+.flow-arrow {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 40px;
+}
+
+.flow-line {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gray), var(--primary), var(--gray));
+    opacity: 0.5;
+}
+
+.flow-data {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    opacity: 0.6;
+    transition: all 0.5s ease;
+}
+
+.flow-data.animate {
+    animation: flowPulse 1s ease-in-out;
+}
+
+@keyframes flowPulse {
+    0% { transform: translateX(-50%) scale(1); opacity: 0.6; }
+    50% { transform: translateX(-50%) scale(1.5); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
+}
+
+.agent-flow.success .agent-node .agent-icon {
+    border-color: var(--green);
+}
+
+.agent-flow.success .flow-line {
+    background: var(--green);
+    opacity: 1;
+}
+
+.flow-arrow.complete .flow-line {
+    background: var(--green);
+    opacity: 1;
+}
+
+/* Transaction Steps */
+.transaction-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 24px 0;
+    padding: 0 8px;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.step-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--gray);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.step-indicator.active {
+    border-color: var(--primary);
+    background: rgba(0, 217, 255, 0.2);
+}
+
+.step-indicator.active::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+.step-indicator.complete {
+    border-color: var(--green);
+    background: var(--green);
+}
+
+.step-indicator.complete::after {
+    content: '✓';
+    color: var(--black);
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* Transaction Details (collapsible) */
+.transaction-details {
+    margin-top: 20px;
+    border-top: 1px solid var(--gray);
+    padding-top: 16px;
+}
+
+.details-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    cursor: pointer;
+    width: 100%;
+    padding: 8px;
+    transition: color 0.2s;
+}
+
+.details-toggle:hover {
+    color: var(--primary);
+}
+
+.details-toggle svg {
+    transition: transform 0.2s;
+}
+
+.details-content {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--darker);
+    border-radius: var(--radius-md);
+}
+
+.details-content.hidden {
+    display: none;
+}
+
+.detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.detail-row:last-child {
+    margin-bottom: 0;
+}
+
+.detail-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--primary);
+    word-break: break-all;
+}
+
+.invoice-string-mini {
+    display: flex;
+    gap: 8px;
+}
+
+.invoice-string-mini input {
+    flex: 1;
+    background: var(--dark);
+    border: 1px solid var(--gray);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.btn-copy-mini {
+    padding: 6px 12px;
+    background: var(--gray);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--white);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-copy-mini:hover {
+    background: var(--primary);
+    color: var(--black);
+}
+
+/* Transaction Complete */
+.transaction-complete {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.complete-header {
+    margin-bottom: 16px;
+}
+
+.transaction-complete .complete-icon {
+    font-size: 3rem;
+    margin-bottom: 8px;
+}
+
+.transaction-complete .complete-title {
+    font-size: 1.3rem;
+    color: var(--green);
+    margin: 0;
+}
+
+.transaction-complete .complete-message {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 12px 0 24px;
+}
+
+/* Review Prompt */
+.review-prompt {
+    background: var(--darker);
+    border: 1px solid var(--gray);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin: 24px 0;
+}
+
+.review-prompt p {
+    margin: 0 0 12px 0;
+    font-weight: 600;
+    color: var(--white);
+}
+
+.star-rating {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.star-rating .star {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: var(--gray);
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 4px;
+}
+
+.star-rating .star:hover,
+.star-rating .star.filled {
+    color: var(--yellow);
+    transform: scale(1.1);
+}
+
+.review-prompt textarea {
+    width: 100%;
+    background: var(--dark);
+    border: 1px solid var(--gray);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    color: var(--white);
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    resize: none;
+    margin-bottom: 12px;
+}
+
+.review-prompt textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.review-prompt textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.btn-submit-review {
+    width: 100%;
+    padding: 12px;
+    background: var(--green);
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--black);
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-submit-review:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 210, 106, 0.3);
+}
+
+.btn-submit-review:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.review-submitted {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+}
+
+.review-submitted .review-check {
+    width: 24px;
+    height: 24px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--black);
+    font-weight: bold;
+}
+
+.review-submitted p {
+    margin: 0;
+    color: var(--green);
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .agent-flow {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .flow-arrow {
+        display: none;
+    }
+    
+    .agent-node {
+        flex-basis: calc(33% - 8px);
+    }
+    
+    .invoice-amount-display .amount {
+        font-size: 2rem;
+    }
+    
+    .transaction-steps {
+        padding: 0;
+    }
+}
