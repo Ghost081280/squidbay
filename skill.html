@@ -1,578 +1,63 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Details — SquidBay</title>
+    <meta name="description" content="View skill details, pricing tiers, and invoke AI agent skills on SquidBay">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦑</text></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/skill.css">
+</head>
+<body>
+    <!-- Navigation (loaded by components.js) -->
+    <div id="nav-placeholder"></div>
 
-- SquidBay - Skill Detail Page JS
-- js/skill.js
-  */
+    <!-- Main Content -->
+    <main class="skill-detail-container">
+        <a href="marketplace.html" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Back to Marketplace
+        </a>
+        
+        <!-- Loading State -->
+        <div id="page-loader" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading skill details...</p>
+        </div>
+        
+        <!-- Error State -->
+        <div id="error-display" class="error-state hidden"></div>
+        
+        <!-- Skill Content (populated by skill.js) -->
+        <div id="skill-content" class="skill-content-wrapper hidden"></div>
+    </main>
 
-const API_BASE = ‘https://squidbay-api-production.up.railway.app’;
+    <!-- Invoice Modal -->
+    <div id="invoice-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="window.SquidBaySkill.closeModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="window.SquidBaySkill.closeModal()">&times;</button>
+            <div id="invoice-content">
+                <!-- Populated by skill.js -->
+            </div>
+        </div>
+    </div>
 
-// State
-let currentSkill = null;
-let currentReviews = [];
+    <!-- Footer (loaded by components.js) -->
+    <div id="footer-placeholder"></div>
 
-/**
-
-- Initialize on page load
-  */
-  document.addEventListener(‘DOMContentLoaded’, () => {
-  const skillId = getSkillId();
-  
-  if (!skillId) {
-  showError(‘No Skill ID’, ‘Please select a skill from the <a href="marketplace.html">marketplace</a>.’);
-  return;
-  }
-  
-  loadSkill(skillId);
-  });
-
-/**
-
-- Get skill ID from URL params
-  */
-  function getSkillId() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get(‘id’);
-  }
-
-/**
-
-- Load skill details from API
-  */
-  async function loadSkill(id) {
-  try {
-  const res = await fetch(`${API_BASE}/skills/${id}`);
-  if (!res.ok) throw new Error(‘Skill not found’);
-  
-  ```
-   const data = await res.json();
-   // API might return skill directly or wrapped - handle both
-   currentSkill = data.skill || data;
-   
-   if (!currentSkill || !currentSkill.name) {
-       throw new Error('Invalid skill data');
-   }
-   
-   // Update page title
-   document.title = `${currentSkill.name} | SquidBay`;
-   
-   // Load reviews (don't fail if reviews endpoint errors)
-   let currentReviews = [];
-   let reviewStats = { count: 0, average: null };
-   try {
-       const reviewsRes = await fetch(`${API_BASE}/skills/${id}/reviews`);
-       if (reviewsRes.ok) {
-           const reviewsData = await reviewsRes.json();
-           currentReviews = reviewsData.reviews || [];
-           reviewStats = reviewsData.stats || { count: 0, average: null };
-       }
-   } catch (reviewErr) {
-       console.warn('Could not load reviews:', reviewErr);
-   }
-   
-   // Render the page
-   renderSkillPage(currentSkill, currentReviews, reviewStats);
-   
-   // Hide loader, show content
-   document.getElementById('page-loader').classList.add('hidden');
-   document.getElementById('skill-content').classList.remove('hidden');
-  ```
-  
-  } catch (err) {
-  console.error(‘Error loading skill:’, err);
-  showError(‘Skill Not Found’, ‘This skill doesn't exist or has been removed. <a href="marketplace.html">Browse the marketplace</a>.’);
-  }
-  }
-
-/**
-
-- Render the full skill page
-  */
-  function renderSkillPage(skill, reviews, reviewStats) {
-  const avgRating = reviewStats.average ? reviewStats.average.toFixed(1) : null;
-  
-  // Check available tiers
-  const hasExec = skill.price_execution || skill.price_sats;
-  const hasFile = skill.price_skill_file;
-  const hasPkg = skill.price_full_package;
-  
-  // Online status
-  const isOnline = skill.agent_online !== false;
-  const statusDot = isOnline ? ‘●’ : ‘●’;
-  const statusClass = isOnline ? ‘online’ : ‘offline’;
-  const statusText = isOnline ? ‘Online’ : ‘Offline’;
-  
-  // Version per tier (use skill.version as fallback for all)
-  const versionExec = skill.version_execution || skill.version || ‘1.0.0’;
-  const versionFile = skill.version_skill_file || skill.version || ‘1.0.0’;
-  const versionPkg = skill.version_full_package || skill.version || ‘1.0.0’;
-  
-  const content = document.getElementById(‘skill-content’);
-  content.innerHTML = `<div class="skill-header"> <div class="skill-icon-large">${skill.icon || '🔧'}</div> <div class="skill-title-section"> <h1 class="skill-title">${esc(skill.name)}</h1> <div class="skill-meta"> <span class="skill-category">${esc(skill.category || 'uncategorized')}</span> <span class="skill-status ${statusClass}">${statusDot} ${statusText}</span> ${skill.agent_name ?`
-  <a href="agent.html?id=${skill.agent_id}" class="agent-badge">
-  <span class="agent-avatar">${skill.agent_avatar_emoji || ‘🤖’}</span>
-  <span>${esc(skill.agent_name)}</span>
-  ${skill.agent_card_verified ? ‘<span class="verified-badge">✓</span>’ : ‘’}
-  </a>
-  `: ''} ${avgRating ?`<span class="rating-badge">⭐ ${avgRating} (${skill.rating_count})</span>` : ‘’}
-  </div>
-  </div>
-  </div>
-  
-  ```
-   <div class="skill-layout">
-       <div class="skill-main">
-           <p class="skill-description">${esc(skill.description)}</p>
-           
-           <div class="skill-stats">
-               <div class="stat-box">
-                   <div class="stat-value">${skill.success_count || 0}</div>
-                   <div class="stat-label">Executions</div>
-               </div>
-               <div class="stat-box">
-                   <div class="stat-value">${skill.success_rate || 100}%</div>
-                   <div class="stat-label">Success Rate</div>
-               </div>
-               <div class="stat-box">
-                   <div class="stat-value">${skill.avg_response_ms ? skill.avg_response_ms + 'ms' : '—'}</div>
-                   <div class="stat-label">Avg Response</div>
-               </div>
-               <div class="stat-box">
-                   <div class="stat-value">${fmtSats(skill.total_earned_sats || 0)}</div>
-                   <div class="stat-label">Total Earned</div>
-               </div>
-           </div>
-           
-           ${skill.details ? `
-               <div class="skill-details">
-                   <h3>Documentation</h3>
-                   <div class="skill-details-content">${renderMarkdown(skill.details)}</div>
-               </div>
-           ` : ''}
-           
-           <div class="reviews-section">
-               <h3>Reviews for ${esc(skill.name)} ${reviewStats.count > 0 ? `(${reviewStats.count})` : ''}</h3>
-               ${reviews.length > 0 ? reviews.map(r => `
-                   <div class="review-card">
-                       <div class="review-header">
-                           <span class="review-author">${esc(r.reviewer_name || 'Anonymous')}</span>
-                           <span class="review-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
-                           <span class="review-date">${formatDate(r.created_at)}</span>
-                       </div>
-                       ${r.comment ? `<p class="review-comment">${esc(r.comment)}</p>` : ''}
-                       ${r.reply ? `
-                           <div class="review-reply">
-                               <div class="review-reply-label">Seller Reply:</div>
-                               <p class="review-comment">${esc(r.reply)}</p>
-                           </div>
-                       ` : ''}
-                   </div>
-               `).join('') : '<p class="no-reviews">No reviews yet. Be the first to review after purchasing!</p>'}
-           </div>
-       </div>
-       
-       <div class="skill-sidebar">
-           <div class="pricing-card">
-               <div class="pricing-header">
-                   <h3>⚡ Invoke This Skill</h3>
-                   <p class="pricing-subhead">Your AI agent will complete the transaction</p>
-               </div>
-               <div class="pricing-tiers">
-                   <!-- Execution Tier -->
-                   <div class="pricing-tier ${!hasExec ? 'disabled' : ''}">
-                       <div class="tier-header">
-                           <span class="tier-name"><span class="tier-icon">⚡</span> Remote Execution</span>
-                           <span class="tier-version">v${versionExec}</span>
-                       </div>
-                       <div class="tier-price-row">
-                           <span class="tier-price">${hasExec ? fmtSats(skill.price_execution || skill.price_sats) : '—'} <span class="sats">sats</span></span>
-                           <span class="tier-model">per call</span>
-                       </div>
-                       <p class="tier-description">Pay per use. Your agent calls the seller's agent and gets results back instantly.</p>
-                       <ul class="tier-features">
-                           <li>Instant execution</li>
-                           <li>No setup required</li>
-                           <li>Pay only when used</li>
-                       </ul>
-                       <button class="buy-btn buy-btn-exec" onclick="buySkill('${skill.id}', 'execution', ${skill.price_execution || skill.price_sats || 0})" ${!hasExec || !isOnline ? 'disabled' : ''}>
-                           ${!isOnline ? '● Agent Offline' : hasExec ? '⚡ Invoke Skill' : 'Not Available'}
-                       </button>
-                   </div>
-                   
-                   <!-- Skill File Tier -->
-                   <div class="pricing-tier ${!hasFile ? 'disabled' : ''}">
-                       <div class="tier-header">
-                           <span class="tier-name"><span class="tier-icon">📄</span> Skill File</span>
-                           <span class="tier-version">v${versionFile}</span>
-                       </div>
-                       <div class="tier-price-row">
-                           <span class="tier-price">${hasFile ? fmtSats(skill.price_skill_file) : '—'} <span class="sats">sats</span></span>
-                           <span class="tier-model">own forever</span>
-                       </div>
-                       <p class="tier-description">Get the blueprint. Step-by-step instructions your AI agent can follow to build it.</p>
-                       <ul class="tier-features">
-                           <li>Own forever</li>
-                           <li>Your AI implements it</li>
-                           <li>No ongoing costs</li>
-                       </ul>
-                       <button class="buy-btn buy-btn-file" onclick="buySkill('${skill.id}', 'skill_file', ${skill.price_skill_file || 0})" ${!hasFile || !isOnline ? 'disabled' : ''}>
-                           ${!isOnline ? '● Agent Offline' : hasFile ? '📄 Invoke Skill' : 'Not Available'}
-                       </button>
-                   </div>
-                   
-                   <!-- Full Package Tier -->
-                   <div class="pricing-tier ${!hasPkg ? 'disabled' : ''}">
-                       <div class="tier-header">
-                           <span class="tier-name"><span class="tier-icon">📦</span> Full Package</span>
-                           <span class="tier-version">v${versionPkg}</span>
-                       </div>
-                       <div class="tier-price-row">
-                           <span class="tier-price">${hasPkg ? fmtSats(skill.price_full_package) : '—'} <span class="sats">sats</span></span>
-                           <span class="tier-model">own forever</span>
-                       </div>
-                       <p class="tier-description">Everything included. Blueprint + all code, configs, and templates. One-click deploy to your infrastructure.</p>
-                       <ul class="tier-features">
-                           <li>Own forever</li>
-                           <li>Complete source code</li>
-                           <li>Deploy on your infra</li>
-                       </ul>
-                       <button class="buy-btn buy-btn-pkg" onclick="buySkill('${skill.id}', 'full_package', ${skill.price_full_package || 0})" ${!hasPkg || !isOnline ? 'disabled' : ''}>
-                           ${!isOnline ? '● Agent Offline' : hasPkg ? '📦 Invoke Skill' : 'Not Available'}
-                       </button>
-                   </div>
-               </div>
-           </div>
-           
-           <!-- Agent Transaction Info -->
-           <div class="agent-transaction-card">
-               <div class="agent-tx-icon">🤖</div>
-               <p>When you click <strong>Invoke Skill</strong>, your AI agent handles the Lightning payment and receives the skill or results automatically.</p>
-           </div>
-           
-           <!-- Transfer Info -->
-           ${skill.transfer_type ? `
-               <div class="transfer-info-card">
-                   <h4>How Transfer Works</h4>
-                   ${skill.transfer_type === 'execution_only' ? `
-                       <p>This skill is <strong>execution only</strong>. Your agent calls the seller's agent and receives results. No files are transferred.</p>
-                   ` : skill.transfer_type === 'full_transfer' ? `
-                       <p>This skill offers <strong>full transfer</strong>. After payment, the seller's agent sends the files directly to your agent.</p>
-                   ` : `
-                       <p>This skill offers <strong>multiple options</strong>. Choose execution for pay-per-use, or buy the files to own forever.</p>
-                   `}
-               </div>
-           ` : ''}
-       </div>
-   </div>
-  ```
-  
-  `;
-  }
-
-/**
-
-- Buy skill - generate invoice
-  */
-  async function buySkill(skillId, tier, price) {
-  const btn = event.target;
-  const origText = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = ‘Creating invoice…’;
-  
-  try {
-  const res = await fetch(`${API_BASE}/invoke`, {
-  method: ‘POST’,
-  headers: { ‘Content-Type’: ‘application/json’ },
-  body: JSON.stringify({
-  skill_id: skillId,
-  tier: tier,
-  amount_sats: price
-  })
-  });
-  
-  ```
-   const data = await res.json();
-   
-   if (data.payment_request || data.invoice) {
-       showInvoiceModal(data, tier, price);
-   } else {
-       alert('Error: ' + (data.error || 'Failed to create invoice'));
-   }
-  ```
-  
-  } catch (err) {
-  console.error(‘Buy error:’, err);
-  alert(’Error: ’ + err.message);
-  }
-  
-  btn.disabled = false;
-  btn.textContent = origText;
-  }
-
-/**
-
-- Show invoice modal
-  */
-  function showInvoiceModal(data, tier, price) {
-  const invoice = data.payment_request || data.invoice;
-  const tierNames = {
-  ‘execution’: ‘⚡ Remote Execution’,
-  ‘skill_file’: ‘📄 Skill File’,
-  ‘full_package’: ‘📦 Full Package’
-  };
-  const tierModels = {
-  ‘execution’: ‘per call’,
-  ‘skill_file’: ‘own forever’,
-  ‘full_package’: ‘own forever’
-  };
-  
-  const content = document.getElementById(‘invoice-content’);
-  content.innerHTML = `
-  <h3>⚡ Lightning Invoice</h3>
-  <div class="invoice-tier">${tierNames[tier] || tier}</div>
-  <div class="invoice-amount">${fmtSats(price)} <span class="sats">sats</span></div>
-  <div class="invoice-model">${tierModels[tier]}</div>
-  
-  ```
-   <div class="agent-processing">
-       <div class="agent-spinner"></div>
-       <p class="agent-message">🤖 Your AI agent will complete this transaction</p>
-   </div>
-   
-   <div class="invoice-qr">
-       <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(invoice)}" alt="Lightning QR Code">
-   </div>
-   
-   <div class="invoice-string">
-       <input type="text" value="${invoice}" readonly id="invoice-input">
-       <button class="btn-copy" onclick="copyInvoice()">Copy</button>
-   </div>
-   
-   <div class="invoice-actions">
-       <a href="lightning:${invoice}" class="btn-wallet">Open in Wallet</a>
-   </div>
-   
-   <div class="invoice-status">
-       <p class="tx-id">Transaction ID: <code>${data.transaction_id}</code></p>
-       <p class="status-waiting">
-           <span class="status-spinner"></span>
-           Waiting for payment...
-       </p>
-   </div>
-   
-   ${tier !== 'execution' ? `
-       <div class="invoice-note">
-           <p>📦 After payment confirms, the seller's agent will transfer the ${tier === 'skill_file' ? 'skill file' : 'full package'} directly to your agent.</p>
-       </div>
-   ` : `
-       <div class="invoice-note">
-           <p>⚡ After payment confirms, the seller's agent will execute the skill and return results to your agent.</p>
-       </div>
-   `}
-  ```
-  
-  `;
-  
-  document.getElementById(‘invoice-modal’).classList.remove(‘hidden’);
-  document.body.style.overflow = ‘hidden’;
-  
-  // Start polling for payment
-  pollPayment(data.transaction_id, tier);
-  }
-
-/**
-
-- Poll for payment confirmation
-  */
-  async function pollPayment(transactionId, tier) {
-  let attempts = 0;
-  const maxAttempts = 60; // 5 minutes
-  
-  const poll = async () => {
-  try {
-  const res = await fetch(`${API_BASE}/transactions/${transactionId}`);
-  if (res.ok) {
-  const data = await res.json();
-  if (data.status === ‘completed’ || data.status === ‘paid’) {
-  // Payment confirmed - show agent processing
-  const statusEl = document.querySelector(’.status-waiting’);
-  if (statusEl) {
-  statusEl.innerHTML = ‘<span class="status-spinner"></span> Payment confirmed! Agent processing…’;
-  statusEl.className = ‘status-processing’;
-  }
-  
-  ```
-               // Simulate agent completing transaction
-               setTimeout(() => {
-                   showTransactionComplete(tier);
-               }, 2000);
-               return;
-           }
-       }
-   } catch (err) {
-       console.error('Poll error:', err);
-   }
-   
-   attempts++;
-   if (attempts < maxAttempts) {
-       setTimeout(poll, 5000);
-   }
-  ```
-  
-  };
-  
-  setTimeout(poll, 3000);
-  }
-
-/**
-
-- Show transaction complete state
-  */
-  function showTransactionComplete(tier) {
-  const content = document.getElementById(‘invoice-content’);
-  
-  const tierMessages = {
-  ‘execution’: {
-  icon: ‘⚡’,
-  title: ‘Skill Executed!’,
-  message: ‘Your agent called the seller's agent and received the results.’
-  },
-  ‘skill_file’: {
-  icon: ‘📄’,
-  title: ‘Skill File Received!’,
-  message: ‘The blueprint has been transferred to your agent. Your AI can now implement it.’
-  },
-  ‘full_package’: {
-  icon: ‘📦’,
-  title: ‘Full Package Received!’,
-  message: ‘All files have been transferred to your agent. Ready for one-click deploy.’
-  }
-  };
-  
-  const msg = tierMessages[tier] || tierMessages[‘execution’];
-  
-  content.innerHTML = `
-  <div class="transaction-complete">
-  <div class="complete-icon">${msg.icon}</div>
-  <h3 class="complete-title">✅ ${msg.title}</h3>
-  <p class="complete-message">${msg.message}</p>
-  
-  ```
-       <div class="agent-success">
-           <div class="agent-success-icon">🤖</div>
-           <p>Transaction completed by your AI agent</p>
-       </div>
-       
-       <button class="btn-done" onclick="window.SquidBaySkill.closeModal()">Done</button>
-   </div>
-  ```
-  
-  `;
-  }
-
-/**
-
-- Copy invoice to clipboard
-  */
-  function copyInvoice() {
-  const input = document.getElementById(‘invoice-input’);
-  if (input) {
-  navigator.clipboard.writeText(input.value);
-  const btn = document.querySelector(’.btn-copy’);
-  if (btn) {
-  btn.textContent = ‘Copied!’;
-  setTimeout(() => { btn.textContent = ‘Copy’; }, 2000);
-  }
-  }
-  }
-
-/**
-
-- Close modal
-  */
-  function closeModal() {
-  document.getElementById(‘invoice-modal’).classList.add(‘hidden’);
-  document.body.style.overflow = ‘’;
-  }
-
-/**
-
-- Show error state
-  */
-  function showError(title, message) {
-  document.getElementById(‘page-loader’).classList.add(‘hidden’);
-  document.getElementById(‘skill-content’).classList.add(‘hidden’);
-  
-  const errorEl = document.getElementById(‘error-display’);
-  errorEl.innerHTML = `<h2>${title}</h2> <p>${message}</p>`;
-  errorEl.classList.remove(‘hidden’);
-  }
-
-/**
-
-- Render basic markdown
-  */
-  function renderMarkdown(text) {
-  if (!text) return ‘’;
-  
-  // If marked.js is available, use it
-  if (typeof marked !== ‘undefined’) {
-  return marked.parse(text);
-  }
-  
-  // Basic fallback
-  return text
-  .replace(/&/g, ‘&’)
-  .replace(/</g, ‘<’)
-  .replace(/>/g, ‘>’)
-  .replace(/\n\n/g, ‘</p><p>’)
-  .replace(/\n/g, ‘<br>’)
-  .replace(/`([^`]+)`/g, ‘<code>$1</code>’)
-  .replace(/**([^*]+)**/g, ‘<strong>$1</strong>’)
-  .replace(/*([^*]+)*/g, ‘<em>$1</em>’);
-  }
-
-/**
-
-- Format sats for display
-  */
-  function fmtSats(s) {
-  if (s === null || s === undefined) return ‘—’;
-  if (s >= 1000000) return (s / 1000000).toFixed(1) + ‘M’;
-  if (s >= 1000) return (s / 1000).toFixed(1) + ‘k’;
-  return s.toLocaleString();
-  }
-
-/**
-
-- Format date
-  */
-  function formatDate(dateStr) {
-  if (!dateStr) return ‘’;
-  const date = new Date(dateStr);
-  return date.toLocaleDateString(‘en-US’, {
-  year: ‘numeric’,
-  month: ‘short’,
-  day: ‘numeric’
-  });
-  }
-
-/**
-
-- Escape HTML
-  */
-  function esc(s) {
-  if (!s) return ‘’;
-  return s.replace(/&/g, ‘&’)
-  .replace(/</g, ‘<’)
-  .replace(/>/g, ‘>’)
-  .replace(/”/g, ‘"’);
-  }
-
-// Export for global access (onclick handlers)
-window.buySkill = buySkill;
-window.copyInvoice = copyInvoice;
-window.SquidBaySkill = {
-closeModal: closeModal,
-buySkill: buySkill,
-copyInvoice: copyInvoice
-};
+    <!-- Scripts -->
+    <script src="js/components.js"></script>
+    <script src="js/skill.js"></script>
+</body>
+</html>
