@@ -364,9 +364,15 @@
 }
 
 .pricing-header h3 {
-    margin: 0;
+    margin: 0 0 4px 0;
     color: var(--white);
     font-size: 1.1rem;
+}
+
+.pricing-subhead {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
 }
 
 .pricing-tiers {
@@ -431,16 +437,39 @@
     font-size: 1.2rem;
 }
 
+.tier-version {
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+}
+
+.tier-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
 .tier-price {
     font-weight: bold;
     color: var(--primary);
     font-family: var(--font-mono);
+    font-size: 1.1rem;
 }
 
 .tier-price .sats {
     font-size: 0.8rem;
     color: var(--text-muted);
     font-weight: normal;
+}
+
+.tier-model {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-style: italic;
 }
 
 .tier-description {
@@ -484,6 +513,36 @@
     font-family: var(--font-display);
 }
 
+.buy-btn-exec {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--black);
+}
+
+.buy-btn-exec:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px var(--primary-glow);
+}
+
+.buy-btn-file {
+    background: linear-gradient(135deg, #b794f6 0%, #9f7aea 100%);
+    color: var(--black);
+}
+
+.buy-btn-file:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(183, 148, 246, 0.4);
+}
+
+.buy-btn-pkg {
+    background: linear-gradient(135deg, #00d26a 0%, #00a854 100%);
+    color: var(--black);
+}
+
+.buy-btn-pkg:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 210, 106, 0.4);
+}
+
 .buy-btn-primary {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: var(--black);
@@ -508,6 +567,51 @@
     opacity: 0.5;
     cursor: not-allowed;
     transform: none !important;
+    box-shadow: none !important;
+}
+
+/* === Agent Transaction Card === */
+.agent-transaction-card {
+    background: var(--dark);
+    border: 1px solid var(--gray);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.agent-tx-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.agent-transaction-card p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.agent-transaction-card strong {
+    color: var(--primary);
+}
+
+/* === Online/Offline Status === */
+.skill-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+}
+
+.skill-status.online {
+    color: #00ff88;
+}
+
+.skill-status.offline {
+    color: #ff6464;
 }
 
 /* === Transfer Info Card === */
@@ -779,4 +883,123 @@
 
 .error-state a {
     color: var(--primary);
+}
+
+/* === Agent Processing Animation === */
+.agent-processing {
+    text-align: center;
+    padding: 16px;
+    background: rgba(0, 217, 255, 0.05);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+}
+
+.agent-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--gray);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px;
+}
+
+.agent-message {
+    margin: 0;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Invoice model label */
+.invoice-model {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-style: italic;
+    margin-bottom: 16px;
+}
+
+/* Status spinner */
+.status-spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--gray);
+    border-top-color: var(--yellow);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.status-processing {
+    color: var(--primary) !important;
+    font-weight: 600;
+}
+
+/* === Transaction Complete State === */
+.transaction-complete {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.complete-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.complete-title {
+    font-size: 1.4rem;
+    margin: 0 0 8px 0;
+    color: var(--white);
+}
+
+.complete-message {
+    color: var(--text-muted);
+    margin: 0 0 24px 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.agent-success {
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.agent-success-icon {
+    font-size: 1.5rem;
+}
+
+.agent-success p {
+    margin: 0;
+    color: var(--green);
+    font-weight: 600;
+}
+
+.btn-done {
+    width: 100%;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--black);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    font-family: var(--font-display);
+}
+
+.btn-done:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px var(--primary-glow);
 }
