@@ -1045,10 +1045,12 @@
     background: rgba(0, 217, 255, 0.15);
     border: 1px solid rgba(0, 217, 255, 0.3);
     color: var(--primary);
-    padding: 4px 12px;
+    padding: 6px 16px;
     border-radius: var(--radius-full);
     font-size: 0.85rem;
     font-weight: 600;
+    margin-top: 12px;
+    margin-bottom: 8px;
 }
 
 .invoice-amount-display {
