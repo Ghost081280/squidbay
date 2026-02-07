@@ -915,21 +915,32 @@
             else if (pkgOn) transferType = 'full_package';
             else if (fileOn) transferType = 'skill_file';
             
-            const body = {
-                name: document.getElementById('editSkillName').value.trim(),
-                description: document.getElementById('editSkillDesc').value.trim(),
-                category: document.getElementById('editSkillCategory').value.trim(),
-                endpoint: document.getElementById('editSkillEndpoint').value.trim(),
-                transfer_endpoint: document.getElementById('editSkillTransferEndpoint').value.trim() || null,
-                icon: document.getElementById('editSkillIcon').value.trim() || null,
-                version: document.getElementById('editSkillVersion').value.trim() || null,
-                details: document.getElementById('editSkillDetails').value.trim() || null,
-                transfer_type: transferType,
-                price_execution: execOn ? parseInt(document.getElementById('editPriceExec').value) || null : null,
-                price_sats: execOn ? parseInt(document.getElementById('editPriceExec').value) || null : null,
-                price_skill_file: fileOn ? parseInt(document.getElementById('editPriceFile').value) || null : null,
-                price_full_package: pkgOn ? parseInt(document.getElementById('editPricePkg').value) || null : null
-            };
+            // Only send fields that have values — blank fields are skipped so existing data isn't wiped
+            const body = { transfer_type: transferType };
+            
+            const name = document.getElementById('editSkillName').value.trim();
+            const desc = document.getElementById('editSkillDesc').value.trim();
+            const cat = document.getElementById('editSkillCategory').value.trim();
+            const endpoint = document.getElementById('editSkillEndpoint').value.trim();
+            const transferEp = document.getElementById('editSkillTransferEndpoint').value.trim();
+            const icon = document.getElementById('editSkillIcon').value.trim();
+            const version = document.getElementById('editSkillVersion').value.trim();
+            const details = document.getElementById('editSkillDetails').value.trim();
+            
+            if (name) body.name = name;
+            if (desc) body.description = desc;
+            if (cat) body.category = cat;
+            if (endpoint) body.endpoint = endpoint;
+            if (transferEp) body.transfer_endpoint = transferEp;
+            if (icon) body.icon = icon;
+            if (version) body.version = version;
+            if (details) body.details = details;
+            
+            // Pricing — always send so tiers can be toggled on/off
+            body.price_execution = execOn ? parseInt(document.getElementById('editPriceExec').value) || null : null;
+            body.price_sats = body.price_execution;
+            body.price_skill_file = fileOn ? parseInt(document.getElementById('editPriceFile').value) || null : null;
+            body.price_full_package = pkgOn ? parseInt(document.getElementById('editPricePkg').value) || null : null;
             
             try {
                 const res = await fetch(API + '/register/' + skillId, {
