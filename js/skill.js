@@ -481,18 +481,32 @@ async function pollPayment(transactionId, tier) {
             const res = await fetch(`${API_BASE}/invoke/${transactionId}`);
             if (res.ok) {
                 const data = await res.json();
-                if (data.status === 'completed' || data.status === 'paid') {
-                    // Payment confirmed - update to step 3
+                
+                if (data.status === 'complete') {
+                    // Payment confirmed + processed — update to step 3
                     updateTransactionStep(3);
                     animateAgentFlow();
                     
-                    // After processing, show complete
+                    // After processing animation, show complete
                     setTimeout(() => {
                         updateTransactionStep(4);
                         setTimeout(() => {
-                            showTransactionComplete(tier, transactionId);
+                            showTransactionComplete(tier, transactionId, data);
                         }, 1000);
                     }, 2000);
+                    return;
+                }
+                
+                if (data.status === 'paid') {
+                    // Payment received, processing in progress
+                    updateTransactionStep(3);
+                    animateAgentFlow();
+                    // Keep polling — will transition to 'complete' shortly
+                }
+                
+                if (data.status === 'failed') {
+                    // Transaction failed
+                    showTransactionFailed(data.error || 'Skill execution failed');
                     return;
                 }
             }
@@ -503,6 +517,8 @@ async function pollPayment(transactionId, tier) {
         attempts++;
         if (attempts < maxAttempts) {
             setTimeout(poll, 5000);
+        } else {
+            showTransactionFailed('Payment timeout — invoice may have expired. No sats were charged.');
         }
     };
     
@@ -524,8 +540,9 @@ function animateAgentFlow() {
 
 /**
  * Show transaction complete state
+ * data = full response from GET /invoke/:id when status === 'complete'
  */
-function showTransactionComplete(tier, transactionId) {
+function showTransactionComplete(tier, transactionId, data) {
     const content = document.getElementById('invoice-content');
     
     const tierMessages = {
@@ -548,6 +565,36 @@ function showTransactionComplete(tier, transactionId) {
     
     const msg = tierMessages[tier] || tierMessages['execution'];
     const sellerEmoji = currentSkill?.agent_avatar_emoji || '🤖';
+    
+    // Build result details based on tier
+    let resultDetails = '';
+    if (tier === 'execution' && data && data.result) {
+        const resultStr = typeof data.result === 'string' ? data.result : JSON.stringify(data.result, null, 2);
+        resultDetails = `
+            <div class="execution-result">
+                <h4>⚡ Execution Result</h4>
+                <pre style="background:#0a0e14;border:1px solid #2a3540;border-radius:8px;padding:12px;font-size:0.8rem;overflow-x:auto;max-height:200px;color:#00ff88;">${esc(resultStr)}</pre>
+                ${data.response_time_ms ? `<p style="color:#555;font-size:0.75rem;margin-top:4px;">Response time: ${data.response_time_ms}ms</p>` : ''}
+            </div>
+        `;
+    } else if ((tier === 'skill_file' || tier === 'full_package') && data) {
+        resultDetails = `
+            <div class="transfer-result">
+                <h4>${tier === 'skill_file' ? '📄' : '📦'} Transfer Details</h4>
+                <p style="color:#888;font-size:0.85rem;">Your agent can present the transfer token to the seller's endpoint to retrieve the files.</p>
+                ${data.transfer_endpoint ? `<p style="font-size:0.8rem;color:#555;">Endpoint: <code style="color:#00d9ff;">${esc(data.transfer_endpoint)}</code></p>` : ''}
+                ${data.transfer_token ? `
+                    <div style="margin-top:8px;">
+                        <label style="font-size:0.75rem;color:#555;">Transfer Token:</label>
+                        <div style="display:flex;gap:6px;align-items:center;">
+                            <input type="text" value="${esc(data.transfer_token)}" readonly id="transfer-token-input" style="font-size:0.7rem;padding:8px;background:#0a0e14;border:1px solid #2a3540;border-radius:6px;color:#ffbd2e;flex:1;">
+                            <button onclick="navigator.clipboard.writeText(document.getElementById('transfer-token-input').value);this.textContent='✓'" style="width:auto;padding:8px 12px;font-size:0.8rem;">Copy</button>
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
     
     content.innerHTML = `
         <div class="transaction-complete">
@@ -582,6 +629,8 @@ function showTransactionComplete(tier, transactionId) {
                 </div>
             </div>
             
+            ${resultDetails}
+            
             <!-- Review Prompt -->
             <div class="review-prompt">
                 <p>How was this skill?</p>
@@ -602,6 +651,24 @@ function showTransactionComplete(tier, transactionId) {
     
     // Set up star rating interaction
     setupStarRating();
+}
+
+/**
+ * Show transaction failed state
+ */
+function showTransactionFailed(errorMsg) {
+    const content = document.getElementById('invoice-content');
+    content.innerHTML = `
+        <div class="transaction-complete">
+            <div class="complete-header">
+                <div class="complete-icon">❌</div>
+                <h3 class="complete-title">Transaction Failed</h3>
+            </div>
+            <p class="complete-message">${esc(errorMsg)}</p>
+            <p style="color:#555;font-size:0.85rem;margin-top:10px;">If you were charged, the Lightning payment will be refunded automatically. Contact the seller or try again.</p>
+            <button class="btn-done" onclick="window.SquidBaySkill.closeModal()" style="margin-top:15px;">Close</button>
+        </div>
+    `;
 }
 
 /**
