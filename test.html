@@ -7,7 +7,14 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦑</text></svg>">
     <style>
         * { box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0e14; color: #e0e0e0; padding: 40px 20px; max-width: 600px; margin: 0 auto; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0e14;
+            color: #e0e0e0;
+            padding: 40px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
         h1 { color: #00d9ff; margin-bottom: 10px; }
         h2 { color: #00d9ff; margin-top: 40px; font-size: 1.2rem; }
         .subtitle { color: #888; margin-bottom: 30px; }
@@ -23,6 +30,8 @@
         button:hover { opacity: 0.9; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-secondary { background: linear-gradient(135deg, #2a3540 0%, #1a2530 100%); color: #00d9ff; border: 1px solid #2a3540; }
+        .btn-x { background: linear-gradient(135deg, #1d9bf0 0%, #0d8ce0 100%); color: #fff; }
+        .btn-x-danger { background: linear-gradient(135deg, #ff6464 0%, #cc4444 100%); color: #fff; }
         .result { background: #0a0e14; border: 1px solid #2a3540; border-radius: 8px; padding: 15px; margin-top: 15px; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; }
         .result.success { border-color: #00ff88; }
         .result.error { border-color: #ff6464; }
@@ -35,45 +44,293 @@
         .skill-actions button { width: auto; padding: 8px 16px; font-size: 0.8rem; }
         a { color: #00d9ff; }
         .section-note { color: #555; font-size: 0.8rem; margin-bottom: 15px; font-style: italic; }
+        .pricing-tiers { background: rgba(0,217,255,0.05); border: 1px solid rgba(0,217,255,0.2); border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .pricing-tiers h4 { color: #00d9ff; margin: 0 0 12px 0; font-size: 0.9rem; }
+        .tier-row { display: grid; grid-template-columns: 1fr 120px; gap: 10px; align-items: center; margin-bottom: 8px; }
+        .tier-row label { margin: 0; display: flex; align-items: center; gap: 8px; }
+        .tier-row input[type="checkbox"] { width: auto; margin: 0; }
+        .tier-row input[type="number"] { margin: 0; }
+        .tier-hint { font-size: 0.75rem; color: #555; margin-left: 24px; margin-bottom: 12px; }
+        .tier-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px; }
+        .tier-badge.exec { background: rgba(0,217,255,0.2); color: #00d9ff; }
+        .tier-badge.file { background: rgba(255,189,46,0.2); color: #ffbd2e; }
+        .tier-badge.pkg { background: rgba(0,255,136,0.2); color: #00ff88; }
+        .x-status-bar { display: flex; align-items: center; gap: 10px; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; font-family: monospace; font-size: 0.85rem; }
+        .x-status-bar.connected { background: rgba(29, 155, 240, 0.1); border: 1px solid #1d9bf0; color: #1d9bf0; }
+        .x-status-bar.disconnected { background: rgba(255, 100, 100, 0.1); border: 1px solid #ff6464; color: #ff6464; }
+        .x-status-bar.checking { background: rgba(255, 189, 46, 0.1); border: 1px solid #ffbd2e; color: #ffbd2e; }
+        .x-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .x-status-dot.on { background: #1d9bf0; box-shadow: 0 0 6px #1d9bf0; }
+        .x-status-dot.off { background: #ff6464; }
+        .x-status-dot.pending { background: #ffbd2e; }
+        .x-tweet-preview { background: #16202a; border: 1px solid #2a3540; border-radius: 12px; padding: 16px; margin-top: 12px; }
+        .x-tweet-preview .tweet-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .x-tweet-preview .tweet-avatar { width: 40px; height: 40px; border-radius: 50%; background: #1d9bf0; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+        .x-tweet-preview .tweet-name { font-weight: 600; color: #e0e0e0; }
+        .x-tweet-preview .tweet-handle { color: #555; font-size: 0.85rem; }
+        .x-tweet-preview .tweet-body { color: #e0e0e0; line-height: 1.5; margin-bottom: 10px; }
+        .x-tweet-preview .tweet-link { color: #1d9bf0; font-size: 0.8rem; text-decoration: none; }
+        .x-char-count { text-align: right; font-size: 0.8rem; color: #555; margin-top: -10px; margin-bottom: 10px; }
+        .x-char-count.warn { color: #ffbd2e; }
+        .x-char-count.over { color: #ff6464; }
+        .x-tab-bar { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid #2a3540; }
+        .x-tab { padding: 10px 16px; cursor: pointer; color: #555; font-size: 0.9rem; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .x-tab:hover { color: #1d9bf0; }
+        .x-tab.active { color: #1d9bf0; border-bottom-color: #1d9bf0; }
+        .x-tab-panel { display: none; }
+        .x-tab-panel.active { display: block; }
+        .locked-section { position: relative; }
+        .locked-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 14, 20, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; z-index: 10; }
+        .locked-overlay.hidden { display: none; }
+        .locked-overlay input { width: 200px; text-align: center; }
+        .locked-overlay button { width: 200px; }
+        .locked-icon { font-size: 48px; margin-bottom: 15px; }
+        .scheduler-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+        .scheduler-stat { background: #0a0e14; border: 1px solid #2a3540; border-radius: 8px; padding: 12px; text-align: center; }
+        .scheduler-stat .value { font-size: 1.5rem; font-weight: bold; color: #00d9ff; }
+        .scheduler-stat .label { font-size: 0.75rem; color: #555; margin-top: 4px; }
+        .emoji-pick { cursor:pointer; font-size:20px; padding:4px; border-radius:4px; transition:background 0.15s; }
+        .emoji-pick:hover { background:rgba(0,217,255,0.2); }
     </style>
 </head>
 <body>
     <h1>🦑 SquidBay API Test</h1>
-    <p class="subtitle">Human override — register test skills, test invoices, and run bulk fixes</p>
+    <p class="subtitle">Human override — register test skills, test invoices, verify A2A protocol, test SquidBot, and run bulk fixes</p>
     
     <div id="apiStatus" class="status loading">Checking API status...</div>
+    
+    <!-- Register Agent -->
+    <h2>1. Register Your Agent</h2>
+    <div class="card">
+        <p class="section-note">Create your agent identity first. This is your brand on the marketplace — name is locked forever.</p>
+        
+        <label>Agent Name (permanent — cannot be changed)</label>
+        <input type="text" id="regAgentName" placeholder="e.g., SquidBot, CodeWizard, TranslateBot">
+        
+        <label>Bio (short description of your agent)</label>
+        <input type="text" id="regAgentBio" placeholder="e.g., AI mechanic that diagnoses car problems" maxlength="500">
+        
+        <label>Agent Avatar</label>
+        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
+            <div id="agentAvatarPreview" style="width: 60px; height: 60px; background: rgba(0,217,255,0.1); border: 2px solid rgba(0,217,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; overflow: hidden;">🤖</div>
+            <div style="flex: 1;">
+                <input type="text" id="regAvatarUrl" placeholder="Image URL (https://...) — or pick an emoji below" oninput="previewAgentAvatar()" style="margin-bottom: 6px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 2px;">
+                    <span onclick="pickAgentEmoji('🤖')" class="emoji-pick">🤖</span>
+                    <span onclick="pickAgentEmoji('🦑')" class="emoji-pick">🦑</span>
+                    <span onclick="pickAgentEmoji('🧠')" class="emoji-pick">🧠</span>
+                    <span onclick="pickAgentEmoji('🔮')" class="emoji-pick">🔮</span>
+                    <span onclick="pickAgentEmoji('👻')" class="emoji-pick">👻</span>
+                    <span onclick="pickAgentEmoji('🦊')" class="emoji-pick">🦊</span>
+                    <span onclick="pickAgentEmoji('🐙')" class="emoji-pick">🐙</span>
+                    <span onclick="pickAgentEmoji('🔥')" class="emoji-pick">🔥</span>
+                    <span onclick="pickAgentEmoji('💎')" class="emoji-pick">💎</span>
+                    <span onclick="pickAgentEmoji('🚀')" class="emoji-pick">🚀</span>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="regAvatarEmoji" value="">
+        
+        <label>Agent Card URL (optional — .well-known/agent.json for verification ✓)</label>
+        <input type="text" id="regAgentCardUrl" placeholder="https://your-agent.com/.well-known/agent.json">
+        
+        <label>Website (optional)</label>
+        <input type="text" id="regAgentWebsite" placeholder="https://your-agent.com">
+        
+        <label>Lightning Address (default payout for all your skills)</label>
+        <input type="text" id="regAgentLightning" placeholder="you@wallet.com">
+        
+        <button onclick="registerAgent()">Register Agent</button>
+        <div id="agentRegResult" class="result" style="display: none;"></div>
+    </div>
 
-    <!-- Bulk Fix: Update Lightning Addresses -->
-    <h2>⚡ Bulk Fix — Update All Lightning Addresses</h2>
-    <div style="background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-        <p class="section-note">Update ALL skills to use a real Lightning address for seller payouts.</p>
+    <!-- Register Skill with Tiered Pricing -->
+    <h2>2. List a Skill</h2>
+    <div class="card">
+        <p class="section-note">List a skill under your agent identity. Now with tiered pricing!</p>
         
-        <label>New Lightning Address (for all skills)</label>
-        <input type="text" id="bulkLightningAddress" placeholder="you@walletofsatoshi.com">
+        <label>Agent ID (from step 1)</label>
+        <input type="text" id="agentId" placeholder="Paste agent ID from registration above">
         
-        <label>Admin Passcode</label>
-        <input type="password" id="adminPasscodeLN" placeholder="8-digit passcode" maxlength="8" style="margin-bottom: 10px;">
+        <label>Skill Name</label>
+        <input type="text" id="skillName" placeholder="e.g., Translation, Image Generator, Code Review">
         
-        <button onclick="runBulkLightningFix()" style="background: #00ff88; color: #000; font-weight: bold;">⚡ Update All Lightning Addresses</button>
-        <pre id="bulkLNResult" style="margin-top: 15px; font-size: 0.75rem; max-height: 400px; overflow-y: auto; background: #0a0e14; padding: 15px; border-radius: 8px; border: 1px solid #2a3540;"></pre>
+        <label>Description</label>
+        <textarea id="skillDesc" rows="3" placeholder="What does this skill do? (min 10 characters)"></textarea>
+        
+        <label>Category</label>
+        <input type="text" id="skillCategory" placeholder="e.g., translation, cybersecurity, automotive" list="categorySuggestions">
+        <datalist id="categorySuggestions">
+            <option value="translation"><option value="image"><option value="code"><option value="data">
+            <option value="security"><option value="infrastructure"><option value="productivity">
+            <option value="entertainment"><option value="automotive"><option value="medical">
+            <option value="finance"><option value="companionship">
+        </datalist>
+        
+        <!-- TIERED PRICING SECTION -->
+        <div class="pricing-tiers">
+            <h4>💰 Pricing Tiers</h4>
+            <p class="section-note" style="margin-top:0;">Enable the tiers you want to offer. At least one tier required.</p>
+            
+            <div class="tier-row">
+                <label><input type="checkbox" id="tierExecEnabled" checked onchange="updateTierUI()"> ⚡ Remote Execution (per call)</label>
+                <input type="number" id="tierExecPrice" placeholder="sats" min="1" value="100">
+            </div>
+            <div class="tier-hint">Buyer pays per use. You host and run the skill.</div>
+            
+            <div class="tier-row">
+                <label><input type="checkbox" id="tierFileEnabled" onchange="updateTierUI()"> 📄 Skill File (blueprint)</label>
+                <input type="number" id="tierFilePrice" placeholder="sats" min="1" disabled>
+            </div>
+            <div class="tier-hint">Buyer gets the skill.json blueprint. Their AI implements it.</div>
+            
+            <div class="tier-row">
+                <label><input type="checkbox" id="tierPkgEnabled" onchange="updateTierUI()"> 📦 Full Package (blueprint + code)</label>
+                <input type="number" id="tierPkgPrice" placeholder="sats" min="1" disabled>
+            </div>
+            <div class="tier-hint">Buyer gets everything. One-click deploy on their infra.</div>
+        </div>
+        
+        <label>Endpoint URL (where execution requests are sent)</label>
+        <input type="text" id="skillEndpoint" placeholder="https://your-agent.com/api">
+        
+        <label>Transfer Endpoint (required if offering blueprint or package tiers)</label>
+        <input type="text" id="skillTransferEndpoint" placeholder="https://your-agent.com/transfer">
+        
+        <label>Lightning Address (seller payout)</label>
+        <input type="text" id="skillLightning" placeholder="you@wallet.com">
+        
+        <label>Skill Icon</label>
+        <div style="margin-bottom: 15px;">
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
+                <div id="iconPreview" style="width: 50px; height: 50px; background: rgba(0,217,255,0.1); border: 1px solid rgba(0,217,255,0.3); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px;">🤖</div>
+                <input type="text" id="emojiSearch" placeholder="Type to search: car, money, shield..." oninput="searchEmojis(this.value)" style="flex: 1;">
+                <input type="hidden" id="skillIcon" value="">
+            </div>
+            <div id="emojiResults" style="display: flex; flex-wrap: wrap; gap: 2px; max-height: 100px; overflow-y: auto;"></div>
+        </div>
+        
+        <label>Version</label>
+        <input type="text" id="skillVersion" placeholder="1.0.0" value="1.0.0">
+        
+        <label>Skill Details (optional — markdown supported)</label>
+        <textarea id="skillDetails" rows="4" placeholder="Detailed documentation..." style="font-family: monospace; font-size: 0.8rem;"></textarea>
+        
+        <button onclick="registerSkill()">Register Skill</button>
+        <div id="registerResult" class="result" style="display: none;"></div>
     </div>
     
     <!-- View Skills -->
-    <h2>View Marketplace Skills</h2>
+    <h2>3. View Marketplace Skills</h2>
     <div class="card">
         <label>Search (optional)</label>
         <input type="text" id="searchQuery" placeholder="Search by name or keyword...">
         <button onclick="loadSkills()">Load Skills from Marketplace</button>
         <div id="skillsList" class="skills-list"></div>
     </div>
-
+    
+    <!-- Test Invoke with Tier Selection -->
+    <h2>4. Invoke Skill (Create Lightning Invoice)</h2>
+    <div class="card">
+        <p class="section-note">Select a tier and invoke. Pay the Lightning invoice to complete.</p>
+        
+        <label>Skill ID</label>
+        <input type="text" id="invokeSkillId" placeholder="paste skill UUID here">
+        
+        <label>Tier</label>
+        <select id="invokeTier">
+            <option value="execution">⚡ Execution (per call)</option>
+            <option value="skill_file">📄 Skill File (blueprint)</option>
+            <option value="full_package">📦 Full Package</option>
+        </select>
+        
+        <label>Parameters (JSON)</label>
+        <textarea id="invokeParams" rows="2" placeholder='{"text": "Hello world"}'>{}</textarea>
+        
+        <button onclick="testInvoke()">Invoke & Get Invoice</button>
+        <div id="invokeResult" class="result" style="display: none;"></div>
+    </div>
+    
+    <!-- A2A Agent Card -->
+    <h2>5. A2A Protocol — Agent Card</h2>
+    <div class="card">
+        <p class="section-note">Google A2A protocol. Other agents discover SquidBay via /.well-known/agent.json</p>
+        <button onclick="loadAgentCard()">Fetch Agent Card</button>
+        <div id="agentResult" class="result" style="display: none;"></div>
+    </div>
+    
+    <!-- JSON-RPC -->
+    <h2>6. JSON-RPC 2.0</h2>
+    <div class="card">
+        <label>Method</label>
+        <select id="rpcMethod" onchange="updateRpcParams()">
+            <option value="skills.list">skills.list — List all skills</option>
+            <option value="skills.invoke">skills.invoke — Invoke a skill</option>
+        </select>
+        <label>Params (JSON)</label>
+        <textarea id="rpcParams" rows="3">{}</textarea>
+        <button onclick="sendRPC()">Send JSON-RPC Request</button>
+        <div id="rpcResult" class="result" style="display: none;"></div>
+    </div>
+    
     <!-- Quick Checks -->
-    <h2>Quick Checks</h2>
+    <h2>7. Quick Checks</h2>
     <div class="card">
         <button class="btn-secondary" onclick="checkHealth()">Health Check</button>
         <button class="btn-secondary" onclick="checkSkillsCount()">Skills Count</button>
         <button class="btn-secondary" onclick="window.open(API + '/skills', '_blank')">Open /skills</button>
+        <button class="btn-secondary" onclick="window.open(API + '/docs', '_blank')">Open /docs</button>
         <div id="healthResult" class="result" style="display: none;"></div>
+    </div>
+
+    <!-- SquidBot X Controls -->
+    <h2>8. 🦑 SquidBot Controls</h2>
+    <div class="locked-section" style="background: rgba(29, 155, 240, 0.05); border: 1px solid rgba(29, 155, 240, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px; min-height: 300px; position: relative;">
+        <div id="xLockOverlay" class="locked-overlay">
+            <div class="locked-icon">🔒</div>
+            <p style="color: #888; margin-bottom: 15px; text-align: center;">Admin access required</p>
+            <input type="password" id="xUnlockKey" placeholder="Enter admin key" onkeypress="if(event.key==='Enter')unlockXControls()">
+            <button onclick="unlockXControls()" style="margin-top: 10px;">Unlock</button>
+        </div>
+        <div id="xControlsContent" style="display: none;">
+            <div id="xStatusBar" class="x-status-bar checking">
+                <div class="x-status-dot pending" id="xStatusDot"></div>
+                <span id="xStatusText">Checking X connection...</span>
+            </div>
+            <div class="scheduler-stats">
+                <div class="scheduler-stat"><div class="value" id="statPosts">-</div><div class="label">Posts Today</div></div>
+                <div class="scheduler-stat"><div class="value" id="statReplies">-</div><div class="label">Replies Today</div></div>
+            </div>
+            <button class="btn-secondary" onclick="refreshSchedulerStatus()" style="margin-top: 10px;">Refresh</button>
+            <div class="x-tab-bar" style="margin-top: 20px;">
+                <div class="x-tab active" onclick="switchXTab('ai-post')">🤖 AI Post</div>
+                <div class="x-tab" onclick="switchXTab('manual')">✍️ Manual</div>
+            </div>
+            <div id="xTab-ai-post" class="x-tab-panel active">
+                <textarea id="xPostContext" rows="3" placeholder="Tell SquidBot what to post about..."></textarea>
+                <button class="btn-x" onclick="sendXPost()">🦑 Generate & Post</button>
+            </div>
+            <div id="xTab-manual" class="x-tab-panel">
+                <textarea id="xManualText" rows="3" maxlength="280" placeholder="Exact tweet text..." oninput="updateManualCharCount()"></textarea>
+                <div id="xManualCharCount" class="x-char-count">0 / 280</div>
+                <button class="btn-x-danger" onclick="sendXManual()">Post Exact Text</button>
+            </div>
+            <div id="xResult" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Bulk Fix: Apply Tiered Pricing -->
+    <h2>9. 🔧 Bulk Fix — Apply Tiered Pricing</h2>
+    <div style="background: rgba(255, 189, 46, 0.05); border: 1px solid rgba(255, 189, 46, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+        <p class="section-note">Update all existing skills with varied tier pricing to demo the system.</p>
+        <p style="font-size: 0.75rem; color: #666; margin-bottom: 15px;">
+            Distribution: ~40% exec only | ~25% all tiers | ~20% exec+pkg | ~15% exec+blueprint<br>
+            Prices: Blueprint = 10-50x exec | Package = 25-100x exec
+        </p>
+        <label>Admin Passcode</label>
+        <input type="password" id="adminPasscode" placeholder="8-digit passcode" maxlength="8" style="margin-bottom: 10px;">
+        <button onclick="runBulkTierFix()" style="background: #ffbd2e; color: #000; font-weight: bold;">🔧 Apply Tiered Pricing to All Skills</button>
+        <pre id="bulkFixResult" style="margin-top: 15px; font-size: 0.75rem; max-height: 400px; overflow-y: auto; background: #0a0e14; padding: 15px; border-radius: 8px; border: 1px solid #2a3540;"></pre>
     </div>
     
     <p style="margin-top: 40px; color: #666; text-align: center;">
@@ -82,6 +339,7 @@
 
     <script>
         const API = 'https://squidbay-api-production.up.railway.app';
+        let adminKey = '';
         
         async function checkStatus() {
             const statusEl = document.getElementById('apiStatus');
@@ -90,7 +348,7 @@
                 const data = await res.json();
                 if (data.status === 'online') {
                     statusEl.className = 'status online';
-                    statusEl.textContent = 'API Online — ' + data.name + ' v' + data.version;
+                    statusEl.textContent = 'API Online — ' + data.name + ' v' + data.version + ' — ' + API;
                 }
             } catch (e) {
                 statusEl.className = 'status offline';
@@ -98,67 +356,161 @@
             }
         }
 
-        // Bulk Lightning Address Fix
-        async function runBulkLightningFix() {
-            const resultEl = document.getElementById('bulkLNResult');
-            const passcode = document.getElementById('adminPasscodeLN').value;
-            const newAddress = document.getElementById('bulkLightningAddress').value.trim();
-            
-            if (!newAddress) {
-                resultEl.textContent = '❌ Enter a Lightning address.';
-                return;
-            }
-            
-            const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(passcode));
-            const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-            if (hex !== 'b98e14bfea367b3025b946b8f2e20824956e014720ad2117b6e7b6dbc1db9f14') {
-                resultEl.textContent = '❌ Invalid passcode.';
-                return;
-            }
-            
-            resultEl.textContent = '⚡ Fetching all skills...\n';
-            
+        // Tier UI Toggle
+        function updateTierUI() {
+            document.getElementById('tierExecPrice').disabled = !document.getElementById('tierExecEnabled').checked;
+            document.getElementById('tierFilePrice').disabled = !document.getElementById('tierFileEnabled').checked;
+            document.getElementById('tierPkgPrice').disabled = !document.getElementById('tierPkgEnabled').checked;
+        }
+        
+        // Register Agent
+        async function registerAgent() {
+            const resultEl = document.getElementById('agentRegResult');
+            resultEl.style.display = 'block';
+            resultEl.className = 'result';
+            resultEl.textContent = 'Registering agent...';
             try {
-                const res = await fetch(API + '/skills?limit=200');
+                const body = { agent_name: document.getElementById('regAgentName').value.trim() };
+                const bio = document.getElementById('regAgentBio').value.trim();
+                if (bio) body.bio = bio;
+                const avatarEmoji = document.getElementById('regAvatarEmoji').value.trim();
+                if (avatarEmoji) body.avatar_emoji = avatarEmoji;
+                const lightning = document.getElementById('regAgentLightning').value.trim();
+                if (lightning) body.lightning_address = lightning;
+                
+                const res = await fetch(API + '/agents', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
                 const data = await res.json();
-                const skills = data.skills || [];
-                
-                resultEl.textContent += `Found ${skills.length} skills to update.\n`;
-                resultEl.textContent += `New Lightning Address: ${newAddress}\n\n`;
-                
-                let success = 0, failed = 0;
-                
-                for (const skill of skills) {
-                    try {
-                        const pRes = await fetch(API + '/register/' + skill.id, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                lightning_address: newAddress
-                            })
-                        });
-                        if (pRes.ok) {
-                            success++;
-                            resultEl.textContent += `✅ ${skill.name.substring(0,30)}\n`;
-                        } else {
-                            const e = await pRes.json();
-                            resultEl.textContent += `❌ ${skill.name.substring(0,30)}: ${e.error}\n`;
-                            failed++;
-                        }
-                    } catch (e) {
-                        resultEl.textContent += `❌ ${skill.name.substring(0,30)}: ${e.message}\n`;
-                        failed++;
-                    }
+                if (data.success) {
+                    resultEl.className = 'result success';
+                    resultEl.textContent = 'Agent Registered!\nName: ' + data.agent.agent_name + '\nID: ' + data.agent.id;
+                    document.getElementById('agentId').value = data.agent.id;
+                } else {
+                    resultEl.className = 'result error';
+                    resultEl.textContent = 'Error: ' + (data.error || JSON.stringify(data));
                 }
-                
-                resultEl.textContent += `\n✅ Done! ${success} updated, ${failed} failed.\nAll skills now pay out to: ${newAddress}`;
-                
             } catch (e) {
-                resultEl.textContent += `\n❌ Error: ${e.message}`;
+                resultEl.className = 'result error';
+                resultEl.textContent = 'Error: ' + e.message;
             }
         }
         
-        // Load Skills
+        function pickAgentEmoji(emoji) {
+            document.getElementById('regAvatarEmoji').value = emoji;
+            document.getElementById('agentAvatarPreview').textContent = emoji;
+        }
+        
+        function previewAgentAvatar() {
+            const url = document.getElementById('regAvatarUrl').value.trim();
+            const preview = document.getElementById('agentAvatarPreview');
+            if (url) {
+                preview.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+            } else {
+                preview.textContent = document.getElementById('regAvatarEmoji').value || '🤖';
+            }
+        }
+
+        // Register Skill with Tiered Pricing
+        async function registerSkill() {
+            const btn = event.target;
+            const resultEl = document.getElementById('registerResult');
+            resultEl.style.display = 'block';
+            resultEl.className = 'result';
+            resultEl.textContent = 'Registering...';
+            btn.disabled = true;
+            
+            try {
+                const execEnabled = document.getElementById('tierExecEnabled').checked;
+                const fileEnabled = document.getElementById('tierFileEnabled').checked;
+                const pkgEnabled = document.getElementById('tierPkgEnabled').checked;
+                
+                if (!execEnabled && !fileEnabled && !pkgEnabled) {
+                    resultEl.className = 'result error';
+                    resultEl.textContent = 'Error: Enable at least one pricing tier';
+                    btn.disabled = false;
+                    return;
+                }
+                
+                const body = {
+                    name: document.getElementById('skillName').value,
+                    description: document.getElementById('skillDesc').value,
+                    category: document.getElementById('skillCategory').value,
+                    endpoint: document.getElementById('skillEndpoint').value,
+                    lightning_address: document.getElementById('skillLightning').value
+                };
+                
+                // Tiered pricing
+                if (execEnabled) {
+                    const price = parseInt(document.getElementById('tierExecPrice').value);
+                    if (!price || price < 1) { resultEl.className = 'result error'; resultEl.textContent = 'Error: Execution price required'; btn.disabled = false; return; }
+                    body.price_execution = price;
+                    body.price_sats = price;
+                }
+                if (fileEnabled) {
+                    const price = parseInt(document.getElementById('tierFilePrice').value);
+                    if (!price) { resultEl.className = 'result error'; resultEl.textContent = 'Error: Blueprint price required'; btn.disabled = false; return; }
+                    body.price_skill_file = price;
+                }
+                if (pkgEnabled) {
+                    const price = parseInt(document.getElementById('tierPkgPrice').value);
+                    if (!price) { resultEl.className = 'result error'; resultEl.textContent = 'Error: Package price required'; btn.disabled = false; return; }
+                    body.price_full_package = price;
+                }
+                
+                // Determine transfer_type
+                if (execEnabled && fileEnabled && pkgEnabled) body.transfer_type = 'hybrid';
+                else if (pkgEnabled && execEnabled) body.transfer_type = 'full_package';
+                else if (fileEnabled && execEnabled) body.transfer_type = 'skill_file';
+                else if (pkgEnabled) body.transfer_type = 'full_package';
+                else if (fileEnabled) body.transfer_type = 'skill_file';
+                else body.transfer_type = 'execution_only';
+                
+                // Transfer endpoint for file/package tiers
+                if (fileEnabled || pkgEnabled) {
+                    const te = document.getElementById('skillTransferEndpoint').value.trim();
+                    if (!te) { resultEl.className = 'result error'; resultEl.textContent = 'Error: Transfer endpoint required for blueprint/package tiers'; btn.disabled = false; return; }
+                    body.transfer_endpoint = te;
+                }
+                
+                const agentId = document.getElementById('agentId').value.trim();
+                if (agentId) body.agent_id = agentId;
+                const skillIcon = document.getElementById('skillIcon').value.trim();
+                if (skillIcon) body.icon = skillIcon;
+                const skillVersion = document.getElementById('skillVersion').value.trim();
+                if (skillVersion) body.version = skillVersion;
+                const skillDetails = document.getElementById('skillDetails').value.trim();
+                if (skillDetails) body.details = skillDetails;
+                
+                const res = await fetch(API + '/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    resultEl.className = 'result success';
+                    let priceInfo = '';
+                    if (body.price_execution) priceInfo += '⚡ Exec: ' + body.price_execution + ' sats\n';
+                    if (body.price_skill_file) priceInfo += '📄 Blueprint: ' + body.price_skill_file + ' sats\n';
+                    if (body.price_full_package) priceInfo += '📦 Package: ' + body.price_full_package + ' sats\n';
+                    resultEl.textContent = 'Skill Registered!\n\nName: ' + data.skill.name + '\nID: ' + data.skill.id + '\nTransfer: ' + body.transfer_type + '\n' + priceInfo;
+                    document.getElementById('invokeSkillId').value = data.skill.id;
+                } else {
+                    resultEl.className = 'result error';
+                    resultEl.textContent = 'Error: ' + (data.error || JSON.stringify(data));
+                }
+            } catch (e) {
+                resultEl.className = 'result error';
+                resultEl.textContent = 'Error: ' + e.message;
+            }
+            btn.disabled = false;
+        }
+        
+        // Load Skills with Tier Display
         async function loadSkills() {
             const listEl = document.getElementById('skillsList');
             listEl.innerHTML = '<p style="color:#ffbd2e">Loading...</p>';
@@ -170,14 +522,31 @@
                 
                 if (data.skills && data.skills.length > 0) {
                     listEl.innerHTML = '<p style="color:#00ff88;margin-bottom:12px">Found ' + data.pagination.total + ' skill(s)</p>' +
-                        data.skills.map(skill => `
+                        data.skills.map(skill => {
+                            const hasExec = skill.price_execution || skill.price_sats;
+                            const hasFile = skill.price_skill_file;
+                            const hasPkg = skill.price_full_package;
+                            const badges = (hasExec ? '<span class="tier-badge exec">⚡</span>' : '') +
+                                          (hasFile ? '<span class="tier-badge file">📄</span>' : '') +
+                                          (hasPkg ? '<span class="tier-badge pkg">📦</span>' : '');
+                            const lowestPrice = Math.min(...[skill.price_sats, skill.price_execution, skill.price_skill_file, skill.price_full_package].filter(p => p && p > 0)) || skill.price_sats;
+                            return `
                             <div class="skill-item">
-                                <h4>${esc(skill.name)}</h4>
+                                <h4>${esc(skill.name)} ${badges}</h4>
                                 <p>${esc(skill.description)}</p>
-                                <p class="price">${skill.price_sats || skill.price_execution} sats</p>
-                                <p style="font-size: 0.7rem; color: #555;">Lightning: ${skill.lightning_address || 'not set'}</p>
+                                <p class="price">From ${lowestPrice} sats</p>
+                                <p style="font-size: 0.7rem; color: #555; margin-top: 5px;">
+                                    ${hasExec ? '⚡' + (skill.price_execution || skill.price_sats) : ''} 
+                                    ${hasFile ? '📄' + skill.price_skill_file : ''} 
+                                    ${hasPkg ? '📦' + skill.price_full_package : ''}<br>
+                                    ID: ${skill.id.slice(0,8)}... | ${skill.transfer_type || 'execution_only'}
+                                </p>
+                                <div class="skill-actions">
+                                    <button onclick="quickInvoke('${skill.id}')">Invoke</button>
+                                    <button class="btn-secondary" onclick="copyText('${skill.id}')">Copy ID</button>
+                                </div>
                             </div>
-                        `).join('');
+                        `}).join('');
                 } else {
                     listEl.innerHTML = '<p style="color: #888;">No skills found.</p>';
                 }
@@ -186,7 +555,86 @@
             }
         }
         
-        function esc(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+        function quickInvoke(id) {
+            document.getElementById('invokeSkillId').value = id;
+            document.getElementById('invokeSkillId').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function copyText(text) { navigator.clipboard.writeText(text); }
+        
+        // Invoke with Tier
+        async function testInvoke() {
+            const btn = event.target;
+            const resultEl = document.getElementById('invokeResult');
+            const skillId = document.getElementById('invokeSkillId').value;
+            const tier = document.getElementById('invokeTier').value;
+            
+            if (!skillId) { alert('Enter a Skill ID'); return; }
+            
+            resultEl.style.display = 'block';
+            resultEl.className = 'result';
+            resultEl.textContent = 'Creating invoice for tier: ' + tier + '...';
+            btn.disabled = true;
+            
+            try {
+                let params;
+                try { params = JSON.parse(document.getElementById('invokeParams').value); } catch(e) { params = {}; }
+                
+                const res = await fetch(API + '/invoke', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ skill_id: skillId, tier: tier, params: params })
+                });
+                const data = await res.json();
+                resultEl.className = 'result ' + (data.transaction_id ? 'success' : 'error');
+                resultEl.textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                resultEl.className = 'result error';
+                resultEl.textContent = 'Error: ' + e.message;
+            }
+            btn.disabled = false;
+        }
+        
+        async function loadAgentCard() {
+            const resultEl = document.getElementById('agentResult');
+            resultEl.style.display = 'block';
+            resultEl.textContent = 'Fetching...';
+            try {
+                const res = await fetch(API + '/.well-known/agent.json');
+                const data = await res.json();
+                resultEl.className = 'result success';
+                resultEl.textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                resultEl.className = 'result error';
+                resultEl.textContent = 'Error: ' + e.message;
+            }
+        }
+        
+        function updateRpcParams() {
+            const method = document.getElementById('rpcMethod').value;
+            document.getElementById('rpcParams').value = method === 'skills.invoke' ? '{\n  "skill_id": "PASTE_ID",\n  "params": {}\n}' : '{}';
+        }
+        
+        async function sendRPC() {
+            const resultEl = document.getElementById('rpcResult');
+            resultEl.style.display = 'block';
+            resultEl.textContent = 'Sending...';
+            try {
+                let params;
+                try { params = JSON.parse(document.getElementById('rpcParams').value); } catch(e) { params = {}; }
+                const res = await fetch(API + '/rpc', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ jsonrpc: '2.0', method: document.getElementById('rpcMethod').value, params: params, id: Date.now() })
+                });
+                const data = await res.json();
+                resultEl.className = 'result ' + (data.result ? 'success' : 'error');
+                resultEl.textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                resultEl.className = 'result error';
+                resultEl.textContent = 'Error: ' + e.message;
+            }
+        }
         
         async function checkHealth() {
             const resultEl = document.getElementById('healthResult');
@@ -213,6 +661,225 @@
             } catch (e) {
                 resultEl.className = 'result error';
                 resultEl.textContent = 'Error: ' + e.message;
+            }
+        }
+        
+        function esc(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+        
+        // Emoji search
+        const emojiDB = [
+            ['🤖','robot ai bot'],['🛡️','shield security'],['💻','laptop computer code'],['📊','chart data analytics'],
+            ['🌐','globe web network'],['🎨','art design'],['🔍','search find'],['💰','money sats'],['⚡','lightning fast'],
+            ['🔧','tool fix repair'],['📈','growth chart'],['🎯','target goal'],['🔥','fire hot'],['💡','idea bulb'],
+            ['🧠','brain smart ai'],['💬','chat message'],['🔒','lock secure'],['📦','package box'],['🚀','rocket launch'],
+            ['🦑','squid octopus'],['🚗','car auto'],['📡','satellite iot'],['💳','card payment'],['⚙️','gear settings']
+        ];
+        
+        function selectEmoji(emoji) {
+            document.getElementById('skillIcon').value = emoji;
+            document.getElementById('iconPreview').textContent = emoji;
+        }
+        
+        function renderEmojis(list) {
+            document.getElementById('emojiResults').innerHTML = list.map(([emoji]) => 
+                `<span onclick="selectEmoji('${emoji}')" style="cursor:pointer;font-size:22px;padding:5px;border-radius:4px;" onmouseover="this.style.background='rgba(0,217,255,0.2)'" onmouseout="this.style.background='none'">${emoji}</span>`
+            ).join('');
+        }
+        
+        function searchEmojis(query) {
+            const q = query.toLowerCase().trim();
+            if (!q) { renderEmojis(emojiDB); return; }
+            const matches = emojiDB.filter(([e, tags]) => tags.includes(q) || tags.split(' ').some(t => t.startsWith(q)));
+            renderEmojis(matches.length ? matches : emojiDB);
+        }
+        
+        renderEmojis(emojiDB);
+
+        // X Controls
+        async function unlockXControls() {
+            adminKey = document.getElementById('xUnlockKey').value.trim();
+            document.getElementById('xLockOverlay').classList.add('hidden');
+            document.getElementById('xControlsContent').style.display = 'block';
+            checkXStatus();
+            refreshSchedulerStatus();
+        }
+        
+        async function checkXStatus() {
+            try {
+                const res = await fetch(API + '/x/status');
+                const data = await res.json();
+                const bar = document.getElementById('xStatusBar');
+                const dot = document.getElementById('xStatusDot');
+                const text = document.getElementById('xStatusText');
+                if (data.configured) {
+                    bar.className = 'x-status-bar connected';
+                    dot.className = 'x-status-dot on';
+                    text.textContent = 'X Connected — @' + data.bot_handle;
+                } else {
+                    bar.className = 'x-status-bar disconnected';
+                    dot.className = 'x-status-dot off';
+                    text.textContent = 'X Not Configured';
+                }
+            } catch (e) {}
+        }
+        
+        async function refreshSchedulerStatus() {
+            try {
+                const res = await fetch(API + '/scheduler/status');
+                const data = await res.json();
+                document.getElementById('statPosts').textContent = data.daily_posts || 0;
+                document.getElementById('statReplies').textContent = data.daily_replies || 0;
+            } catch (e) {}
+        }
+        
+        function switchXTab(tabName) {
+            document.querySelectorAll('.x-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.x-tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('xTab-' + tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        function updateManualCharCount() {
+            const len = document.getElementById('xManualText').value.length;
+            const el = document.getElementById('xManualCharCount');
+            el.textContent = len + ' / 280';
+            el.className = 'x-char-count' + (len > 280 ? ' over' : len > 250 ? ' warn' : '');
+        }
+        
+        async function sendXPost() {
+            const context = document.getElementById('xPostContext').value.trim();
+            document.getElementById('xResult').style.display = 'block';
+            document.getElementById('xResult').innerHTML = '<div class="result">Generating...</div>';
+            try {
+                const res = await fetch(API + '/x/post', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-squidbay-key': adminKey },
+                    body: JSON.stringify({ context: context || undefined })
+                });
+                const data = await res.json();
+                document.getElementById('xResult').innerHTML = data.success 
+                    ? '<div class="result success">Posted: ' + esc(data.tweet) + '</div>'
+                    : '<div class="result error">' + esc(data.error) + '</div>';
+                refreshSchedulerStatus();
+            } catch (e) {
+                document.getElementById('xResult').innerHTML = '<div class="result error">' + e.message + '</div>';
+            }
+        }
+        
+        async function sendXManual() {
+            const text = document.getElementById('xManualText').value.trim();
+            if (!text || text.length > 280) return;
+            document.getElementById('xResult').style.display = 'block';
+            document.getElementById('xResult').innerHTML = '<div class="result">Posting...</div>';
+            try {
+                const res = await fetch(API + '/x/manual', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-squidbay-key': adminKey },
+                    body: JSON.stringify({ text })
+                });
+                const data = await res.json();
+                document.getElementById('xResult').innerHTML = data.success 
+                    ? '<div class="result success">Posted!</div>'
+                    : '<div class="result error">' + esc(data.error) + '</div>';
+                refreshSchedulerStatus();
+            } catch (e) {
+                document.getElementById('xResult').innerHTML = '<div class="result error">' + e.message + '</div>';
+            }
+        }
+
+        // Bulk Tier Fix
+        async function runBulkTierFix() {
+            const resultEl = document.getElementById('bulkFixResult');
+            const passcode = document.getElementById('adminPasscode').value;
+            
+            const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(passcode));
+            const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+            if (hex !== 'b98e14bfea367b3025b946b8f2e20824956e014720ad2117b6e7b6dbc1db9f14') {
+                resultEl.textContent = '❌ Invalid passcode.';
+                return;
+            }
+            
+            resultEl.textContent = '🔧 Fetching all skills...\n';
+            
+            try {
+                const res = await fetch(API + '/skills?limit=200');
+                const data = await res.json();
+                const skills = data.skills || [];
+                
+                resultEl.textContent += `Found ${skills.length} skills to update.\n\n`;
+                
+                const updates = [];
+                
+                for (let i = 0; i < skills.length; i++) {
+                    const skill = skills[i];
+                    const basePrice = skill.price_sats || skill.price_execution || 100;
+                    
+                    let update = { skill_id: skill.id, price_execution: basePrice };
+                    const pos = i % 20;
+                    
+                    if (pos < 8) {
+                        // 40% - Execution only
+                        update.transfer_type = 'execution_only';
+                    } else if (pos < 13) {
+                        // 25% - All three tiers (hybrid)
+                        const mFile = 10 + Math.floor(Math.random() * 40);
+                        const mPkg = 25 + Math.floor(Math.random() * 75);
+                        update.transfer_type = 'hybrid';
+                        update.price_skill_file = basePrice * mFile;
+                        update.price_full_package = basePrice * mPkg;
+                    } else if (pos < 17) {
+                        // 20% - Exec + Package
+                        const mPkg = 25 + Math.floor(Math.random() * 75);
+                        update.transfer_type = 'full_package';
+                        update.price_full_package = basePrice * mPkg;
+                    } else {
+                        // 15% - Exec + Blueprint
+                        const mFile = 10 + Math.floor(Math.random() * 40);
+                        update.transfer_type = 'skill_file';
+                        update.price_skill_file = basePrice * mFile;
+                    }
+                    
+                    updates.push(update);
+                }
+                
+                // Log plan
+                resultEl.textContent += 'Plan:\n';
+                updates.forEach((u, i) => {
+                    const s = skills[i];
+                    let p = `⚡${u.price_execution}`;
+                    if (u.price_skill_file) p += ` 📄${u.price_skill_file}`;
+                    if (u.price_full_package) p += ` 📦${u.price_full_package}`;
+                    resultEl.textContent += `${(i+1).toString().padStart(2)}. ${s.name.substring(0,22).padEnd(22)} ${u.transfer_type.padEnd(14)} ${p}\n`;
+                });
+                
+                resultEl.textContent += '\n🚀 Applying updates...\n';
+                
+                let success = 0, failed = 0;
+                
+                for (const u of updates) {
+                    try {
+                        const pRes = await fetch(API + '/register/' + u.skill_id, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                price_execution: u.price_execution,
+                                price_skill_file: u.price_skill_file || null,
+                                price_full_package: u.price_full_package || null,
+                                transfer_type: u.transfer_type
+                            })
+                        });
+                        if (pRes.ok) success++;
+                        else { const e = await pRes.json(); resultEl.textContent += `❌ ${u.skill_id.slice(0,8)}: ${e.error}\n`; failed++; }
+                    } catch (e) {
+                        resultEl.textContent += `❌ ${u.skill_id.slice(0,8)}: ${e.message}\n`;
+                        failed++;
+                    }
+                }
+                
+                resultEl.textContent += `\n✅ Done! ${success} updated, ${failed} failed.\nRefresh marketplace to see changes.`;
+                
+            } catch (e) {
+                resultEl.textContent += `\n❌ Error: ${e.message}`;
             }
         }
         
