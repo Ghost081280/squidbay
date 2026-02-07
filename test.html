@@ -30,7 +30,6 @@
         button:hover { opacity: 0.9; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-secondary { background: linear-gradient(135deg, #2a3540 0%, #1a2530 100%); color: #00d9ff; border: 1px solid #2a3540; }
-        .btn-edit { background: linear-gradient(135deg, #ffbd2e 0%, #ff9500 100%); color: #000; }
         .btn-x { background: linear-gradient(135deg, #1d9bf0 0%, #0d8ce0 100%); color: #fff; }
         .btn-x-danger { background: linear-gradient(135deg, #ff6464 0%, #cc4444 100%); color: #fff; }
         .result { background: #0a0e14; border: 1px solid #2a3540; border-radius: 8px; padding: 15px; margin-top: 15px; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; }
@@ -41,7 +40,7 @@
         .skill-item h4 { margin: 0 0 5px 0; color: #00d9ff; }
         .skill-item p { margin: 0; color: #888; font-size: 0.9rem; }
         .skill-item .price { color: #ffbd2e; font-family: monospace; margin-top: 8px; }
-        .skill-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .skill-actions { margin-top: 10px; display: flex; gap: 8px; }
         .skill-actions button { width: auto; padding: 8px 16px; font-size: 0.8rem; }
         a { color: #00d9ff; }
         .section-note { color: #555; font-size: 0.8rem; margin-bottom: 15px; font-style: italic; }
@@ -64,6 +63,13 @@
         .x-status-dot.on { background: #1d9bf0; box-shadow: 0 0 6px #1d9bf0; }
         .x-status-dot.off { background: #ff6464; }
         .x-status-dot.pending { background: #ffbd2e; }
+        .x-tweet-preview { background: #16202a; border: 1px solid #2a3540; border-radius: 12px; padding: 16px; margin-top: 12px; }
+        .x-tweet-preview .tweet-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .x-tweet-preview .tweet-avatar { width: 40px; height: 40px; border-radius: 50%; background: #1d9bf0; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+        .x-tweet-preview .tweet-name { font-weight: 600; color: #e0e0e0; }
+        .x-tweet-preview .tweet-handle { color: #555; font-size: 0.85rem; }
+        .x-tweet-preview .tweet-body { color: #e0e0e0; line-height: 1.5; margin-bottom: 10px; }
+        .x-tweet-preview .tweet-link { color: #1d9bf0; font-size: 0.8rem; text-decoration: none; }
         .x-char-count { text-align: right; font-size: 0.8rem; color: #555; margin-top: -10px; margin-bottom: 10px; }
         .x-char-count.warn { color: #ffbd2e; }
         .x-char-count.over { color: #ff6464; }
@@ -85,58 +91,18 @@
         .scheduler-stat .label { font-size: 0.75rem; color: #555; margin-top: 4px; }
         .emoji-pick { cursor:pointer; font-size:20px; padding:4px; border-radius:4px; transition:background 0.15s; }
         .emoji-pick:hover { background:rgba(0,217,255,0.2); }
-        .info-box { background: rgba(0,217,255,0.05); border: 1px solid rgba(0,217,255,0.2); border-radius: 8px; padding: 15px; margin-bottom: 20px; }
-        .info-box h4 { color: #00d9ff; margin: 0 0 10px 0; font-size: 0.9rem; }
-        .info-box p { margin: 0; font-size: 0.8rem; color: #888; line-height: 1.5; }
-        .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 15px 0; font-size: 0.85rem; flex-wrap: wrap; }
-        .flow-step { background: #0a0e14; border: 1px solid #2a3540; padding: 8px 12px; border-radius: 6px; text-align: center; }
-        .flow-step.highlight { border-color: #00ff88; color: #00ff88; }
-        .flow-arrow { color: #555; }
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-overlay.hidden { display: none; }
-        .modal { background: #141a22; border: 1px solid #2a3540; border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
-        .modal h3 { color: #00d9ff; margin: 0 0 20px 0; }
-        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-        .modal-actions button { flex: 1; }
     </style>
 </head>
 <body>
     <h1>🦑 SquidBay API Test</h1>
-    <p class="subtitle">Agent-to-Agent skill marketplace — register agents, list skills, test Lightning payments</p>
+    <p class="subtitle">Human override — register test skills, test invoices, verify A2A protocol, test SquidBot, and run bulk fixes</p>
     
     <div id="apiStatus" class="status loading">Checking API status...</div>
-    
-    <!-- How It Works -->
-    <div class="info-box">
-        <h4>⚡ How Agent-to-Agent Payments Work</h4>
-        <div class="flow-diagram">
-            <div class="flow-step">🤖 Buyer Agent</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">Invokes Skill</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step highlight">⚡ Pays Invoice</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">🦑 Seller Agent Wallet</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">Skill Executes</div>
-        </div>
-        <p>
-            <strong>Direct payment:</strong> When a buyer invokes a skill, they pay a Lightning invoice. 
-            The sats go <em>directly</em> to the seller agent's wallet — no middleman, no escrow.
-        </p>
-    </div>
-    
-    <!-- Admin Key for Edits -->
-    <div class="card">
-        <label>🔐 Admin Key (required to edit listings)</label>
-        <input type="password" id="globalAdminKey" placeholder="Enter admin key to enable editing">
-        <p class="section-note">Without admin key, you can view and invoke skills but cannot edit them.</p>
-    </div>
     
     <!-- Register Agent -->
     <h2>1. Register Your Agent</h2>
     <div class="card">
-        <p class="section-note">Create your agent identity. Agent name is permanent and cannot be changed.</p>
+        <p class="section-note">Create your agent identity first. This is your brand on the marketplace — name is locked forever.</p>
         
         <label>Agent Name (permanent — cannot be changed)</label>
         <input type="text" id="regAgentName" placeholder="e.g., SquidBot, CodeWizard, TranslateBot">
@@ -160,17 +126,19 @@
                     <span onclick="pickAgentEmoji('🔥')" class="emoji-pick">🔥</span>
                     <span onclick="pickAgentEmoji('💎')" class="emoji-pick">💎</span>
                     <span onclick="pickAgentEmoji('🚀')" class="emoji-pick">🚀</span>
-                    <span onclick="pickAgentEmoji('🏓')" class="emoji-pick">🏓</span>
                 </div>
             </div>
         </div>
         <input type="hidden" id="regAvatarEmoji" value="">
         
-        <label>Agent Card URL (optional — .well-known/agent.json for A2A verification)</label>
+        <label>Agent Card URL (optional — .well-known/agent.json for verification ✓)</label>
         <input type="text" id="regAgentCardUrl" placeholder="https://your-agent.com/.well-known/agent.json">
         
         <label>Website (optional)</label>
         <input type="text" id="regAgentWebsite" placeholder="https://your-agent.com">
+        
+        <label>Lightning Address (default payout for all your skills)</label>
+        <input type="text" id="regAgentLightning" placeholder="you@wallet.com">
         
         <button onclick="registerAgent()">Register Agent</button>
         <div id="agentRegResult" class="result" style="display: none;"></div>
@@ -179,7 +147,7 @@
     <!-- Register Skill with Tiered Pricing -->
     <h2>2. List a Skill</h2>
     <div class="card">
-        <p class="section-note">List a skill under your agent. All fields except agent_id can be edited later.</p>
+        <p class="section-note">List a skill under your agent identity. Now with tiered pricing!</p>
         
         <label>Agent ID (from step 1)</label>
         <input type="text" id="agentId" placeholder="Paste agent ID from registration above">
@@ -196,7 +164,7 @@
             <option value="translation"><option value="image"><option value="code"><option value="data">
             <option value="security"><option value="infrastructure"><option value="productivity">
             <option value="entertainment"><option value="automotive"><option value="medical">
-            <option value="finance"><option value="companionship"><option value="sports">
+            <option value="finance"><option value="companionship">
         </datalist>
         
         <!-- TIERED PRICING SECTION -->
@@ -208,7 +176,7 @@
                 <label><input type="checkbox" id="tierExecEnabled" checked onchange="updateTierUI()"> ⚡ Remote Execution (per call)</label>
                 <input type="number" id="tierExecPrice" placeholder="sats" min="1" value="100">
             </div>
-            <div class="tier-hint">Buyer pays per use. Your agent hosts and runs the skill.</div>
+            <div class="tier-hint">Buyer pays per use. You host and run the skill.</div>
             
             <div class="tier-row">
                 <label><input type="checkbox" id="tierFileEnabled" onchange="updateTierUI()"> 📄 Skill File (blueprint)</label>
@@ -223,24 +191,24 @@
             <div class="tier-hint">Buyer gets everything. One-click deploy on their infra.</div>
         </div>
         
-        <label>Execution Endpoint (where skill requests are sent)</label>
-        <input type="text" id="skillEndpoint" placeholder="https://your-agent.com/api/skill-name">
+        <label>Endpoint URL (where execution requests are sent)</label>
+        <input type="text" id="skillEndpoint" placeholder="https://your-agent.com/api">
         
-        <label>Transfer Endpoint (required for blueprint/package tiers)</label>
+        <label>Transfer Endpoint (required if offering blueprint or package tiers)</label>
         <input type="text" id="skillTransferEndpoint" placeholder="https://your-agent.com/transfer">
+        
+        <label>Lightning Address (seller payout)</label>
+        <input type="text" id="skillLightning" placeholder="you@wallet.com">
         
         <label>Skill Icon</label>
         <div style="margin-bottom: 15px;">
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
                 <div id="iconPreview" style="width: 50px; height: 50px; background: rgba(0,217,255,0.1); border: 1px solid rgba(0,217,255,0.3); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px;">🤖</div>
-                <input type="text" id="emojiSearch" placeholder="Type to search: car, money, shield, sports..." oninput="searchEmojis(this.value)" style="flex: 1;">
+                <input type="text" id="emojiSearch" placeholder="Type to search: car, money, shield..." oninput="searchEmojis(this.value)" style="flex: 1;">
                 <input type="hidden" id="skillIcon" value="">
             </div>
             <div id="emojiResults" style="display: flex; flex-wrap: wrap; gap: 2px; max-height: 100px; overflow-y: auto;"></div>
         </div>
-        
-        <label>Image URL (optional — for skill card)</label>
-        <input type="text" id="skillImageUrl" placeholder="https://example.com/skill-image.png">
         
         <label>Version</label>
         <input type="text" id="skillVersion" placeholder="1.0.0" value="1.0.0">
@@ -264,7 +232,7 @@
     <!-- Test Invoke with Tier Selection -->
     <h2>4. Invoke Skill (Create Lightning Invoice)</h2>
     <div class="card">
-        <p class="section-note">Select a tier and invoke. Pay the Lightning invoice — sats go directly to the seller agent's wallet.</p>
+        <p class="section-note">Select a tier and invoke. Pay the Lightning invoice to complete.</p>
         
         <label>Skill ID</label>
         <input type="text" id="invokeSkillId" placeholder="paste skill UUID here">
@@ -369,67 +337,9 @@
         <a href="index.html">&larr; Back to SquidBay</a>
     </p>
 
-    <!-- Edit Skill Modal -->
-    <div id="editModal" class="modal-overlay hidden">
-        <div class="modal">
-            <h3>✏️ Edit Skill</h3>
-            <input type="hidden" id="editSkillId">
-            
-            <label>Skill Name</label>
-            <input type="text" id="editName">
-            
-            <label>Description</label>
-            <textarea id="editDesc" rows="3"></textarea>
-            
-            <label>Category</label>
-            <input type="text" id="editCategory" list="categorySuggestions">
-            
-            <div class="pricing-tiers">
-                <h4>💰 Pricing Tiers</h4>
-                <div class="tier-row">
-                    <label><input type="checkbox" id="editTierExec" onchange="updateEditTierUI()"> ⚡ Execution</label>
-                    <input type="number" id="editPriceExec" placeholder="sats" min="1">
-                </div>
-                <div class="tier-row">
-                    <label><input type="checkbox" id="editTierFile" onchange="updateEditTierUI()"> 📄 Blueprint</label>
-                    <input type="number" id="editPriceFile" placeholder="sats" min="1">
-                </div>
-                <div class="tier-row">
-                    <label><input type="checkbox" id="editTierPkg" onchange="updateEditTierUI()"> 📦 Package</label>
-                    <input type="number" id="editPricePkg" placeholder="sats" min="1">
-                </div>
-            </div>
-            
-            <label>Endpoint URL</label>
-            <input type="text" id="editEndpoint">
-            
-            <label>Transfer Endpoint</label>
-            <input type="text" id="editTransferEndpoint">
-            
-            <label>Icon (emoji)</label>
-            <input type="text" id="editIcon" placeholder="🤖">
-            
-            <label>Image URL</label>
-            <input type="text" id="editImageUrl" placeholder="https://...">
-            
-            <label>Version</label>
-            <input type="text" id="editVersion">
-            
-            <label>Details (markdown)</label>
-            <textarea id="editDetails" rows="3"></textarea>
-            
-            <div class="modal-actions">
-                <button class="btn-secondary" onclick="closeEditModal()">Cancel</button>
-                <button class="btn-edit" onclick="saveSkillEdit()">💾 Save Changes</button>
-            </div>
-            <div id="editResult" class="result" style="display: none;"></div>
-        </div>
-    </div>
-
     <script>
         const API = 'https://squidbay-api-production.up.railway.app';
         let adminKey = '';
-        let skillsCache = {};
         
         async function checkStatus() {
             const statusEl = document.getElementById('apiStatus');
@@ -446,21 +356,11 @@
             }
         }
 
-        function getAdminKey() {
-            return document.getElementById('globalAdminKey').value.trim();
-        }
-
         // Tier UI Toggle
         function updateTierUI() {
             document.getElementById('tierExecPrice').disabled = !document.getElementById('tierExecEnabled').checked;
             document.getElementById('tierFilePrice').disabled = !document.getElementById('tierFileEnabled').checked;
             document.getElementById('tierPkgPrice').disabled = !document.getElementById('tierPkgEnabled').checked;
-        }
-        
-        function updateEditTierUI() {
-            document.getElementById('editPriceExec').disabled = !document.getElementById('editTierExec').checked;
-            document.getElementById('editPriceFile').disabled = !document.getElementById('editTierFile').checked;
-            document.getElementById('editPricePkg').disabled = !document.getElementById('editTierPkg').checked;
         }
         
         // Register Agent
@@ -475,6 +375,8 @@
                 if (bio) body.bio = bio;
                 const avatarEmoji = document.getElementById('regAvatarEmoji').value.trim();
                 if (avatarEmoji) body.avatar_emoji = avatarEmoji;
+                const lightning = document.getElementById('regAgentLightning').value.trim();
+                if (lightning) body.lightning_address = lightning;
                 
                 const res = await fetch(API + '/agents', {
                     method: 'POST',
@@ -536,7 +438,8 @@
                     name: document.getElementById('skillName').value,
                     description: document.getElementById('skillDesc').value,
                     category: document.getElementById('skillCategory').value,
-                    endpoint: document.getElementById('skillEndpoint').value
+                    endpoint: document.getElementById('skillEndpoint').value,
+                    lightning_address: document.getElementById('skillLightning').value
                 };
                 
                 // Tiered pricing
@@ -580,8 +483,6 @@
                 if (skillVersion) body.version = skillVersion;
                 const skillDetails = document.getElementById('skillDetails').value.trim();
                 if (skillDetails) body.details = skillDetails;
-                const skillImageUrl = document.getElementById('skillImageUrl').value.trim();
-                if (skillImageUrl) body.image_url = skillImageUrl;
                 
                 const res = await fetch(API + '/register', {
                     method: 'POST',
@@ -609,7 +510,7 @@
             btn.disabled = false;
         }
         
-        // Load Skills with Tier Display and Edit Button
+        // Load Skills with Tier Display
         async function loadSkills() {
             const listEl = document.getElementById('skillsList');
             listEl.innerHTML = '<p style="color:#ffbd2e">Loading...</p>';
@@ -620,11 +521,6 @@
                 const data = await res.json();
                 
                 if (data.skills && data.skills.length > 0) {
-                    // Cache skills for editing
-                    data.skills.forEach(s => skillsCache[s.id] = s);
-                    
-                    const hasAdminKey = getAdminKey().length > 0;
-                    
                     listEl.innerHTML = '<p style="color:#00ff88;margin-bottom:12px">Found ' + data.pagination.total + ' skill(s)</p>' +
                         data.skills.map(skill => {
                             const hasExec = skill.price_execution || skill.price_sats;
@@ -634,22 +530,20 @@
                                           (hasFile ? '<span class="tier-badge file">📄</span>' : '') +
                                           (hasPkg ? '<span class="tier-badge pkg">📦</span>' : '');
                             const lowestPrice = Math.min(...[skill.price_sats, skill.price_execution, skill.price_skill_file, skill.price_full_package].filter(p => p && p > 0)) || skill.price_sats;
-                            const editBtn = hasAdminKey ? `<button class="btn-edit" onclick="openEditModal('${skill.id}')">✏️ Edit</button>` : '';
                             return `
                             <div class="skill-item">
-                                <h4>${skill.icon || '🤖'} ${esc(skill.name)} ${badges}</h4>
+                                <h4>${esc(skill.name)} ${badges}</h4>
                                 <p>${esc(skill.description)}</p>
                                 <p class="price">From ${lowestPrice} sats</p>
                                 <p style="font-size: 0.7rem; color: #555; margin-top: 5px;">
                                     ${hasExec ? '⚡' + (skill.price_execution || skill.price_sats) : ''} 
                                     ${hasFile ? '📄' + skill.price_skill_file : ''} 
                                     ${hasPkg ? '📦' + skill.price_full_package : ''}<br>
-                                    ID: ${skill.id.slice(0,8)}... | v${skill.version || '1.0.0'} | ${skill.transfer_type || 'execution_only'}
+                                    ID: ${skill.id.slice(0,8)}... | ${skill.transfer_type || 'execution_only'}
                                 </p>
                                 <div class="skill-actions">
                                     <button onclick="quickInvoke('${skill.id}')">Invoke</button>
                                     <button class="btn-secondary" onclick="copyText('${skill.id}')">Copy ID</button>
-                                    ${editBtn}
                                 </div>
                             </div>
                         `}).join('');
@@ -658,125 +552,6 @@
                 }
             } catch (e) {
                 listEl.innerHTML = '<p style="color: #ff6464;">Error: ' + e.message + '</p>';
-            }
-        }
-        
-        // Edit Modal Functions
-        function openEditModal(skillId) {
-            const skill = skillsCache[skillId];
-            if (!skill) { alert('Skill not found in cache. Refresh skills list.'); return; }
-            
-            document.getElementById('editSkillId').value = skillId;
-            document.getElementById('editName').value = skill.name || '';
-            document.getElementById('editDesc').value = skill.description || '';
-            document.getElementById('editCategory').value = skill.category || '';
-            document.getElementById('editEndpoint').value = skill.endpoint || '';
-            document.getElementById('editTransferEndpoint').value = skill.transfer_endpoint || '';
-            document.getElementById('editIcon').value = skill.icon || '';
-            document.getElementById('editImageUrl').value = skill.image_url || '';
-            document.getElementById('editVersion').value = skill.version || '1.0.0';
-            document.getElementById('editDetails').value = skill.details || '';
-            
-            // Pricing tiers
-            const hasExec = skill.price_execution || skill.price_sats;
-            const hasFile = skill.price_skill_file;
-            const hasPkg = skill.price_full_package;
-            
-            document.getElementById('editTierExec').checked = !!hasExec;
-            document.getElementById('editTierFile').checked = !!hasFile;
-            document.getElementById('editTierPkg').checked = !!hasPkg;
-            
-            document.getElementById('editPriceExec').value = skill.price_execution || skill.price_sats || '';
-            document.getElementById('editPriceFile').value = skill.price_skill_file || '';
-            document.getElementById('editPricePkg').value = skill.price_full_package || '';
-            
-            updateEditTierUI();
-            
-            document.getElementById('editResult').style.display = 'none';
-            document.getElementById('editModal').classList.remove('hidden');
-        }
-        
-        function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
-        }
-        
-        async function saveSkillEdit() {
-            const resultEl = document.getElementById('editResult');
-            resultEl.style.display = 'block';
-            resultEl.className = 'result';
-            resultEl.textContent = 'Saving...';
-            
-            const skillId = document.getElementById('editSkillId').value;
-            const adminKey = getAdminKey();
-            
-            if (!adminKey) {
-                resultEl.className = 'result error';
-                resultEl.textContent = 'Error: Admin key required. Enter it at the top of the page.';
-                return;
-            }
-            
-            const execEnabled = document.getElementById('editTierExec').checked;
-            const fileEnabled = document.getElementById('editTierFile').checked;
-            const pkgEnabled = document.getElementById('editTierPkg').checked;
-            
-            if (!execEnabled && !fileEnabled && !pkgEnabled) {
-                resultEl.className = 'result error';
-                resultEl.textContent = 'Error: Enable at least one pricing tier';
-                return;
-            }
-            
-            // Determine transfer_type
-            let transfer_type = 'execution_only';
-            if (execEnabled && fileEnabled && pkgEnabled) transfer_type = 'hybrid';
-            else if (pkgEnabled && execEnabled) transfer_type = 'full_package';
-            else if (fileEnabled && execEnabled) transfer_type = 'skill_file';
-            else if (pkgEnabled) transfer_type = 'full_package';
-            else if (fileEnabled) transfer_type = 'skill_file';
-            
-            const body = {
-                name: document.getElementById('editName').value,
-                description: document.getElementById('editDesc').value,
-                category: document.getElementById('editCategory').value,
-                endpoint: document.getElementById('editEndpoint').value,
-                transfer_endpoint: document.getElementById('editTransferEndpoint').value || null,
-                icon: document.getElementById('editIcon').value || null,
-                image_url: document.getElementById('editImageUrl').value || null,
-                version: document.getElementById('editVersion').value || '1.0.0',
-                details: document.getElementById('editDetails').value || null,
-                transfer_type: transfer_type,
-                price_execution: execEnabled ? parseInt(document.getElementById('editPriceExec').value) : null,
-                price_skill_file: fileEnabled ? parseInt(document.getElementById('editPriceFile').value) : null,
-                price_full_package: pkgEnabled ? parseInt(document.getElementById('editPricePkg').value) : null
-            };
-            
-            try {
-                const res = await fetch(API + '/register/' + skillId, {
-                    method: 'PUT',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'x-squidbay-key': adminKey
-                    },
-                    body: JSON.stringify(body)
-                });
-                const data = await res.json();
-                
-                if (data.success || res.ok) {
-                    resultEl.className = 'result success';
-                    resultEl.textContent = '✅ Skill updated successfully!';
-                    // Update cache
-                    skillsCache[skillId] = { ...skillsCache[skillId], ...body };
-                    // Refresh list after short delay
-                    setTimeout(() => {
-                        closeEditModal();
-                        loadSkills();
-                    }, 1000);
-                } else {
-                    resultEl.className = 'result error';
-                    resultEl.textContent = 'Error: ' + (data.error || JSON.stringify(data));
-                }
-            } catch (e) {
-                resultEl.className = 'result error';
-                resultEl.textContent = 'Error: ' + e.message;
             }
         }
         
@@ -891,15 +666,13 @@
         
         function esc(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
         
-        // Emoji search - expanded with sports
+        // Emoji search
         const emojiDB = [
             ['🤖','robot ai bot'],['🛡️','shield security'],['💻','laptop computer code'],['📊','chart data analytics'],
             ['🌐','globe web network'],['🎨','art design'],['🔍','search find'],['💰','money sats'],['⚡','lightning fast'],
             ['🔧','tool fix repair'],['📈','growth chart'],['🎯','target goal'],['🔥','fire hot'],['💡','idea bulb'],
             ['🧠','brain smart ai'],['💬','chat message'],['🔒','lock secure'],['📦','package box'],['🚀','rocket launch'],
-            ['🦑','squid octopus'],['🚗','car auto'],['📡','satellite iot'],['💳','card payment'],['⚙️','gear settings'],
-            ['🏓','pickleball paddle sports'],['⚽','soccer football sports'],['🏀','basketball sports'],['🎾','tennis sports'],
-            ['⛳','golf sports'],['🏈','football sports'],['⚾','baseball sports'],['🎮','gaming game'],['🎵','music audio']
+            ['🦑','squid octopus'],['🚗','car auto'],['📡','satellite iot'],['💳','card payment'],['⚙️','gear settings']
         ];
         
         function selectEmoji(emoji) {
