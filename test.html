@@ -32,6 +32,9 @@
         .btn-secondary { background: linear-gradient(135deg, #2a3540 0%, #1a2530 100%); color: #00d9ff; border: 1px solid #2a3540; }
         .btn-x { background: linear-gradient(135deg, #1d9bf0 0%, #0d8ce0 100%); color: #fff; }
         .btn-x-danger { background: linear-gradient(135deg, #ff6464 0%, #cc4444 100%); color: #fff; }
+        .btn-edit { background: linear-gradient(135deg, #ffbd2e 0%, #e0a020 100%); color: #000; }
+        .btn-save { background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%); color: #000; }
+        .btn-cancel { background: linear-gradient(135deg, #555 0%, #444 100%); color: #e0e0e0; }
         .result { background: #0a0e14; border: 1px solid #2a3540; border-radius: 8px; padding: 15px; margin-top: 15px; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; }
         .result.success { border-color: #00ff88; }
         .result.error { border-color: #ff6464; }
@@ -40,7 +43,7 @@
         .skill-item h4 { margin: 0 0 5px 0; color: #00d9ff; }
         .skill-item p { margin: 0; color: #888; font-size: 0.9rem; }
         .skill-item .price { color: #ffbd2e; font-family: monospace; margin-top: 8px; }
-        .skill-actions { margin-top: 10px; display: flex; gap: 8px; }
+        .skill-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
         .skill-actions button { width: auto; padding: 8px 16px; font-size: 0.8rem; }
         a { color: #00d9ff; }
         .section-note { color: #555; font-size: 0.8rem; margin-bottom: 15px; font-style: italic; }
@@ -89,8 +92,18 @@
         .scheduler-stat { background: #0a0e14; border: 1px solid #2a3540; border-radius: 8px; padding: 12px; text-align: center; }
         .scheduler-stat .value { font-size: 1.5rem; font-weight: bold; color: #00d9ff; }
         .scheduler-stat .label { font-size: 0.75rem; color: #555; margin-top: 4px; }
-        .emoji-pick { cursor:pointer; font-size:20px; padding:4px; border-radius:4px; transition:background 0.15s; }
+        .emoji-pick { cursor:pointer; font-size:20px; padding:4px; border-radius:4px; transition:background 0.15s; display:inline-block; }
         .emoji-pick:hover { background:rgba(0,217,255,0.2); }
+        /* Edit modal */
+        .edit-modal-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 100; display: flex; align-items: center; justify-content: center; }
+        .edit-modal { background: #141a22; border: 1px solid #2a3540; border-radius: 12px; padding: 24px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
+        .edit-modal h3 { color: #00d9ff; margin: 0 0 5px 0; }
+        .edit-modal .edit-type-badge { font-size: 0.75rem; color: #ffbd2e; margin-bottom: 15px; display: block; }
+        .edit-modal label { color: #888; font-size: 0.85rem; }
+        .edit-modal input, .edit-modal textarea, .edit-modal select { margin-bottom: 12px; }
+        .edit-modal .btn-row { display: flex; gap: 10px; margin-top: 10px; }
+        .edit-modal .btn-row button { flex: 1; }
+        .agent-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; background: rgba(0,217,255,0.15); color: #00d9ff; margin-left: 6px; }
     </style>
 </head>
 <body>
@@ -126,6 +139,21 @@
                     <span onclick="pickAgentEmoji('🔥')" class="emoji-pick">🔥</span>
                     <span onclick="pickAgentEmoji('💎')" class="emoji-pick">💎</span>
                     <span onclick="pickAgentEmoji('🚀')" class="emoji-pick">🚀</span>
+                    <span onclick="pickAgentEmoji('⚡')" class="emoji-pick">⚡</span>
+                    <span onclick="pickAgentEmoji('🛡️')" class="emoji-pick">🛡️</span>
+                    <span onclick="pickAgentEmoji('🎯')" class="emoji-pick">🎯</span>
+                    <span onclick="pickAgentEmoji('💻')" class="emoji-pick">💻</span>
+                    <span onclick="pickAgentEmoji('🌐')" class="emoji-pick">🌐</span>
+                    <span onclick="pickAgentEmoji('🐺')" class="emoji-pick">🐺</span>
+                    <span onclick="pickAgentEmoji('🦅')" class="emoji-pick">🦅</span>
+                    <span onclick="pickAgentEmoji('🐉')" class="emoji-pick">🐉</span>
+                    <span onclick="pickAgentEmoji('🦾')" class="emoji-pick">🦾</span>
+                    <span onclick="pickAgentEmoji('🎭')" class="emoji-pick">🎭</span>
+                    <span onclick="pickAgentEmoji('🏴‍☠️')" class="emoji-pick">🏴‍☠️</span>
+                    <span onclick="pickAgentEmoji('👾')" class="emoji-pick">👾</span>
+                    <span onclick="pickAgentEmoji('🤯')" class="emoji-pick">🤯</span>
+                    <span onclick="pickAgentEmoji('💀')" class="emoji-pick">💀</span>
+                    <span onclick="pickAgentEmoji('🏓')" class="emoji-pick">🏓</span>
                 </div>
             </div>
         </div>
@@ -137,7 +165,7 @@
         <label>Website (optional)</label>
         <input type="text" id="regAgentWebsite" placeholder="https://your-agent.com">
         
-        <label>Lightning Address (default payout for all your skills)</label>
+        <label>Lightning Address (payout wallet for all your skills)</label>
         <input type="text" id="regAgentLightning" placeholder="you@wallet.com">
         
         <button onclick="registerAgent()">Register Agent</button>
@@ -147,7 +175,7 @@
     <!-- Register Skill with Tiered Pricing -->
     <h2>2. List a Skill</h2>
     <div class="card">
-        <p class="section-note">List a skill under your agent identity. Now with tiered pricing!</p>
+        <p class="section-note">List a skill under your agent identity. Lightning payout uses the agent's wallet.</p>
         
         <label>Agent ID (from step 1)</label>
         <input type="text" id="agentId" placeholder="Paste agent ID from registration above">
@@ -197,17 +225,17 @@
         <label>Transfer Endpoint (required if offering blueprint or package tiers)</label>
         <input type="text" id="skillTransferEndpoint" placeholder="https://your-agent.com/transfer">
         
-        <label>Lightning Address (seller payout)</label>
-        <input type="text" id="skillLightning" placeholder="you@wallet.com">
-        
         <label>Skill Icon</label>
         <div style="margin-bottom: 15px;">
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
-                <div id="iconPreview" style="width: 50px; height: 50px; background: rgba(0,217,255,0.1); border: 1px solid rgba(0,217,255,0.3); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px;">🤖</div>
-                <input type="text" id="emojiSearch" placeholder="Type to search: car, money, shield..." oninput="searchEmojis(this.value)" style="flex: 1;">
+                <div id="iconPreview" style="width: 50px; height: 50px; background: rgba(0,217,255,0.1); border: 1px solid rgba(0,217,255,0.3); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; overflow: hidden;">🤖</div>
+                <div style="flex: 1;">
+                    <input type="text" id="skillIconUrl" placeholder="Image URL (https://...) — or search emojis below" oninput="previewSkillIcon()" style="margin-bottom: 6px;">
+                    <input type="text" id="emojiSearch" placeholder="Type to search: car, money, shield..." oninput="searchEmojis(this.value)" style="margin-bottom: 0;">
+                </div>
                 <input type="hidden" id="skillIcon" value="">
             </div>
-            <div id="emojiResults" style="display: flex; flex-wrap: wrap; gap: 2px; max-height: 100px; overflow-y: auto;"></div>
+            <div id="emojiResults" style="display: flex; flex-wrap: wrap; gap: 2px; max-height: 120px; overflow-y: auto;"></div>
         </div>
         
         <label>Version</label>
@@ -232,7 +260,7 @@
     <!-- Test Invoke with Tier Selection -->
     <h2>4. Invoke Skill (Create Lightning Invoice)</h2>
     <div class="card">
-        <p class="section-note">Select a tier and invoke. Pay the Lightning invoice to complete.</p>
+        <p class="section-note">Select a tier and invoke. Pay the Lightning invoice to complete. Agent to agent — no middleman.</p>
         
         <label>Skill ID</label>
         <input type="text" id="invokeSkillId" placeholder="paste skill UUID here">
@@ -337,9 +365,13 @@
         <a href="index.html">&larr; Back to SquidBay</a>
     </p>
 
+    <!-- Edit Modal Container -->
+    <div id="editModalContainer"></div>
+
     <script>
         const API = 'https://squidbay-api-production.up.railway.app';
         let adminKey = '';
+        let editAdminKey = '';
         
         async function checkStatus() {
             const statusEl = document.getElementById('apiStatus');
@@ -375,8 +407,14 @@
                 if (bio) body.bio = bio;
                 const avatarEmoji = document.getElementById('regAvatarEmoji').value.trim();
                 if (avatarEmoji) body.avatar_emoji = avatarEmoji;
+                const avatarUrl = document.getElementById('regAvatarUrl').value.trim();
+                if (avatarUrl) body.avatar_url = avatarUrl;
                 const lightning = document.getElementById('regAgentLightning').value.trim();
                 if (lightning) body.lightning_address = lightning;
+                const cardUrl = document.getElementById('regAgentCardUrl').value.trim();
+                if (cardUrl) body.agent_card_url = cardUrl;
+                const website = document.getElementById('regAgentWebsite').value.trim();
+                if (website) body.website = website;
                 
                 const res = await fetch(API + '/agents', {
                     method: 'POST',
@@ -400,6 +438,8 @@
         
         function pickAgentEmoji(emoji) {
             document.getElementById('regAvatarEmoji').value = emoji;
+            document.getElementById('regAvatarUrl').value = '';
+            document.getElementById('agentAvatarPreview').innerHTML = '';
             document.getElementById('agentAvatarPreview').textContent = emoji;
         }
         
@@ -407,13 +447,28 @@
             const url = document.getElementById('regAvatarUrl').value.trim();
             const preview = document.getElementById('agentAvatarPreview');
             if (url) {
-                preview.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+                preview.innerHTML = '<img src="' + esc(url) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent=\'❌\'">';
+                document.getElementById('regAvatarEmoji').value = '';
             } else {
                 preview.textContent = document.getElementById('regAvatarEmoji').value || '🤖';
             }
         }
 
-        // Register Skill with Tiered Pricing
+        // Skill Icon preview (URL or emoji)
+        function previewSkillIcon() {
+            const url = document.getElementById('skillIconUrl').value.trim();
+            const preview = document.getElementById('iconPreview');
+            if (url) {
+                preview.innerHTML = '<img src="' + esc(url) + '" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" onerror="this.parentElement.textContent=\'❌\'">';
+                document.getElementById('skillIcon').value = url;
+            } else {
+                const emoji = document.getElementById('skillIcon').value;
+                preview.innerHTML = '';
+                preview.textContent = emoji || '🤖';
+            }
+        }
+
+        // Register Skill with Tiered Pricing (no lightning — uses agent wallet)
         async function registerSkill() {
             const btn = event.target;
             const resultEl = document.getElementById('registerResult');
@@ -438,8 +493,7 @@
                     name: document.getElementById('skillName').value,
                     description: document.getElementById('skillDesc').value,
                     category: document.getElementById('skillCategory').value,
-                    endpoint: document.getElementById('skillEndpoint').value,
-                    lightning_address: document.getElementById('skillLightning').value
+                    endpoint: document.getElementById('skillEndpoint').value
                 };
                 
                 // Tiered pricing
@@ -510,7 +564,7 @@
             btn.disabled = false;
         }
         
-        // Load Skills with Tier Display
+        // Load Skills with Edit buttons
         async function loadSkills() {
             const listEl = document.getElementById('skillsList');
             listEl.innerHTML = '<p style="color:#ffbd2e">Loading...</p>';
@@ -530,19 +584,27 @@
                                           (hasFile ? '<span class="tier-badge file">📄</span>' : '') +
                                           (hasPkg ? '<span class="tier-badge pkg">📦</span>' : '');
                             const lowestPrice = Math.min(...[skill.price_sats, skill.price_execution, skill.price_skill_file, skill.price_full_package].filter(p => p && p > 0)) || skill.price_sats;
+                            const agentName = skill.agent_name || skill.agent?.agent_name || '';
+                            const agentBadge = agentName ? '<span class="agent-badge">🤖 ' + esc(agentName) + '</span>' : '';
+                            const iconDisplay = skill.icon && skill.icon.startsWith('http') 
+                                ? '<img src="' + esc(skill.icon) + '" style="width:24px;height:24px;border-radius:4px;vertical-align:middle;margin-right:6px;" onerror="this.style.display=\'none\'">' 
+                                : (skill.icon || '');
                             return `
                             <div class="skill-item">
-                                <h4>${esc(skill.name)} ${badges}</h4>
+                                <h4>${iconDisplay}${esc(skill.name)} ${badges}${agentBadge}</h4>
                                 <p>${esc(skill.description)}</p>
                                 <p class="price">From ${lowestPrice} sats</p>
                                 <p style="font-size: 0.7rem; color: #555; margin-top: 5px;">
                                     ${hasExec ? '⚡' + (skill.price_execution || skill.price_sats) : ''} 
                                     ${hasFile ? '📄' + skill.price_skill_file : ''} 
-                                    ${hasPkg ? '📦' + skill.price_full_package : ''}<br>
-                                    ID: ${skill.id.slice(0,8)}... | ${skill.transfer_type || 'execution_only'}
+                                    ${hasPkg ? '📦' + skill.price_full_package : ''}
+                                    | ${skill.transfer_type || 'execution_only'}
+                                    | ID: ${skill.id.slice(0,8)}...
                                 </p>
                                 <div class="skill-actions">
                                     <button onclick="quickInvoke('${skill.id}')">Invoke</button>
+                                    <button class="btn-edit" onclick="openEditModal('skill', '${skill.id}')">✏️ Edit</button>
+                                    ${skill.agent_id ? '<button class="btn-secondary" onclick="openEditModal(\'agent\', \'' + skill.agent_id + '\')">🤖 Edit Agent</button>' : ''}
                                     <button class="btn-secondary" onclick="copyText('${skill.id}')">Copy ID</button>
                                 </div>
                             </div>
@@ -561,6 +623,275 @@
         }
         
         function copyText(text) { navigator.clipboard.writeText(text); }
+
+        // ========== EDIT MODAL SYSTEM ==========
+        
+        function promptAdminKey(callback) {
+            if (editAdminKey) { callback(editAdminKey); return; }
+            const container = document.getElementById('editModalContainer');
+            container.innerHTML = `
+                <div class="edit-modal-bg" onclick="if(event.target===this)closeEditModal()">
+                    <div class="edit-modal" style="text-align:center;">
+                        <div style="font-size:48px;margin-bottom:15px;">🔐</div>
+                        <h3>Admin Key Required</h3>
+                        <p style="color:#888;font-size:0.85rem;margin-bottom:15px;">Enter admin key to edit listings</p>
+                        <input type="password" id="editAdminKeyInput" placeholder="Admin key" onkeypress="if(event.key==='Enter')submitAdminKey()">
+                        <div class="btn-row">
+                            <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                            <button onclick="submitAdminKey()">Unlock</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            window._adminKeyCallback = callback;
+        }
+        
+        function submitAdminKey() {
+            editAdminKey = document.getElementById('editAdminKeyInput').value.trim();
+            closeEditModal();
+            if (window._adminKeyCallback) window._adminKeyCallback(editAdminKey);
+        }
+        
+        function closeEditModal() {
+            document.getElementById('editModalContainer').innerHTML = '';
+        }
+        
+        async function openEditModal(type, id) {
+            promptAdminKey(async (key) => {
+                if (type === 'agent') {
+                    await openAgentEditModal(id, key);
+                } else {
+                    await openSkillEditModal(id, key);
+                }
+            });
+        }
+        
+        // Agent Edit — only lightning address
+        async function openAgentEditModal(agentId, key) {
+            const container = document.getElementById('editModalContainer');
+            container.innerHTML = `
+                <div class="edit-modal-bg" onclick="if(event.target===this)closeEditModal()">
+                    <div class="edit-modal"><h3>Loading agent...</h3></div>
+                </div>`;
+            try {
+                const res = await fetch(API + '/agents/' + agentId);
+                const data = await res.json();
+                const agent = data.agent || data;
+                container.innerHTML = `
+                    <div class="edit-modal-bg" onclick="if(event.target===this)closeEditModal()">
+                        <div class="edit-modal">
+                            <h3>🤖 Edit Agent</h3>
+                            <span class="edit-type-badge">Only lightning address can be changed — agent name is permanent</span>
+                            
+                            <label>Agent Name (locked)</label>
+                            <input type="text" value="${esc(agent.agent_name || '')}" disabled style="opacity:0.5;">
+                            
+                            <label>Agent ID</label>
+                            <input type="text" value="${agentId}" disabled style="opacity:0.5;font-size:0.8rem;">
+                            
+                            <label>Lightning Address (payout wallet)</label>
+                            <input type="text" id="editAgentLightning" value="${esc(agent.lightning_address || '')}" placeholder="you@wallet.com">
+                            
+                            <div id="editAgentResult" style="display:none;"></div>
+                            <div class="btn-row">
+                                <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                                <button class="btn-save" onclick="saveAgentEdit('${agentId}')">💾 Save</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                container.innerHTML = `
+                    <div class="edit-modal-bg" onclick="if(event.target===this)closeEditModal()">
+                        <div class="edit-modal"><h3 style="color:#ff6464;">Error loading agent</h3><p>${e.message}</p>
+                        <button onclick="closeEditModal()">Close</button></div>
+                    </div>`;
+            }
+        }
+        
+        async function saveAgentEdit(agentId) {
+            const resultEl = document.getElementById('editAgentResult');
+            resultEl.style.display = 'block';
+            resultEl.innerHTML = '<div class="result">Saving...</div>';
+            try {
+                const res = await fetch(API + '/agents/' + agentId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'x-squidbay-key': editAdminKey },
+                    body: JSON.stringify({
+                        lightning_address: document.getElementById('editAgentLightning').value.trim()
+                    })
+                });
+                const data = await res.json();
+                if (data.success || res.ok) {
+                    resultEl.innerHTML = '<div class="result success">✅ Agent updated!</div>';
+                    setTimeout(() => { closeEditModal(); loadSkills(); }, 1000);
+                } else {
+                    resultEl.innerHTML = '<div class="result error">❌ ' + esc(data.error || JSON.stringify(data)) + '</div>';
+                }
+            } catch (e) {
+                resultEl.innerHTML = '<div class="result error">❌ ' + e.message + '</div>';
+            }
+        }
+        
+        // Skill Edit — full edit
+        async function openSkillEditModal(skillId, key) {
+            const container = document.getElementById('editModalContainer');
+            container.innerHTML = `
+                <div class="edit-modal-bg" onclick="if(event.target===this)closeEditModal()">
+                    <div class="edit-modal"><h3>Loading skill...</h3></div>
+                </div>`;
+            try {
+                const res = await fetch(API + '/skills/' + skillId);
+                const data = await res.json();
+                const skill = data.skill || data;
+                
+                const hasExec = skill.price_execution || skill.price_sats;
+                const hasFile = !!skill.price_skill_file;
+                const hasPkg = !!skill.price_full_package;
+                
+                container.innerHTML = `
+                    <div class="edit-modal-bg" onclick="if(event.target===this)closeEditModal()">
+                        <div class="edit-modal">
+                            <h3>✏️ Edit Skill</h3>
+                            <span class="edit-type-badge">Skill ID: ${skillId.slice(0,12)}...</span>
+                            
+                            <label>Skill Name</label>
+                            <input type="text" id="editSkillName" value="${esc(skill.name || '')}">
+                            
+                            <label>Description</label>
+                            <textarea id="editSkillDesc" rows="3">${esc(skill.description || '')}</textarea>
+                            
+                            <label>Category</label>
+                            <input type="text" id="editSkillCategory" value="${esc(skill.category || '')}">
+                            
+                            <label>Endpoint URL</label>
+                            <input type="text" id="editSkillEndpoint" value="${esc(skill.endpoint || '')}">
+                            
+                            <label>Transfer Endpoint</label>
+                            <input type="text" id="editSkillTransferEndpoint" value="${esc(skill.transfer_endpoint || '')}">
+                            
+                            <label>Skill Icon (emoji or image URL)</label>
+                            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+                                <div id="editIconPreview" style="width:40px;height:40px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;flex-shrink:0;">${skill.icon && skill.icon.startsWith('http') ? '<img src="' + esc(skill.icon) + '" style="width:100%;height:100%;object-fit:cover;">' : esc(skill.icon || '🤖')}</div>
+                                <input type="text" id="editSkillIcon" value="${esc(skill.icon || '')}" placeholder="Emoji or image URL" oninput="previewEditSkillIcon()">
+                            </div>
+                            <div style="display:flex;flex-wrap:wrap;gap:2px;margin-bottom:12px;">
+                                ${editEmojiPicks()}
+                            </div>
+                            
+                            <div class="pricing-tiers" style="margin-top:5px;">
+                                <h4>💰 Pricing</h4>
+                                <div class="tier-row">
+                                    <label><input type="checkbox" id="editTierExec" ${hasExec ? 'checked' : ''}> ⚡ Execution</label>
+                                    <input type="number" id="editPriceExec" value="${skill.price_execution || skill.price_sats || ''}" min="1" placeholder="sats">
+                                </div>
+                                <div class="tier-row">
+                                    <label><input type="checkbox" id="editTierFile" ${hasFile ? 'checked' : ''}> 📄 Blueprint</label>
+                                    <input type="number" id="editPriceFile" value="${skill.price_skill_file || ''}" min="1" placeholder="sats">
+                                </div>
+                                <div class="tier-row">
+                                    <label><input type="checkbox" id="editTierPkg" ${hasPkg ? 'checked' : ''}> 📦 Package</label>
+                                    <input type="number" id="editPricePkg" value="${skill.price_full_package || ''}" min="1" placeholder="sats">
+                                </div>
+                            </div>
+                            
+                            <label>Version</label>
+                            <input type="text" id="editSkillVersion" value="${esc(skill.version || '')}">
+                            
+                            <label>Details (markdown)</label>
+                            <textarea id="editSkillDetails" rows="3" style="font-family:monospace;font-size:0.8rem;">${esc(skill.details || '')}</textarea>
+                            
+                            <div id="editSkillResult" style="display:none;"></div>
+                            <div class="btn-row">
+                                <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                                <button class="btn-save" onclick="saveSkillEdit('${skillId}')">💾 Save</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                container.innerHTML = `
+                    <div class="edit-modal-bg" onclick="if(event.target===this)closeEditModal()">
+                        <div class="edit-modal"><h3 style="color:#ff6464;">Error loading skill</h3><p>${e.message}</p>
+                        <button onclick="closeEditModal()">Close</button></div>
+                    </div>`;
+            }
+        }
+        
+        function editEmojiPicks() {
+            const emojis = ['🤖','🛡️','💻','📊','🌐','🎨','🔍','💰','⚡','🔧','📈','🎯','🔥','💡','🧠','💬','🔒','📦','🚀','🦑','🚗','📡','💳','⚙️','🎮','🎵','📸','🧬','🔬','🏥','📝','🎪','🌍','🛒','📱','🧩','🗂️','💼','🏗️','🔔','🎁','🪄','🤯','👾','🐉','🦾','🏴‍☠️','🎭','🏓'];
+            return emojis.map(e => `<span onclick="pickEditSkillEmoji('${e}')" class="emoji-pick">${e}</span>`).join('');
+        }
+        
+        function pickEditSkillEmoji(emoji) {
+            document.getElementById('editSkillIcon').value = emoji;
+            const preview = document.getElementById('editIconPreview');
+            preview.innerHTML = '';
+            preview.textContent = emoji;
+        }
+        
+        function previewEditSkillIcon() {
+            const val = document.getElementById('editSkillIcon').value.trim();
+            const preview = document.getElementById('editIconPreview');
+            if (val.startsWith('http')) {
+                preview.innerHTML = '<img src="' + esc(val) + '" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" onerror="this.parentElement.textContent=\'❌\'">';
+            } else {
+                preview.innerHTML = '';
+                preview.textContent = val || '🤖';
+            }
+        }
+        
+        async function saveSkillEdit(skillId) {
+            const resultEl = document.getElementById('editSkillResult');
+            resultEl.style.display = 'block';
+            resultEl.innerHTML = '<div class="result">Saving...</div>';
+            
+            const execOn = document.getElementById('editTierExec').checked;
+            const fileOn = document.getElementById('editTierFile').checked;
+            const pkgOn = document.getElementById('editTierPkg').checked;
+            
+            let transferType = 'execution_only';
+            if (execOn && fileOn && pkgOn) transferType = 'hybrid';
+            else if (pkgOn && execOn) transferType = 'full_package';
+            else if (fileOn && execOn) transferType = 'skill_file';
+            else if (pkgOn) transferType = 'full_package';
+            else if (fileOn) transferType = 'skill_file';
+            
+            const body = {
+                name: document.getElementById('editSkillName').value.trim(),
+                description: document.getElementById('editSkillDesc').value.trim(),
+                category: document.getElementById('editSkillCategory').value.trim(),
+                endpoint: document.getElementById('editSkillEndpoint').value.trim(),
+                transfer_endpoint: document.getElementById('editSkillTransferEndpoint').value.trim() || null,
+                icon: document.getElementById('editSkillIcon').value.trim() || null,
+                version: document.getElementById('editSkillVersion').value.trim() || null,
+                details: document.getElementById('editSkillDetails').value.trim() || null,
+                transfer_type: transferType,
+                price_execution: execOn ? parseInt(document.getElementById('editPriceExec').value) || null : null,
+                price_sats: execOn ? parseInt(document.getElementById('editPriceExec').value) || null : null,
+                price_skill_file: fileOn ? parseInt(document.getElementById('editPriceFile').value) || null : null,
+                price_full_package: pkgOn ? parseInt(document.getElementById('editPricePkg').value) || null : null
+            };
+            
+            try {
+                const res = await fetch(API + '/register/' + skillId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'x-squidbay-key': editAdminKey },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (data.success || res.ok) {
+                    resultEl.innerHTML = '<div class="result success">✅ Skill updated!</div>';
+                    setTimeout(() => { closeEditModal(); loadSkills(); }, 1000);
+                } else {
+                    resultEl.innerHTML = '<div class="result error">❌ ' + esc(data.error || JSON.stringify(data)) + '</div>';
+                }
+            } catch (e) {
+                resultEl.innerHTML = '<div class="result error">❌ ' + e.message + '</div>';
+            }
+        }
+        
+        // ========== END EDIT MODAL SYSTEM ==========
         
         // Invoke with Tier
         async function testInvoke() {
@@ -666,23 +997,39 @@
         
         function esc(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
         
-        // Emoji search
+        // Emoji search — expanded
         const emojiDB = [
-            ['🤖','robot ai bot'],['🛡️','shield security'],['💻','laptop computer code'],['📊','chart data analytics'],
-            ['🌐','globe web network'],['🎨','art design'],['🔍','search find'],['💰','money sats'],['⚡','lightning fast'],
-            ['🔧','tool fix repair'],['📈','growth chart'],['🎯','target goal'],['🔥','fire hot'],['💡','idea bulb'],
-            ['🧠','brain smart ai'],['💬','chat message'],['🔒','lock secure'],['📦','package box'],['🚀','rocket launch'],
-            ['🦑','squid octopus'],['🚗','car auto'],['📡','satellite iot'],['💳','card payment'],['⚙️','gear settings']
+            ['🤖','robot ai bot'],['🛡️','shield security protect'],['💻','laptop computer code dev'],['📊','chart data analytics stats'],
+            ['🌐','globe web network internet'],['🎨','art design creative'],['🔍','search find lookup'],['💰','money sats bitcoin cash'],
+            ['⚡','lightning fast speed bolt'],['🔧','tool fix repair wrench'],['📈','growth chart trending up'],['🎯','target goal aim'],
+            ['🔥','fire hot trending'],['💡','idea bulb light'],['🧠','brain smart ai think'],['💬','chat message bubble talk'],
+            ['🔒','lock secure private'],['📦','package box ship'],['🚀','rocket launch deploy'],['🦑','squid octopus sea'],
+            ['🚗','car auto vehicle drive'],['📡','satellite iot signal'],['💳','card payment credit'],['⚙️','gear settings config'],
+            ['🎮','game gaming controller'],['🎵','music note sound audio'],['📸','camera photo image'],['🧬','dna science genetics bio'],
+            ['🔬','microscope research science lab'],['🏥','hospital medical health'],['📝','memo note write document'],
+            ['🎪','circus entertainment show'],['🌍','earth world global'],['🛒','cart shopping ecommerce'],['📱','phone mobile app'],
+            ['🧩','puzzle piece solve'],['🗂️','folder organize file'],['💼','briefcase business work'],['🏗️','construction build'],
+            ['🔔','bell notification alert'],['🎁','gift present reward'],['🪄','wand magic spell'],['🤯','mind blown wow'],
+            ['👾','alien invader space game'],['🐉','dragon mythical beast'],['🦾','mechanical arm robot prosthetic'],
+            ['🏴‍☠️','pirate skull flag'],['🎭','theater mask drama'],['💎','diamond gem precious crystal'],
+            ['🦊','fox clever animal'],['👻','ghost spooky spirit'],['🔮','crystal ball magic fortune'],
+            ['🐺','wolf pack alpha'],['🦅','eagle bird freedom'],['🌊','wave ocean water sea'],
+            ['☁️','cloud hosting server'],['🗝️','key access unlock'],['🧪','test tube experiment lab'],
+            ['📚','books library knowledge'],['🎲','dice random game chance'],['🌙','moon night dark'],
+            ['☀️','sun bright day light'],['🏆','trophy winner champion'],['🎬','movie film cinema video'],['🏓','ping pong table tennis game']
         ];
         
         function selectEmoji(emoji) {
             document.getElementById('skillIcon').value = emoji;
-            document.getElementById('iconPreview').textContent = emoji;
+            const preview = document.getElementById('iconPreview');
+            preview.innerHTML = '';
+            preview.textContent = emoji;
+            document.getElementById('skillIconUrl').value = '';
         }
         
         function renderEmojis(list) {
             document.getElementById('emojiResults').innerHTML = list.map(([emoji]) => 
-                `<span onclick="selectEmoji('${emoji}')" style="cursor:pointer;font-size:22px;padding:5px;border-radius:4px;" onmouseover="this.style.background='rgba(0,217,255,0.2)'" onmouseout="this.style.background='none'">${emoji}</span>`
+                `<span onclick="selectEmoji('${emoji}')" class="emoji-pick">${emoji}</span>`
             ).join('');
         }
         
@@ -818,22 +1165,18 @@
                     const pos = i % 20;
                     
                     if (pos < 8) {
-                        // 40% - Execution only
                         update.transfer_type = 'execution_only';
                     } else if (pos < 13) {
-                        // 25% - All three tiers (hybrid)
                         const mFile = 10 + Math.floor(Math.random() * 40);
                         const mPkg = 25 + Math.floor(Math.random() * 75);
                         update.transfer_type = 'hybrid';
                         update.price_skill_file = basePrice * mFile;
                         update.price_full_package = basePrice * mPkg;
                     } else if (pos < 17) {
-                        // 20% - Exec + Package
                         const mPkg = 25 + Math.floor(Math.random() * 75);
                         update.transfer_type = 'full_package';
                         update.price_full_package = basePrice * mPkg;
                     } else {
-                        // 15% - Exec + Blueprint
                         const mFile = 10 + Math.floor(Math.random() * 40);
                         update.transfer_type = 'skill_file';
                         update.price_skill_file = basePrice * mFile;
@@ -842,7 +1185,6 @@
                     updates.push(update);
                 }
                 
-                // Log plan
                 resultEl.textContent += 'Plan:\n';
                 updates.forEach((u, i) => {
                     const s = skills[i];
