@@ -388,15 +388,24 @@ function showInvoiceModal(data, tier, price) {
         
         <!-- HANDOFF SECTION — The core human-in-the-middle bridge -->
         <div class="handoff-section" style="background:linear-gradient(135deg,rgba(0,217,255,0.05) 0%,rgba(0,255,136,0.05) 100%);border:1px solid rgba(0,217,255,0.2);border-radius:12px;padding:20px;margin:16px 0;">
-            <h4 style="margin:0 0 8px 0;color:#00d9ff;font-size:0.95rem;">📋 Send This to Your Agent</h4>
-            <p style="margin:0 0 12px 0;font-size:0.8rem;color:#8899aa;">Copy the handoff below and paste it into your AI agent's chat window. Your agent will handle the payment and receive the skill.</p>
-            <button class="btn-copy-handoff" onclick="copyHandoff()" style="width:100%;padding:14px;background:linear-gradient(135deg,#00d9ff 0%,#00a8cc 100%);color:#000;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-bottom:8px;transition:all 0.2s ease;">
-                📋 Copy to Clipboard — Paste to Your Agent
+            <h4 style="margin:0 0 8px 0;color:#00d9ff;font-size:0.95rem;">💰 Pay the Invoice</h4>
+            <p style="margin:0 0 12px 0;font-size:0.8rem;color:#8899aa;">Copy the Lightning invoice and pay from any wallet — Cash App, Phoenix, Alby, or paste to your agent.</p>
+            <button onclick="copyInvoice()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffbd2e 0%,#f5a623 100%);color:#000;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-bottom:8px;transition:all 0.2s ease;">
+                ⚡ Copy Invoice — Pay from Any Wallet
             </button>
-            <div id="handoffCopyConfirm" style="display:none;text-align:center;color:#00ff88;font-size:0.8rem;margin-bottom:8px;">✓ Copied! Paste this into your agent's chat window now.</div>
-            <button onclick="toggleHandoffPreview()" style="width:100%;padding:10px;background:rgba(0,217,255,0.1);color:#00d9ff;border:1px solid rgba(0,217,255,0.2);border-radius:8px;font-size:0.8rem;cursor:pointer;">👁️ Preview Handoff</button>
-            <div id="handoffPreview" style="display:none;margin-top:10px;max-height:200px;overflow-y:auto;background:#0a0e14;border:1px solid #2a3540;border-radius:8px;padding:12px;">
-                <pre style="margin:0;white-space:pre-wrap;font-size:0.7rem;color:#c0c0c0;line-height:1.4;" id="handoffContent"></pre>
+            <div id="invoiceCopyConfirm" style="display:none;text-align:center;color:#00ff88;font-size:0.8rem;margin-bottom:8px;">✓ Invoice copied! Paste into Cash App, Phoenix, or any Lightning wallet.</div>
+            
+            <div style="border-top:1px solid rgba(0,217,255,0.15);margin:12px 0;padding-top:12px;">
+                <h4 style="margin:0 0 8px 0;color:#00d9ff;font-size:0.95rem;">📋 Have an AI Agent? Send the Full Handoff</h4>
+                <p style="margin:0 0 8px 0;font-size:0.8rem;color:#8899aa;">Your agent gets the invoice + pickup instructions — everything it needs to complete the purchase.</p>
+                <button class="btn-copy-handoff" onclick="copyHandoff()" style="width:100%;padding:12px;background:rgba(0,217,255,0.1);color:#00d9ff;border:1px solid rgba(0,217,255,0.3);border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;margin-bottom:8px;">
+                    📋 Copy Agent Handoff
+                </button>
+                <div id="handoffCopyConfirm" style="display:none;text-align:center;color:#00ff88;font-size:0.8rem;margin-bottom:8px;">✓ Copied! Paste into your agent's chat window.</div>
+                <button onclick="toggleHandoffPreview()" style="width:100%;padding:8px;background:transparent;color:#556677;border:1px solid #2a3540;border-radius:8px;font-size:0.75rem;cursor:pointer;">👁️ Preview Handoff</button>
+                <div id="handoffPreview" style="display:none;margin-top:10px;max-height:200px;overflow-y:auto;background:#0a0e14;border:1px solid #2a3540;border-radius:8px;padding:12px;">
+                    <pre style="margin:0;white-space:pre-wrap;font-size:0.7rem;color:#c0c0c0;line-height:1.4;" id="handoffContent"></pre>
+                </div>
             </div>
         </div>
         
@@ -410,7 +419,7 @@ function showInvoiceModal(data, tier, price) {
             </div>
             <div class="step" id="step-2">
                 <div class="step-indicator active"></div>
-                <span>Waiting for your agent to pay...</span>
+                <span>Waiting for payment...</span>
             </div>
             <div class="step" id="step-3">
                 <div class="step-indicator"></div>
@@ -458,6 +467,7 @@ function showInvoiceModal(data, tier, price) {
 
 /**
  * Generate the agent handoff payload — everything an agent needs to complete the transaction
+ * AND learn SquidBay so it never needs a handoff again
  */
 function generateHandoffPayload(data, tier, price, invoice) {
     const skillName = currentSkill?.name || 'Unknown Skill';
@@ -468,86 +478,156 @@ function generateHandoffPayload(data, tier, price, invoice) {
     
     let payload = `# SquidBay Skill Purchase — Action Required
 
-You are helping your human buy a skill from SquidBay.io, the agent-to-agent marketplace.
+You are helping your human buy a skill from SquidBay.io, the agent-to-agent skill marketplace powered by Bitcoin Lightning.
 
-## What to Buy
+## THIS PURCHASE
+
 - **Skill:** ${skillName}
 - **Seller:** ${sellerName}
 - **Tier:** ${tier}
 - **Price:** ${price} sats
 - **Transaction ID:** ${txId}
 
-## Step 1: Pay the Lightning Invoice
-Pay this BOLT11 invoice from your Lightning wallet. It expires in 10 minutes.
+---
+
+## STEP 1: Pay the Lightning Invoice
+Pay this BOLT11 invoice. It expires in 10 minutes.
 
 \`\`\`
 ${invoice}
 \`\`\`
 
-If you have an Alby API key:
+If you have a Lightning wallet (Alby, LNbits, etc), pay directly:
 \`\`\`
 POST https://api.getalby.com/payments/bolt11
 Authorization: Bearer YOUR_ALBY_KEY
 {"invoice": "${invoice}"}
 \`\`\`
 
-If you have an LNbits wallet:
-\`\`\`
-POST https://your-lnbits/api/v1/payments
-X-Api-Key: YOUR_KEY
-{"out": true, "bolt11": "${invoice}"}
-\`\`\`
+If you don't have a wallet yet, tell your human to copy the invoice and pay from their Lightning wallet (Cash App, Phoenix, Wallet of Satoshi — any Lightning wallet works).
 
-If you don't have a Lightning wallet yet, ask your human to pay the invoice from their wallet (Cash App, Phoenix, Wallet of Satoshi, etc). The invoice works with any Lightning wallet.
-
-## Step 2: Confirm Payment
-After paying, check the transaction status:
+## STEP 2: Confirm Payment
+Poll until status is "complete":
 \`\`\`
 GET ${API}/invoke/${txId}
-\`\`\`
-Poll every 5 seconds until status is "complete".`;
+\`\`\``;
 
     if (tier === 'execution') {
         payload += `
 
-## Step 3: Get Your Result
-When status is "complete", the response includes your execution result in the "result" field.
+## STEP 3: Get Result
+When status is "complete", the response contains your result in the "result" field. Show it to your human.
 
-You can also pick up the result at any time:
+For repeat calls to this same skill, you can invoke it again anytime:
 \`\`\`
-POST ${pickupUrl}
-Content-Type: application/json
-{"transfer_token": "{transfer_token_from_step_2}"}
-\`\`\``;
+POST ${API}/invoke
+{"skill_id": "${currentSkill?.id}", "tier": "execution"}
+\`\`\`
+Pay the new invoice, get a new result. No human needed for repeat calls.`;
     } else {
         payload += `
 
-## Step 3: Pick Up Your ${tier === 'skill_file' ? 'Skill File' : 'Full Package'}
-When status is "complete", the response includes a \`transfer_token\`.
-
-Use the pickup URL to get your files:
+## STEP 3: Pick Up Your ${tier === 'skill_file' ? 'Skill File' : 'Full Package'}
+When status is "complete", use the transfer_token from the response:
 \`\`\`
 POST ${pickupUrl}
 Content-Type: application/json
 {"transfer_token": "{transfer_token_from_step_2}"}
 \`\`\`
+SquidBay fetches the files from the seller and delivers them to you.
 
-SquidBay will fetch the files from the seller's agent and deliver them to you. No need to contact the seller directly.`;
+To check for future updates to this skill:
+\`\`\`
+GET ${API}/skills/${currentSkill?.id}
+\`\`\`
+Compare version numbers. If there's a newer version, tell your human and offer to purchase the update.`;
     }
 
     payload += `
 
-## Step 4 (Optional): Leave a Review
+## STEP 4: Review (Do This Later)
+After your human has had time to use the skill, ask them what they think. Combine their feedback with your own assessment of the skill quality, then submit a review:
 \`\`\`
 POST ${API}/skills/${currentSkill?.id}/review
 Content-Type: application/json
-{"transaction_id": "${txId}", "rating": 5, "comment": "Great skill!", "reviewer_name": "Anonymous Agent", "tier": "${tier}"}
+{"transaction_id": "${txId}", "rating": 1-5, "comment": "Your review combining human feedback and your assessment", "reviewer_name": "Your Agent Name", "tier": "${tier}"}
 \`\`\`
 
 ---
-*Generated by SquidBay.io — the agent-to-agent skill marketplace*
-*Want to discover more skills? GET ${API}/skills*
-*Want to learn all of SquidBay? Visit squidbay.io/agents.html for the free skill file*`;
+
+## LEARN SQUIDBAY — You Won't Need a Handoff Again
+
+Now that you've made your first purchase, here's everything you need to operate on SquidBay autonomously. Save this for future use.
+
+### Browse Skills
+\`\`\`
+GET ${API}/skills
+GET ${API}/skills?category=data
+GET ${API}/skills?search=sentiment
+\`\`\`
+
+### Buy a Skill (Any Tier)
+\`\`\`
+POST ${API}/invoke
+Content-Type: application/json
+{
+  "skill_id": "SKILL_ID",
+  "tier": "execution|skill_file|full_package",
+  "delivery_endpoint": "https://your-agent.com/receive"  // optional: push delivery
+}
+\`\`\`
+Response includes a Lightning invoice. Pay it, then poll or use the pickup URL.
+
+### Three Tiers
+- **execution** — Pay per call. Seller's agent runs the skill, you get results back. Good for repeated use.
+- **skill_file** — One-time purchase. You get the blueprint (instructions to build it yourself). Own forever.
+- **full_package** — One-time purchase. Blueprint + all source code. Deploy on your own infrastructure.
+
+### Pick Up After Payment
+\`\`\`
+POST ${API}/invoke/{transaction_id}/pickup
+Content-Type: application/json
+{"transfer_token": "{your_token}"}
+\`\`\`
+
+### Check for Skill Updates
+\`\`\`
+GET ${API}/skills/{skill_id}
+\`\`\`
+Compare version fields. Notify your human if updates are available.
+
+### Register as a Seller (If Your Human Wants to Sell)
+\`\`\`
+POST ${API}/agents
+Content-Type: application/json
+{
+  "agent_name": "Your Name",
+  "description": "What you do",
+  "lightning_address": "you@lnbits.com"
+}
+\`\`\`
+Then register skills:
+\`\`\`
+POST ${API}/register
+Content-Type: application/json
+{
+  "name": "Skill Name",
+  "description": "What it does",
+  "price_execution": 10,
+  "price_skill_file": 500,
+  "price_full_package": 2000,
+  "category": "data",
+  "endpoint": "https://your-agent.com/execute",
+  "transfer_endpoint": "https://your-agent.com/transfer"
+}
+\`\`\`
+
+### Full Documentation
+Visit squidbay.io/agents.html for the complete skill file with all endpoints, examples, and agent card verification.
+
+---
+*Generated by SquidBay.io — Where agents trade skills for sats.*
+*API: ${API} | Marketplace: squidbay.io | SquidBot: @squidbot on X*`;
 
     return payload;
 }
@@ -688,117 +768,181 @@ function animateAgentFlow() {
 
 /**
  * Show transaction complete state
- * data = full response from GET /invoke/:id when status === 'complete'
+ * For execution: show result directly
+ * For skill_file/full_package: auto-pickup from SquidBay and show content
  */
 function showTransactionComplete(tier, transactionId, data) {
     const content = document.getElementById('invoice-content');
-    
-    const tierMessages = {
-        'execution': {
-            icon: '⚡',
-            title: 'Skill Executed!',
-            message: 'Your agent called the seller\'s agent and received the results.'
-        },
-        'skill_file': {
-            icon: '📄',
-            title: 'Skill File Received!',
-            message: 'The blueprint has been transferred to your agent. Your AI can now implement it.'
-        },
-        'full_package': {
-            icon: '📦',
-            title: 'Full Package Received!',
-            message: 'All files have been transferred to your agent. Ready for one-click deploy.'
-        }
-    };
-    
-    const msg = tierMessages[tier] || tierMessages['execution'];
     const sellerEmoji = currentSkill?.agent_avatar_emoji || '🤖';
     
-    // Build result details based on tier
-    let resultDetails = '';
-    if (tier === 'execution' && data && data.result) {
-        const resultStr = typeof data.result === 'string' ? data.result : JSON.stringify(data.result, null, 2);
-        resultDetails = `
-            <div class="execution-result">
-                <h4>⚡ Execution Result</h4>
-                <pre style="background:#0a0e14;border:1px solid #2a3540;border-radius:8px;padding:12px;font-size:0.8rem;overflow-x:auto;max-height:200px;color:#00ff88;">${esc(resultStr)}</pre>
-                ${data.response_time_ms ? `<p style="color:#555;font-size:0.75rem;margin-top:4px;">Response time: ${data.response_time_ms}ms</p>` : ''}
+    const tierMessages = {
+        'execution': { icon: '⚡', title: 'Skill Executed!', message: 'The seller\'s agent processed your request.' },
+        'skill_file': { icon: '📄', title: 'Skill File Ready!', message: 'Picking up your blueprint from the seller...' },
+        'full_package': { icon: '📦', title: 'Full Package Ready!', message: 'Picking up your files from the seller...' }
+    };
+    const msg = tierMessages[tier] || tierMessages['execution'];
+    
+    // For execution tier — show result immediately
+    if (tier === 'execution') {
+        const resultStr = (data && data.result) 
+            ? (typeof data.result === 'string' ? data.result : JSON.stringify(data.result, null, 2))
+            : 'No result returned';
+        
+        content.innerHTML = `
+            <div class="transaction-complete">
+                <div class="complete-header">
+                    <div class="complete-icon">⚡</div>
+                    <h3 class="complete-title">✅ Skill Executed!</h3>
+                </div>
+                
+                <div class="agent-flow success">
+                    <div class="agent-node buyer"><div class="agent-icon">🤖</div><div class="agent-label">Your Agent</div><div class="agent-status">✓ Received</div></div>
+                    <div class="flow-arrow complete"><div class="flow-line"></div></div>
+                    <div class="agent-node store"><div class="agent-icon">🦑</div><div class="agent-label">SquidBay</div><div class="agent-status">✓ Verified</div></div>
+                    <div class="flow-arrow complete"><div class="flow-line"></div></div>
+                    <div class="agent-node seller"><div class="agent-icon">${sellerEmoji}</div><div class="agent-label">${esc(currentSkill?.agent_name || 'Seller')}</div><div class="agent-status">✓ Paid</div></div>
+                </div>
+                
+                <div class="execution-result" style="margin:16px 0;">
+                    <h4>⚡ Execution Result</h4>
+                    <pre style="background:#0a0e14;border:1px solid #2a3540;border-radius:8px;padding:12px;font-size:0.8rem;overflow-x:auto;max-height:300px;overflow-y:auto;color:#00ff88;white-space:pre-wrap;">${esc(resultStr)}</pre>
+                    ${data.response_time_ms ? `<p style="color:#556677;font-size:0.75rem;margin-top:4px;">Response time: ${data.response_time_ms}ms</p>` : ''}
+                </div>
+                
+                <button onclick="copyToClipboard(document.querySelector('.execution-result pre').textContent)" style="width:100%;padding:12px;background:linear-gradient(135deg,#00d9ff 0%,#00a8cc 100%);color:#000;border:none;border-radius:8px;font-weight:700;font-size:0.9rem;cursor:pointer;margin-bottom:8px;">
+                    📋 Copy Result — Give to Your Agent
+                </button>
+                
+                <button class="btn-done" onclick="window.SquidBaySkill.closeModal()">Done</button>
             </div>
         `;
-    } else if ((tier === 'skill_file' || tier === 'full_package') && data) {
-        resultDetails = `
-            <div class="transfer-result">
-                <h4>${tier === 'skill_file' ? '📄' : '📦'} Transfer Details</h4>
-                <p style="color:#888;font-size:0.85rem;">Your agent can present the transfer token to the seller's endpoint to retrieve the files.</p>
-                ${data.transfer_endpoint ? `<p style="font-size:0.8rem;color:#555;">Endpoint: <code style="color:#00d9ff;">${esc(data.transfer_endpoint)}</code></p>` : ''}
-                ${data.transfer_token ? `
-                    <div style="margin-top:8px;">
-                        <label style="font-size:0.75rem;color:#555;">Transfer Token:</label>
-                        <div style="display:flex;gap:6px;align-items:center;">
-                            <input type="text" value="${esc(data.transfer_token)}" readonly id="transfer-token-input" style="font-size:0.7rem;padding:8px;background:#0a0e14;border:1px solid #2a3540;border-radius:6px;color:#ffbd2e;flex:1;">
-                            <button onclick="navigator.clipboard.writeText(document.getElementById('transfer-token-input').value);this.textContent='✓'" style="width:auto;padding:8px 12px;font-size:0.8rem;">Copy</button>
-                        </div>
-                    </div>
-                ` : ''}
-            </div>
-        `;
+        return;
     }
     
+    // For skill_file and full_package — show loading then auto-pickup
     content.innerHTML = `
         <div class="transaction-complete">
             <div class="complete-header">
                 <div class="complete-icon">${msg.icon}</div>
-                <h3 class="complete-title">✅ ${msg.title}</h3>
+                <h3 class="complete-title">✅ Payment Confirmed!</h3>
             </div>
             <p class="complete-message">${msg.message}</p>
             
-            <!-- Success Agent Flow -->
             <div class="agent-flow success">
-                <div class="agent-node buyer">
-                    <div class="agent-icon">🤖</div>
-                    <div class="agent-label">Your Agent</div>
-                    <div class="agent-status">✓ Received</div>
-                </div>
-                <div class="flow-arrow complete">
-                    <div class="flow-line"></div>
-                </div>
-                <div class="agent-node store">
-                    <div class="agent-icon">🦑</div>
-                    <div class="agent-label">SquidBay</div>
-                    <div class="agent-status">✓ Verified</div>
-                </div>
-                <div class="flow-arrow complete">
-                    <div class="flow-line"></div>
-                </div>
-                <div class="agent-node seller">
-                    <div class="agent-icon">${sellerEmoji}</div>
-                    <div class="agent-label">${esc(currentSkill?.agent_name || 'Seller')}</div>
-                    <div class="agent-status">✓ Paid</div>
-                </div>
+                <div class="agent-node buyer"><div class="agent-icon">🤖</div><div class="agent-label">Your Agent</div><div class="agent-status">✓ Paid</div></div>
+                <div class="flow-arrow complete"><div class="flow-line"></div></div>
+                <div class="agent-node store"><div class="agent-icon">🦑</div><div class="agent-label">SquidBay</div><div class="agent-status">⏳ Fetching</div></div>
+                <div class="flow-arrow complete"><div class="flow-line"></div></div>
+                <div class="agent-node seller"><div class="agent-icon">${sellerEmoji}</div><div class="agent-label">${esc(currentSkill?.agent_name || 'Seller')}</div><div class="agent-status">✓ Paid</div></div>
             </div>
             
-            ${resultDetails}
-            
-            <!-- Review Prompt -->
-            <div class="review-prompt">
-                <p>How was this skill?</p>
-                <div class="star-rating" id="star-rating">
-                    <button class="star" data-rating="1">☆</button>
-                    <button class="star" data-rating="2">☆</button>
-                    <button class="star" data-rating="3">☆</button>
-                    <button class="star" data-rating="4">☆</button>
-                    <button class="star" data-rating="5">☆</button>
-                </div>
-                <textarea id="review-comment" placeholder="Optional: Share your experience..." rows="2"></textarea>
-                <button class="btn-submit-review" onclick="submitReview('${currentSkill?.id}', '${transactionId}')">Submit Review</button>
+            <div id="pickup-status" style="text-align:center;padding:20px;color:#8899aa;">
+                <div class="typing-dots" style="display:inline-flex;gap:4px;margin-bottom:8px;"><span style="width:8px;height:8px;background:#00d9ff;border-radius:50%;animation:typingBounce 1.4s infinite;display:inline-block;"></span><span style="width:8px;height:8px;background:#00d9ff;border-radius:50%;animation:typingBounce 1.4s infinite 0.2s;display:inline-block;"></span><span style="width:8px;height:8px;background:#00d9ff;border-radius:50%;animation:typingBounce 1.4s infinite 0.4s;display:inline-block;"></span></div>
+                <p>Picking up your ${tier === 'skill_file' ? 'skill file' : 'full package'} from the seller's agent...</p>
             </div>
             
-            <button class="btn-done" onclick="window.SquidBaySkill.closeModal()">Done</button>
+            <div id="pickup-content" style="display:none;"></div>
+            
+            <button class="btn-done" onclick="window.SquidBaySkill.closeModal()" style="margin-top:12px;">Done</button>
         </div>
     `;
     
-    // Set up star rating interaction
-    setupStarRating();
+    // Auto-pickup: call the pickup endpoint from the browser
+    autoPickup(transactionId, data.transfer_token, tier);
+}
+
+/**
+ * Auto-pickup: browser calls the pickup endpoint to get skill content
+ */
+async function autoPickup(transactionId, transferToken, tier) {
+    const statusEl = document.getElementById('pickup-status');
+    const contentEl = document.getElementById('pickup-content');
+    
+    if (!transferToken) {
+        statusEl.innerHTML = `<p style="color:#ff6b6b;">No transfer token received. Check transaction details.</p>`;
+        return;
+    }
+    
+    try {
+        const res = await fetch(`${API_BASE}/invoke/${transactionId}/pickup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ transfer_token: transferToken })
+        });
+        
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || `Pickup failed (${res.status})`);
+        }
+        
+        const pickupData = await res.json();
+        
+        // Format the content for display
+        const contentStr = typeof pickupData.content === 'string' 
+            ? pickupData.content 
+            : JSON.stringify(pickupData.content || pickupData, null, 2);
+        
+        // Store for copy
+        window._pickupContent = contentStr;
+        
+        // Update status
+        statusEl.innerHTML = `<p style="color:#00ff88;font-weight:600;">✅ ${tier === 'skill_file' ? 'Skill file' : 'Full package'} retrieved successfully!</p>`;
+        
+        // Update agent flow status
+        const storeStatus = document.querySelector('.agent-node.store .agent-status');
+        if (storeStatus) storeStatus.textContent = '✓ Delivered';
+        const buyerStatus = document.querySelector('.agent-node.buyer .agent-status');
+        if (buyerStatus) buyerStatus.textContent = '✓ Received';
+        
+        // Show content
+        contentEl.style.display = 'block';
+        contentEl.innerHTML = `
+            <div style="margin:12px 0;">
+                <h4>${tier === 'skill_file' ? '📄 Your Skill File' : '📦 Your Full Package'}</h4>
+                <pre style="background:#0a0e14;border:1px solid #2a3540;border-radius:8px;padding:12px;font-size:0.75rem;overflow-x:auto;max-height:300px;overflow-y:auto;color:#c0c0c0;white-space:pre-wrap;">${esc(contentStr)}</pre>
+            </div>
+            <button onclick="copyToClipboard(window._pickupContent)" style="width:100%;padding:12px;background:linear-gradient(135deg,#00d9ff 0%,#00a8cc 100%);color:#000;border:none;border-radius:8px;font-weight:700;font-size:0.9rem;cursor:pointer;margin-bottom:8px;">
+                📋 Copy ${tier === 'skill_file' ? 'Skill File' : 'Full Package'} — Give to Your Agent
+            </button>
+            <div id="pickupCopyConfirm" style="display:none;text-align:center;color:#00ff88;font-size:0.8rem;">✓ Copied! Paste into your agent's chat window.</div>
+        `;
+        
+    } catch (err) {
+        console.error('Auto-pickup failed:', err);
+        
+        // Fallback: show manual pickup instructions
+        statusEl.innerHTML = `
+            <p style="color:#ffbd2e;margin-bottom:12px;">⚠️ Couldn't auto-pickup: ${esc(err.message)}</p>
+            <p style="color:#8899aa;font-size:0.85rem;">Your purchase is confirmed. Copy the pickup instructions for your agent:</p>
+        `;
+        
+        const pickupInstructions = `POST ${API_BASE}/invoke/${transactionId}/pickup
+Content-Type: application/json
+{"transfer_token": "${transferToken}"}`;
+        
+        window._pickupInstructions = pickupInstructions;
+        
+        contentEl.style.display = 'block';
+        contentEl.innerHTML = `
+            <pre style="background:#0a0e14;border:1px solid #2a3540;border-radius:8px;padding:12px;font-size:0.75rem;color:#c0c0c0;white-space:pre-wrap;">${esc(pickupInstructions)}</pre>
+            <button onclick="copyToClipboard(window._pickupInstructions)" style="width:100%;padding:12px;background:linear-gradient(135deg,#00d9ff 0%,#00a8cc 100%);color:#000;border:none;border-radius:8px;font-weight:700;font-size:0.9rem;cursor:pointer;margin-top:8px;">
+                📋 Copy Pickup Instructions for Your Agent
+            </button>
+        `;
+    }
+}
+
+/**
+ * Universal copy to clipboard helper
+ */
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        const confirm = document.getElementById('pickupCopyConfirm');
+        if (confirm) {
+            confirm.style.display = 'block';
+            setTimeout(() => { confirm.style.display = 'none'; }, 4000);
+        }
+    });
 }
 
 /**
@@ -911,7 +1055,14 @@ function copyInvoice() {
     const input = document.getElementById('invoice-input');
     if (input) {
         navigator.clipboard.writeText(input.value);
-        const btn = document.querySelector('.btn-copy');
+        // Show confirmation on main button
+        const confirm = document.getElementById('invoiceCopyConfirm');
+        if (confirm) {
+            confirm.style.display = 'block';
+            setTimeout(() => { confirm.style.display = 'none'; }, 4000);
+        }
+        // Also update mini copy button if it exists
+        const btn = document.querySelector('.btn-copy-mini');
         if (btn) {
             btn.textContent = 'Copied!';
             setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
@@ -1003,6 +1154,7 @@ function esc(s) {
 window.buySkill = buySkill;
 window.copyInvoice = copyInvoice;
 window.copyHandoff = copyHandoff;
+window.copyToClipboard = copyToClipboard;
 window.toggleHandoffPreview = toggleHandoffPreview;
 window.toggleTxDetails = toggleTxDetails;
 window.submitReview = submitReview;
@@ -1011,6 +1163,7 @@ window.SquidBaySkill = {
     buySkill: buySkill,
     copyInvoice: copyInvoice,
     copyHandoff: copyHandoff,
+    copyToClipboard: copyToClipboard,
     toggleHandoffPreview: toggleHandoffPreview,
     submitReview: submitReview
 };
