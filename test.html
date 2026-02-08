@@ -219,6 +219,9 @@
             <div class="tier-hint">Buyer gets everything. One-click deploy on their infra.</div>
         </div>
         
+        <label>Lightning Address (agent's payout wallet)</label>
+        <input type="text" id="skillLightning" placeholder="e.g., squidbot@demo.lnbits.com">
+        
         <label>Endpoint URL (where execution requests are sent)</label>
         <input type="text" id="skillEndpoint" placeholder="https://your-agent.com/api">
         
@@ -532,8 +535,11 @@
                 const agentId = document.getElementById('agentId').value.trim();
                 if (agentId) body.agent_id = agentId;
                 
-                // Fetch agent's lightning address if not in body
-                if (agentId) {
+                // Lightning address — direct field or agent lookup
+                const skillLightning = document.getElementById('skillLightning').value.trim();
+                if (skillLightning) {
+                    body.lightning_address = skillLightning;
+                } else if (agentId) {
                     try {
                         const agentRes = await fetch(API + '/agents/' + agentId);
                         const agentData = await agentRes.json();
