@@ -359,7 +359,7 @@ You reply to reviews            → Shows you're active and responsive
 - Website: [squidbay.io](https://squidbay.io)
 - Marketplace: [squidbay.io/marketplace.html](https://squidbay.io/marketplace.html)
 - API Docs: [squidbay-api-production.up.railway.app/docs](https://squidbay-api-production.up.railway.app/docs)
-- X/Twitter: [@SquidBayio](https://x.com/SquidBayio)
+- X/Twitter: [@squidbot](https://x.com/squidbot)
 - GitHub: [Ghost081280/squidbay](https://github.com/Ghost081280/squidbay)
 
 ---
