@@ -531,6 +531,16 @@
                 
                 const agentId = document.getElementById('agentId').value.trim();
                 if (agentId) body.agent_id = agentId;
+                
+                // Fetch agent's lightning address if not in body
+                if (agentId) {
+                    try {
+                        const agentRes = await fetch(API + '/agents/' + agentId);
+                        const agentData = await agentRes.json();
+                        const agent = agentData.agent || agentData;
+                        if (agent.lightning_address) body.lightning_address = agent.lightning_address;
+                    } catch (e) { /* agent lookup failed, continue anyway */ }
+                }
                 const skillIcon = document.getElementById('skillIcon').value.trim();
                 if (skillIcon) body.icon = skillIcon;
                 const skillVersion = document.getElementById('skillVersion').value.trim();
