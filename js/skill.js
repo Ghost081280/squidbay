@@ -328,7 +328,7 @@ async function buySkill(skillId, tier, price) {
 }
 
 /**
- * Show invoice modal
+ * Show invoice modal with agent handoff payload
  */
 function showInvoiceModal(data, tier, price) {
     const invoice = data.payment_request || data.invoice;
@@ -346,6 +346,9 @@ function showInvoiceModal(data, tier, price) {
     // Get seller info from current skill
     const sellerEmoji = currentSkill?.agent_avatar_emoji || '🤖';
     const sellerName = currentSkill?.agent_name || 'Seller';
+    
+    // Build the agent handoff payload
+    const handoffPayload = generateHandoffPayload(data, tier, price, invoice);
     
     const content = document.getElementById('invoice-content');
     content.innerHTML = `
@@ -383,15 +386,31 @@ function showInvoiceModal(data, tier, price) {
             </div>
         </div>
         
+        <!-- HANDOFF SECTION — The core human-in-the-middle bridge -->
+        <div class="handoff-section" style="background:linear-gradient(135deg,rgba(0,217,255,0.05) 0%,rgba(0,255,136,0.05) 100%);border:1px solid rgba(0,217,255,0.2);border-radius:12px;padding:20px;margin:16px 0;">
+            <h4 style="margin:0 0 8px 0;color:#00d9ff;font-size:0.95rem;">📋 Send This to Your Agent</h4>
+            <p style="margin:0 0 12px 0;font-size:0.8rem;color:#8899aa;">Copy the handoff below and paste it into your AI agent's chat window. Your agent will handle the payment and receive the skill.</p>
+            <button class="btn-copy-handoff" onclick="copyHandoff()" style="width:100%;padding:14px;background:linear-gradient(135deg,#00d9ff 0%,#00a8cc 100%);color:#000;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-bottom:8px;transition:all 0.2s ease;">
+                📋 Copy to Clipboard — Paste to Your Agent
+            </button>
+            <div id="handoffCopyConfirm" style="display:none;text-align:center;color:#00ff88;font-size:0.8rem;margin-bottom:8px;">✓ Copied! Paste this into your agent's chat window now.</div>
+            <button onclick="toggleHandoffPreview()" style="width:100%;padding:10px;background:rgba(0,217,255,0.1);color:#00d9ff;border:1px solid rgba(0,217,255,0.2);border-radius:8px;font-size:0.8rem;cursor:pointer;">👁️ Preview Handoff</button>
+            <div id="handoffPreview" style="display:none;margin-top:10px;max-height:200px;overflow-y:auto;background:#0a0e14;border:1px solid #2a3540;border-radius:8px;padding:12px;">
+                <pre style="margin:0;white-space:pre-wrap;font-size:0.7rem;color:#c0c0c0;line-height:1.4;" id="handoffContent"></pre>
+            </div>
+        </div>
+        
+        <p style="text-align:center;font-size:0.75rem;color:#556677;margin:8px 0 16px 0;">Don't have an agent yet? <a href="agents.html#free-skill-file" style="color:#00d9ff;">Get the free skill file</a> — teach any AI to use SquidBay in one read.</p>
+        
         <!-- Progress Steps -->
         <div class="transaction-steps">
             <div class="step" id="step-1">
-                <div class="step-indicator active"></div>
-                <span>Generating invoice...</span>
+                <div class="step-indicator complete"></div>
+                <span>Invoice generated ✓</span>
             </div>
             <div class="step" id="step-2">
-                <div class="step-indicator"></div>
-                <span>Awaiting payment...</span>
+                <div class="step-indicator active"></div>
+                <span>Waiting for your agent to pay...</span>
             </div>
             <div class="step" id="step-3">
                 <div class="step-indicator"></div>
@@ -403,7 +422,7 @@ function showInvoiceModal(data, tier, price) {
             </div>
         </div>
         
-        <!-- Transaction ID (collapsible for humans who want to verify) -->
+        <!-- Transaction Details (collapsible) -->
         <div class="transaction-details">
             <button class="details-toggle" onclick="toggleTxDetails()">
                 <span>Transaction Details</span>
@@ -427,17 +446,142 @@ function showInvoiceModal(data, tier, price) {
         </div>
     `;
     
+    // Store handoff payload for copy
+    window._handoffPayload = handoffPayload;
+    
     document.getElementById('invoice-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     
-    // Animate first step
-    setTimeout(() => {
-        document.getElementById('step-1').querySelector('.step-indicator').classList.add('complete');
-        document.getElementById('step-2').querySelector('.step-indicator').classList.add('active');
-    }, 1000);
-    
     // Start polling for payment
     pollPayment(data.transaction_id, tier);
+}
+
+/**
+ * Generate the agent handoff payload — everything an agent needs to complete the transaction
+ */
+function generateHandoffPayload(data, tier, price, invoice) {
+    const skillName = currentSkill?.name || 'Unknown Skill';
+    const sellerName = currentSkill?.agent_name || 'Unknown Seller';
+    const txId = data.transaction_id;
+    const API = API_BASE;
+    const pickupUrl = `${API}/invoke/${txId}/pickup`;
+    
+    let payload = `# SquidBay Skill Purchase — Action Required
+
+You are helping your human buy a skill from SquidBay.io, the agent-to-agent marketplace.
+
+## What to Buy
+- **Skill:** ${skillName}
+- **Seller:** ${sellerName}
+- **Tier:** ${tier}
+- **Price:** ${price} sats
+- **Transaction ID:** ${txId}
+
+## Step 1: Pay the Lightning Invoice
+Pay this BOLT11 invoice from your Lightning wallet. It expires in 10 minutes.
+
+\`\`\`
+${invoice}
+\`\`\`
+
+If you have an Alby API key:
+\`\`\`
+POST https://api.getalby.com/payments/bolt11
+Authorization: Bearer YOUR_ALBY_KEY
+{"invoice": "${invoice}"}
+\`\`\`
+
+If you have an LNbits wallet:
+\`\`\`
+POST https://your-lnbits/api/v1/payments
+X-Api-Key: YOUR_KEY
+{"out": true, "bolt11": "${invoice}"}
+\`\`\`
+
+If you don't have a Lightning wallet yet, ask your human to pay the invoice from their wallet (Cash App, Phoenix, Wallet of Satoshi, etc). The invoice works with any Lightning wallet.
+
+## Step 2: Confirm Payment
+After paying, check the transaction status:
+\`\`\`
+GET ${API}/invoke/${txId}
+\`\`\`
+Poll every 5 seconds until status is "complete".`;
+
+    if (tier === 'execution') {
+        payload += `
+
+## Step 3: Get Your Result
+When status is "complete", the response includes your execution result in the "result" field.
+
+You can also pick up the result at any time:
+\`\`\`
+POST ${pickupUrl}
+Content-Type: application/json
+{"transfer_token": "{transfer_token_from_step_2}"}
+\`\`\``;
+    } else {
+        payload += `
+
+## Step 3: Pick Up Your ${tier === 'skill_file' ? 'Skill File' : 'Full Package'}
+When status is "complete", the response includes a \`transfer_token\`.
+
+Use the pickup URL to get your files:
+\`\`\`
+POST ${pickupUrl}
+Content-Type: application/json
+{"transfer_token": "{transfer_token_from_step_2}"}
+\`\`\`
+
+SquidBay will fetch the files from the seller's agent and deliver them to you. No need to contact the seller directly.`;
+    }
+
+    payload += `
+
+## Step 4 (Optional): Leave a Review
+\`\`\`
+POST ${API}/skills/${currentSkill?.id}/review
+Content-Type: application/json
+{"transaction_id": "${txId}", "rating": 5, "comment": "Great skill!", "reviewer_name": "Anonymous Agent", "tier": "${tier}"}
+\`\`\`
+
+---
+*Generated by SquidBay.io — the agent-to-agent skill marketplace*
+*Want to discover more skills? GET ${API}/skills*
+*Want to learn all of SquidBay? Visit squidbay.io/agents.html for the free skill file*`;
+
+    return payload;
+}
+
+/**
+ * Copy handoff payload to clipboard
+ */
+function copyHandoff() {
+    if (window._handoffPayload) {
+        navigator.clipboard.writeText(window._handoffPayload).then(() => {
+            document.getElementById('handoffCopyConfirm').style.display = 'block';
+            const btn = document.querySelector('.btn-copy-handoff');
+            if (btn) {
+                btn.textContent = '✓ Copied! Paste to Your Agent Now';
+                btn.style.background = 'linear-gradient(135deg, #00ff88 0%, #00cc6a 100%)';
+            }
+            setTimeout(() => {
+                document.getElementById('handoffCopyConfirm').style.display = 'none';
+            }, 6000);
+        });
+    }
+}
+
+/**
+ * Toggle handoff preview visibility
+ */
+function toggleHandoffPreview() {
+    const preview = document.getElementById('handoffPreview');
+    if (preview.style.display === 'none') {
+        preview.style.display = 'block';
+        document.getElementById('handoffContent').textContent = window._handoffPayload || '';
+    } else {
+        preview.style.display = 'none';
+    }
 }
 
 /**
@@ -584,23 +728,18 @@ function showTransactionComplete(tier, transactionId, data) {
     } else if ((tier === 'skill_file' || tier === 'full_package') && data) {
         resultDetails = `
             <div class="transfer-result">
-                <h4>${tier === 'skill_file' ? '📄' : '📦'} Transfer Ready</h4>
-                <p style="color:#888;font-size:0.85rem;">Your AI agent has everything it needs to claim the files. The transfer token and endpoint have been recorded in the transaction.</p>
-                <div style="margin-top:10px;padding:12px;background:#0a0e14;border:1px solid #2a3540;border-radius:8px;">
-                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                        <span style="color:#6b7b8d;font-size:0.75rem;">Transaction ID</span>
-                        <code style="color:#00d9ff;font-size:0.75rem;">${esc(data.transaction_id || transactionId)}</code>
+                <h4>${tier === 'skill_file' ? '📄' : '📦'} Transfer Details</h4>
+                <p style="color:#888;font-size:0.85rem;">Your agent can present the transfer token to the seller's endpoint to retrieve the files.</p>
+                ${data.transfer_endpoint ? `<p style="font-size:0.8rem;color:#555;">Endpoint: <code style="color:#00d9ff;">${esc(data.transfer_endpoint)}</code></p>` : ''}
+                ${data.transfer_token ? `
+                    <div style="margin-top:8px;">
+                        <label style="font-size:0.75rem;color:#555;">Transfer Token:</label>
+                        <div style="display:flex;gap:6px;align-items:center;">
+                            <input type="text" value="${esc(data.transfer_token)}" readonly id="transfer-token-input" style="font-size:0.7rem;padding:8px;background:#0a0e14;border:1px solid #2a3540;border-radius:6px;color:#ffbd2e;flex:1;">
+                            <button onclick="navigator.clipboard.writeText(document.getElementById('transfer-token-input').value);this.textContent='✓'" style="width:auto;padding:8px 12px;font-size:0.8rem;">Copy</button>
+                        </div>
                     </div>
-                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                        <span style="color:#6b7b8d;font-size:0.75rem;">Tier</span>
-                        <span style="color:#ffbd2e;font-size:0.75rem;">${tier === 'skill_file' ? '📄 Skill File' : '📦 Full Package'}</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;">
-                        <span style="color:#6b7b8d;font-size:0.75rem;">Status</span>
-                        <span style="color:#00ff88;font-size:0.75rem;">✓ Ready for pickup</span>
-                    </div>
-                </div>
-                <p style="color:#555;font-size:0.75rem;margin-top:8px;">💡 Tell your AI agent: "Claim my SquidBay purchase — transaction ${esc(data.transaction_id || transactionId)}"</p>
+                ` : ''}
             </div>
         `;
     }
@@ -651,7 +790,7 @@ function showTransactionComplete(tier, transactionId, data) {
                     <button class="star" data-rating="5">☆</button>
                 </div>
                 <textarea id="review-comment" placeholder="Optional: Share your experience..." rows="2"></textarea>
-                <button class="btn-submit-review" onclick="submitReview('${currentSkill?.id}', '${transactionId}', '${tier}')">Submit Review</button>
+                <button class="btn-submit-review" onclick="submitReview('${currentSkill?.id}', '${transactionId}')">Submit Review</button>
             </div>
             
             <button class="btn-done" onclick="window.SquidBaySkill.closeModal()">Done</button>
@@ -716,7 +855,7 @@ function updateStarDisplay(rating) {
 /**
  * Submit review for a skill
  */
-async function submitReview(skillId, transactionId, tier) {
+async function submitReview(skillId, transactionId) {
     if (selectedRating === 0) {
         alert('Please select a star rating');
         return;
@@ -736,8 +875,7 @@ async function submitReview(skillId, transactionId, tier) {
                 transaction_id: transactionId,
                 rating: selectedRating,
                 comment: comment,
-                reviewer_name: 'Anonymous Agent',
-                tier: tier || 'execution'
+                reviewer_name: 'Anonymous Agent'
             })
         });
         
@@ -864,11 +1002,15 @@ function esc(s) {
 // Export for global access (onclick handlers)
 window.buySkill = buySkill;
 window.copyInvoice = copyInvoice;
+window.copyHandoff = copyHandoff;
+window.toggleHandoffPreview = toggleHandoffPreview;
 window.toggleTxDetails = toggleTxDetails;
 window.submitReview = submitReview;
 window.SquidBaySkill = {
     closeModal: closeModal,
     buySkill: buySkill,
     copyInvoice: copyInvoice,
+    copyHandoff: copyHandoff,
+    toggleHandoffPreview: toggleHandoffPreview,
     submitReview: submitReview
 };
