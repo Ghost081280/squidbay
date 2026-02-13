@@ -55,8 +55,10 @@
             // Close menu when any link inside is tapped
             mobileMenu.querySelectorAll('a').forEach(function(link) {
                 link.addEventListener('click', function() {
-                    mobileMenu.classList.remove('open');
-                    document.body.classList.remove('menu-open');
+                    // Always close — don't toggle
+                    if (mobileMenu.classList.contains('open')) {
+                        window.toggleMobileMenu();
+                    }
                 });
             });
             return;
@@ -72,7 +74,6 @@
         
         menuBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Menu clicked');
             navLinks.classList.toggle('mobile-open');
         });
         

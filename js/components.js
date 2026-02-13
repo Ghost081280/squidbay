@@ -36,13 +36,13 @@
             // Post-load processing
             if (name === 'nav') {
                 initNavigation();
+                initMobileMenuLinks();
             }
             if (name === 'footer') {
                 initFooter();
             }
         } catch (error) {
             console.warn(`Component ${name} not loaded:`, error.message);
-            // Fallback - keep existing content
         }
     }
 
@@ -66,22 +66,45 @@
      * Initialize footer
      */
     function initFooter() {
-        // Initialize back to top button
         initBackToTop();
     }
 
     /**
-     * Mobile menu toggle (slides from right)
+     * Mobile menu toggle — explicit open/close, never gets out of sync
      */
     window.toggleMobileMenu = function() {
         const menu = document.getElementById('mobile-menu');
         const body = document.body;
         
-        if (menu) {
-            menu.classList.toggle('open');
-            body.classList.toggle('menu-open');
+        if (!menu) return;
+        
+        const isOpen = menu.classList.contains('open');
+        
+        if (isOpen) {
+            menu.classList.remove('open');
+            body.classList.remove('menu-open');
+        } else {
+            menu.classList.add('open');
+            body.classList.add('menu-open');
         }
     };
+
+    /**
+     * Close mobile menu on link click (called after nav loads)
+     */
+    function initMobileMenuLinks() {
+        const menu = document.getElementById('mobile-menu');
+        if (!menu) return;
+        
+        menu.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (menu.classList.contains('open')) {
+                    menu.classList.remove('open');
+                    document.body.classList.remove('menu-open');
+                }
+            });
+        });
+    }
 
     /**
      * Close mobile menu on escape key
@@ -90,7 +113,8 @@
         if (e.key === 'Escape') {
             const menu = document.getElementById('mobile-menu');
             if (menu && menu.classList.contains('open')) {
-                toggleMobileMenu();
+                menu.classList.remove('open');
+                document.body.classList.remove('menu-open');
             }
         }
     });
@@ -146,14 +170,12 @@
      * Initialize all components on DOM ready
      */
     function init() {
-        // Check if we should use component system
         const navPlaceholder = document.getElementById('nav-placeholder');
         const footerPlaceholder = document.getElementById('footer-placeholder');
 
         if (navPlaceholder) {
             loadComponent('nav', 'nav-placeholder');
         } else {
-            // Initialize existing nav
             initNavigation();
             initScrollProgress();
         }
@@ -161,7 +183,6 @@
         if (footerPlaceholder) {
             loadComponent('footer', 'footer-placeholder');
         } else {
-            // Initialize existing footer elements
             initBackToTop();
         }
 
@@ -219,10 +240,8 @@
             scriptEl.src = CHATBOT_JS;
             scriptEl.onload = function() {
                 console.log('SquidBot: JS loaded');
-                // Dispatch event for chatbot init
                 document.dispatchEvent(new CustomEvent('squidbay:components-loaded'));
                 
-                // Show chatbot button after a short delay
                 setTimeout(function() {
                     if (typeof showChatbotButton === 'function') {
                         showChatbotButton();
