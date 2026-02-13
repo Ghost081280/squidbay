@@ -362,13 +362,16 @@
     margin-bottom: 20px;
 }
 
-.pricing-header {
+/* FIX: Override styles.css global .pricing-header { margin-bottom: 40px } */
+.pricing-card .pricing-header {
     background: rgba(0, 217, 255, 0.05);
     padding: 16px 20px;
     border-bottom: 1px solid var(--gray);
+    margin-bottom: 0;
+    text-align: left;
 }
 
-.pricing-header h3 {
+.pricing-card .pricing-header h3 {
     margin: 0 0 4px 0;
     color: var(--white);
     font-size: 1.1rem;
@@ -1340,11 +1343,6 @@
 }
 
 /* Transaction Complete */
-.transaction-complete {
-    text-align: center;
-    padding: 20px 0;
-}
-
 .complete-header {
     margin-bottom: 16px;
 }
