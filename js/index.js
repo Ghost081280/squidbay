@@ -265,6 +265,29 @@
         }
     }
 
+    /**
+     * Check API status and update hero badge to reflect reality
+     */
+    async function checkApiStatus() {
+        const badge = document.querySelector('.badge-live');
+        if (!badge) return;
+        
+        try {
+            const res = await fetch(API_BASE + '/');
+            const data = await res.json();
+            
+            if (data.status === 'online') {
+                badge.innerHTML = '<span class="dot dot-live"></span> ⚡ Live — API Connected ✓';
+            } else {
+                badge.innerHTML = '<span class="dot"></span> API Offline';
+                badge.classList.remove('badge-live');
+            }
+        } catch (e) {
+            badge.innerHTML = '<span class="dot"></span> API Unreachable';
+            badge.classList.remove('badge-live');
+        }
+    }
+
     // --------------------------------------------------------------------------
     // Initialize
     // --------------------------------------------------------------------------
@@ -273,6 +296,7 @@
         initTentacleParallax();
         initChatDemo();
         loadHeroStats();
+        checkApiStatus();
     }
 
     if (document.readyState === 'loading') {
