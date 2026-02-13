@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SquidBay Marketplace - Additional Styles
+   SquidBay Marketplace - Styles
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -327,7 +327,7 @@
 }
 
 .skill-status.online {
-    color: var(--green);
+    color: #00ff88;
 }
 
 .skill-status.busy {
@@ -335,7 +335,7 @@
 }
 
 .skill-status.offline {
-    color: var(--red);
+    color: #ff6464;
 }
 
 .skill-name {
@@ -450,11 +450,72 @@
     border: none;
     cursor: pointer;
     transition: all var(--transition-base);
+    text-decoration: none;
 }
 
 .btn-invoke:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(0, 217, 255, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   Skill Card Footer with Tiers
+   -------------------------------------------------------------------------- */
+.skill-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid var(--gray);
+    margin-top: 16px;
+}
+
+.skill-price-display {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.skill-stats-mini {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.skill-stats-mini .rating {
+    color: var(--yellow);
+}
+
+.skill-stats-mini .calls {
+    color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Agent Info Mini (in card footer)
+   -------------------------------------------------------------------------- */
+.skill-agent-mini {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--gray);
+}
+
+.agent-avatar-mini {
+    font-size: 1rem;
+}
+
+.agent-name-mini {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.verified-mini {
+    color: var(--green);
+    font-size: 0.75rem;
 }
 
 /* --------------------------------------------------------------------------
@@ -635,6 +696,8 @@
     background: var(--black);
     padding: 8px;
     border-radius: var(--radius-sm);
+    max-height: 60px;
+    overflow: hidden;
 }
 
 .transaction-id {
@@ -653,10 +716,6 @@
     background: rgba(0, 255, 136, 0.1);
     border-radius: var(--radius-sm);
 }
-    border-radius: var(--radius-sm);
-    max-height: 60px;
-    overflow: hidden;
-}
 
 /* Processing State */
 .processing-animation {
@@ -672,10 +731,6 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 24px;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
 }
 
 .processing-animation h3 {
@@ -850,557 +905,8 @@
     color: #546E7A;
 }
 
-/* --------------------------------------------------------------------------
-   Responsive
-   -------------------------------------------------------------------------- */
-@media (max-width: 768px) {
-    .marketplace-header {
-        padding: 120px 0 40px;
-    }
-    
-    .skills-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .stats-ticker {
-        gap: 16px;
-    }
-    
-    .ticker-divider {
-        display: none;
-    }
-    
-    .ticker-item {
-        flex: 1;
-        min-width: 80px;
-    }
-    
-    .filter-chips {
-        gap: 6px;
-    }
-    
-    .chip {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-    }
-    
-    .skill-card {
-        padding: 20px;
-    }
-    
-    .modal-content {
-        padding: 24px;
-    }
-    
-    .invoice-amount {
-        font-size: 2rem;
-    }
-    
-    .qr-placeholder {
-        width: 150px;
-        height: 150px;
-    }
-}
 /* ==========================================================================
-   TIERED PRICING ADDITIONS FOR MARKETPLACE
-   Append this to the bottom of your existing css/marketplace.css
-   ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   Tier Badges on Skill Cards
-   -------------------------------------------------------------------------- */
-.skill-tier-badges {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-}
-
-.tier-badge-mini {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 500;
-}
-
-.tier-badge-mini[title="Remote Execution"] {
-    background: rgba(0, 217, 255, 0.15);
-    color: var(--primary);
-}
-
-.tier-badge-mini[title="Skill File"] {
-    background: rgba(183, 148, 246, 0.15);
-    color: var(--purple);
-}
-
-.tier-badge-mini[title="Full Package"] {
-    background: rgba(0, 210, 106, 0.15);
-    color: var(--green);
-}
-
-/* --------------------------------------------------------------------------
-   Transfer Type Labels
-   -------------------------------------------------------------------------- */
-.transfer-label {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: var(--radius-full);
-    font-size: 0.7rem;
-    font-weight: 500;
-}
-
-.transfer-label.ownable {
-    background: rgba(0, 210, 106, 0.15);
-    color: var(--green);
-}
-
-.transfer-label.hybrid {
-    background: rgba(255, 189, 46, 0.15);
-    color: var(--yellow);
-}
-
-/* --------------------------------------------------------------------------
-   Price Display Updates
-   -------------------------------------------------------------------------- */
-.skill-card .price-from {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.skill-card .price-value {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    color: var(--primary);
-}
-
-/* --------------------------------------------------------------------------
-   Skill Card Footer with Tiers
-   -------------------------------------------------------------------------- */
-.skill-card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 16px;
-    border-top: 1px solid var(--gray);
-    margin-top: 16px;
-}
-
-.skill-price-display {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.skill-stats-mini {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-.skill-stats-mini .rating {
-    color: var(--yellow);
-}
-
-.skill-stats-mini .calls {
-    color: var(--text-muted);
-}
-
-/* --------------------------------------------------------------------------
-   Agent Info Mini (in card footer)
-   -------------------------------------------------------------------------- */
-.skill-agent-mini {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--gray);
-}
-
-.agent-avatar-mini {
-    font-size: 1rem;
-}
-
-.agent-name-mini {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-.verified-mini {
-    color: var(--green);
-    font-size: 0.75rem;
-}
-/* ==========================================================================
-   TIERED PRICING ADDITIONS FOR MARKETPLACE
-   Append this to the bottom of your existing css/marketplace.css
-   ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   Tier Buttons on Skill Cards
-   -------------------------------------------------------------------------- */
-.tier-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
-}
-
-.tier-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-.tier-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.tier-btn.tier-exec {
-    background: rgba(0, 217, 255, 0.15);
-    color: #00d9ff;
-    border: 1px solid rgba(0, 217, 255, 0.3);
-}
-
-.tier-btn.tier-exec:hover {
-    background: rgba(0, 217, 255, 0.25);
-    border-color: #00d9ff;
-}
-
-.tier-btn.tier-file {
-    background: rgba(183, 148, 246, 0.15);
-    color: #b794f6;
-    border: 1px solid rgba(183, 148, 246, 0.3);
-}
-
-.tier-btn.tier-file:hover {
-    background: rgba(183, 148, 246, 0.25);
-    border-color: #b794f6;
-}
-
-.tier-btn.tier-pkg {
-    background: rgba(0, 210, 106, 0.15);
-    color: #00d26a;
-    border: 1px solid rgba(0, 210, 106, 0.3);
-}
-
-.tier-btn.tier-pkg:hover {
-    background: rgba(0, 210, 106, 0.25);
-    border-color: #00d26a;
-}
-
-/* --------------------------------------------------------------------------
-   Online/Offline Status
-   -------------------------------------------------------------------------- */
-.skill-status.online {
-    color: #00ff88;
-}
-
-.skill-status.offline {
-    color: #ff6464;
-}
-
-/* Offline card styling */
-.skill-card-offline {
-    opacity: 0.6;
-    filter: grayscale(30%);
-}
-
-.skill-card-offline .btn-invoke {
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-.skill-card-offline .tier-btn {
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-/* --------------------------------------------------------------------------
-   Transfer Type Labels (keeping for backwards compat)
-   -------------------------------------------------------------------------- */
-.transfer-label {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: var(--radius-full, 50px);
-    font-size: 0.7rem;
-    font-weight: 500;
-}
-
-.transfer-label.ownable {
-    background: rgba(0, 210, 106, 0.15);
-    color: #00d26a;
-}
-
-.transfer-label.hybrid {
-    background: rgba(255, 189, 46, 0.15);
-    color: #ffbd2e;
-}
-
-/* --------------------------------------------------------------------------
-   Price Display Updates
-   -------------------------------------------------------------------------- */
-.skill-card .price-from {
-    font-size: 0.7rem;
-    color: var(--text-muted, #888);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.skill-card .price-value {
-    font-family: var(--font-mono, 'Space Mono', monospace);
-    font-weight: 700;
-    color: var(--primary, #00d9ff);
-}
-
-/* --------------------------------------------------------------------------
-   Invoke Button as Link
-   -------------------------------------------------------------------------- */
-a.btn-invoke {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    text-decoration: none;
-}
-/* ==========================================================================
-   TIERED PRICING ADDITIONS FOR MARKETPLACE
-   Append this to the bottom of your existing css/marketplace.css
-   ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   Tier Legend at Top of Marketplace
-   -------------------------------------------------------------------------- */
-.tier-legend {
-    background: rgba(0, 217, 255, 0.05);
-    border: 1px solid rgba(0, 217, 255, 0.15);
-    border-radius: 12px;
-    padding: 16px 24px;
-    margin-bottom: 24px;
-}
-
-.legend-title {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-muted, #888);
-    margin-bottom: 12px;
-}
-
-.legend-items {
-    display: flex;
-    gap: 32px;
-    flex-wrap: wrap;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.legend-icon {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    font-size: 1rem;
-}
-
-.legend-icon.exec {
-    background: rgba(0, 217, 255, 0.15);
-}
-
-.legend-icon.file {
-    background: rgba(183, 148, 246, 0.15);
-}
-
-.legend-icon.pkg {
-    background: rgba(0, 210, 106, 0.15);
-}
-
-.legend-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.legend-text strong {
-    font-size: 0.85rem;
-    color: var(--white, #fff);
-}
-
-.legend-text span {
-    font-size: 0.7rem;
-    color: var(--text-muted, #888);
-}
-
-@media (max-width: 768px) {
-    .legend-items {
-        flex-direction: column;
-        gap: 12px;
-    }
-    
-    .tier-legend {
-        padding: 12px 16px;
-    }
-}
-
-/* --------------------------------------------------------------------------
-   Tier Buttons on Skill Cards
-   -------------------------------------------------------------------------- */
-.tier-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
-}
-
-.tier-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-.tier-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.tier-btn.tier-exec {
-    background: rgba(0, 217, 255, 0.15);
-    color: #00d9ff;
-    border: 1px solid rgba(0, 217, 255, 0.3);
-}
-
-.tier-btn.tier-exec:hover {
-    background: rgba(0, 217, 255, 0.25);
-    border-color: #00d9ff;
-}
-
-.tier-btn.tier-file {
-    background: rgba(183, 148, 246, 0.15);
-    color: #b794f6;
-    border: 1px solid rgba(183, 148, 246, 0.3);
-}
-
-.tier-btn.tier-file:hover {
-    background: rgba(183, 148, 246, 0.25);
-    border-color: #b794f6;
-}
-
-.tier-btn.tier-pkg {
-    background: rgba(0, 210, 106, 0.15);
-    color: #00d26a;
-    border: 1px solid rgba(0, 210, 106, 0.3);
-}
-
-.tier-btn.tier-pkg:hover {
-    background: rgba(0, 210, 106, 0.25);
-    border-color: #00d26a;
-}
-
-/* --------------------------------------------------------------------------
-   Online/Offline Status
-   -------------------------------------------------------------------------- */
-.skill-status.online {
-    color: #00ff88;
-}
-
-.skill-status.offline {
-    color: #ff6464;
-}
-
-/* Offline card styling */
-.skill-card-offline {
-    opacity: 0.6;
-    filter: grayscale(30%);
-}
-
-.skill-card-offline .btn-invoke {
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-.skill-card-offline .tier-btn {
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-/* --------------------------------------------------------------------------
-   Transfer Type Labels (keeping for backwards compat)
-   -------------------------------------------------------------------------- */
-.transfer-label {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: var(--radius-full, 50px);
-    font-size: 0.7rem;
-    font-weight: 500;
-}
-
-.transfer-label.ownable {
-    background: rgba(0, 210, 106, 0.15);
-    color: #00d26a;
-}
-
-.transfer-label.hybrid {
-    background: rgba(255, 189, 46, 0.15);
-    color: #ffbd2e;
-}
-
-/* --------------------------------------------------------------------------
-   Price Display Updates
-   -------------------------------------------------------------------------- */
-.skill-card .price-from {
-    font-size: 0.7rem;
-    color: var(--text-muted, #888);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.skill-card .price-value {
-    font-family: var(--font-mono, 'Space Mono', monospace);
-    font-weight: 700;
-    color: var(--primary, #00d9ff);
-}
-
-/* --------------------------------------------------------------------------
-   Invoke Button as Link
-   -------------------------------------------------------------------------- */
-a.btn-invoke {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    text-decoration: none;
-}
-/* ==========================================================================
-   TIERED PRICING ADDITIONS FOR MARKETPLACE
-   Append this to the bottom of your existing css/marketplace.css
+   TIERED PRICING — Single consolidated block
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -1418,7 +924,7 @@ a.btn-invoke {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: var(--text-muted, #888);
+    color: var(--text-muted);
     margin-bottom: 16px;
     text-align: center;
 }
@@ -1469,28 +975,47 @@ a.btn-invoke {
 
 .legend-text strong {
     font-size: 0.9rem;
-    color: var(--white, #fff);
+    color: var(--white);
 }
 
 .legend-text span {
     font-size: 0.75rem;
-    color: var(--text-muted, #888);
+    color: var(--text-muted);
     line-height: 1.4;
 }
 
-@media (max-width: 900px) {
-    .legend-items {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-    
-    .tier-legend {
-        padding: 16px 20px;
-    }
-    
-    .legend-item {
-        padding: 10px;
-    }
+/* --------------------------------------------------------------------------
+   Tier Badges on Skill Cards (mini icons)
+   -------------------------------------------------------------------------- */
+.skill-tier-badges {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.tier-badge-mini {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.tier-badge-mini[title="Remote Execution"] {
+    background: rgba(0, 217, 255, 0.15);
+    color: var(--primary);
+}
+
+.tier-badge-mini[title="Skill File"] {
+    background: rgba(183, 148, 246, 0.15);
+    color: var(--purple);
+}
+
+.tier-badge-mini[title="Full Package"] {
+    background: rgba(0, 210, 106, 0.15);
+    color: var(--green);
 }
 
 /* --------------------------------------------------------------------------
@@ -1555,17 +1080,8 @@ a.btn-invoke {
 }
 
 /* --------------------------------------------------------------------------
-   Online/Offline Status
+   Online/Offline Status & Offline Card
    -------------------------------------------------------------------------- */
-.skill-status.online {
-    color: #00ff88;
-}
-
-.skill-status.offline {
-    color: #ff6464;
-}
-
-/* Offline card styling */
 .skill-card-offline {
     opacity: 0.6;
     filter: grayscale(30%);
@@ -1582,13 +1098,13 @@ a.btn-invoke {
 }
 
 /* --------------------------------------------------------------------------
-   Transfer Type Labels (keeping for backwards compat)
+   Transfer Type Labels
    -------------------------------------------------------------------------- */
 .transfer-label {
     display: inline-flex;
     align-items: center;
     padding: 2px 8px;
-    border-radius: var(--radius-full, 50px);
+    border-radius: var(--radius-full);
     font-size: 0.7rem;
     font-weight: 500;
 }
@@ -1608,24 +1124,86 @@ a.btn-invoke {
    -------------------------------------------------------------------------- */
 .skill-card .price-from {
     font-size: 0.7rem;
-    color: var(--text-muted, #888);
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .skill-card .price-value {
-    font-family: var(--font-mono, 'Space Mono', monospace);
+    font-family: var(--font-mono);
     font-weight: 700;
-    color: var(--primary, #00d9ff);
+    color: var(--primary);
 }
 
 /* --------------------------------------------------------------------------
-   Invoke Button as Link
+   Responsive
    -------------------------------------------------------------------------- */
-a.btn-invoke {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    text-decoration: none;
+@media (max-width: 900px) {
+    .legend-items {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .tier-legend {
+        padding: 16px 20px;
+    }
+    
+    .legend-item {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .marketplace-header {
+        padding: 120px 0 40px;
+    }
+    
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-ticker {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        text-align: center;
+    }
+    
+    .ticker-divider {
+        display: none;
+    }
+    
+    .ticker-item {
+        min-width: 0;
+    }
+    
+    .filter-chips {
+        gap: 6px;
+    }
+    
+    .chip {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .skill-card {
+        padding: 20px;
+    }
+    
+    .modal-content {
+        padding: 24px;
+    }
+    
+    .invoice-amount {
+        font-size: 2rem;
+    }
+    
+    .qr-placeholder {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .search-box input::placeholder {
+        font-size: 0.9rem;
+    }
 }
