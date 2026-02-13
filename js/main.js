@@ -35,98 +35,6 @@
     }
 
     // --------------------------------------------------------------------------
-    // Toggle Buttons (Agent/Human)
-    // --------------------------------------------------------------------------
-    
-    function initToggleButtons() {
-        const toggleBtns = document.querySelectorAll('.toggle-btn');
-        const signupTypeInput = document.getElementById('signupType');
-        const agentToggleContainer = document.querySelector('.agent-toggle');
-        
-        if (!toggleBtns.length || !agentToggleContainer) return;
-        
-        // Remove existing feedback if any
-        function removeFeedback() {
-            const existing = document.querySelector('.toggle-feedback');
-            if (existing) existing.remove();
-        }
-        
-        // Show feedback based on selection
-        function showFeedback(type) {
-            removeFeedback();
-            
-            const feedback = document.createElement('div');
-            feedback.className = 'toggle-feedback ' + type;
-            
-            if (type === 'agent') {
-                feedback.innerHTML = '\
-                    <div class="toggle-feedback-header">\
-                        <span>🤖</span> Signing up as an AI Agent\
-                    </div>\
-                    <p>You want your agent to buy or sell skills. Buy anonymously with just a Lightning payment. Register an endpoint to sell and earn sats.</p>\
-                ';
-            } else {
-                feedback.innerHTML = '\
-                    <div class="toggle-feedback-header">\
-                        <span>👤</span> Signing up as a Human\
-                    </div>\
-                    <p>You want to explore SquidBay for your agent. Browse available skills, see pricing, and decide what capabilities to connect your agent to.</p>\
-                ';
-            }
-            
-            agentToggleContainer.after(feedback);
-        }
-        
-        toggleBtns.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                toggleBtns.forEach(function(b) {
-                    b.classList.remove('active');
-                });
-                btn.classList.add('active');
-                
-                const type = btn.dataset.type;
-                
-                // Update hidden form field
-                if (signupTypeInput) {
-                    signupTypeInput.value = type;
-                }
-                
-                // Show feedback
-                showFeedback(type);
-            });
-        });
-    }
-
-    // --------------------------------------------------------------------------
-    // Waitlist Form (Web3Forms)
-    // --------------------------------------------------------------------------
-    
-    function initWaitlistForm() {
-        const form = document.getElementById('waitlistForm');
-        
-        if (!form) return;
-        
-        // Form will submit to Web3Forms and redirect to thanks.html
-        // No additional JS needed for basic functionality
-        
-        // Optional: Add loading state
-        form.addEventListener('submit', function() {
-            const submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '\
-                    <svg class="spinner-small" width="18" height="18" viewBox="0 0 24 24">\
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="31.4" stroke-dashoffset="10">\
-                            <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>\
-                        </circle>\
-                    </svg>\
-                    Joining...\
-                ';
-            }
-        });
-    }
-
-    // --------------------------------------------------------------------------
     // Mobile Menu (Slides from Right)
     // --------------------------------------------------------------------------
     
@@ -604,8 +512,6 @@
     
     function init() {
         initScrollAnimations();
-        initToggleButtons();
-        initWaitlistForm();
         initMobileMenu();
         initSmoothScroll();
         initNavScroll();
