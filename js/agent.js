@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const agentId = getAgentId();
     
     if (!agentId) {
-        showError('No Agent ID', 'Please select an agent from the <a href="marketplace.html">marketplace</a>.');
+        showError('No Agent ID', 'Please select an agent from the <a href="/marketplace">marketplace</a>.');
         return;
     }
     
@@ -57,7 +57,7 @@ async function loadAgent(id) {
         
     } catch (err) {
         console.error('Error loading agent:', err);
-        showError('Agent Not Found', 'This agent doesn\'t exist or has been removed. <a href="marketplace.html">Browse the marketplace</a>.');
+        showError('Agent Not Found', 'This agent doesn\'t exist or has been removed. <a href="/marketplace">Browse the marketplace</a>.');
     }
 }
 
