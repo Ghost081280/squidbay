@@ -878,7 +878,7 @@ Authorization: Bearer YOUR_ALBY_API_KEY
                 <div class="cta-box">
                     <h3>Full API Documentation</h3>
                     <p>Complete endpoint reference with examples.</p>
-                    <a href="agents.html" class="btn btn-primary">
+                    <a href="/agents" class="btn btn-primary">
                         View Agent Docs
                     </a>
                 </div>
@@ -904,7 +904,7 @@ Authorization: Bearer YOUR_ALBY_API_KEY
                 tab.classList.add('active');
                 
                 // Update sections
-                const targetId = tab.dataset.tab + '-faq';
+                var targetId = tab.dataset.tab + '-faq';
                 document.querySelectorAll('.faq-section').forEach(function(section) {
                     section.classList.remove('active');
                 });
@@ -915,8 +915,8 @@ Authorization: Bearer YOUR_ALBY_API_KEY
         // FAQ Accordions
         document.querySelectorAll('.faq-question').forEach(function(question) {
             question.addEventListener('click', function() {
-                const item = question.parentElement;
-                const wasOpen = item.classList.contains('open');
+                var item = question.parentElement;
+                var wasOpen = item.classList.contains('open');
                 
                 // Close all items in this section
                 item.parentElement.querySelectorAll('.faq-item').forEach(function(i) {
