@@ -1,6 +1,8 @@
 /**
  * SquidBay - Agent Profile Page JS
  * js/agent.js
+ * Supports vanity URLs: /agent/squidbot → agent.html?name=squidbot
+ * Also supports legacy: agent.html?id=uuid
  */
 
 const API_BASE = 'https://squidbay-api-production.up.railway.app';
@@ -14,28 +16,45 @@ let agentReviews = [];
  * Initialize on page load
  */
 document.addEventListener('DOMContentLoaded', () => {
-    const agentId = getAgentId();
+    const params = new URLSearchParams(window.location.search);
+    const agentName = params.get('name');
+    const agentId = params.get('id');
     
-    if (!agentId) {
+    if (agentName) {
+        // Vanity URL: /agent/squidbot → agent.html?name=squidbot
+        loadAgentByName(agentName);
+    } else if (agentId) {
+        // Legacy URL: agent.html?id=uuid
+        loadAgentById(agentId);
+    } else {
         showError('No Agent ID', 'Please select an agent from the <a href="/marketplace">marketplace</a>.');
-        return;
     }
-    
-    loadAgent(agentId);
 });
 
 /**
- * Get agent ID from URL params
+ * Load agent by name (vanity URL)
  */
-function getAgentId() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('id');
+async function loadAgentByName(name) {
+    try {
+        const res = await fetch(`${API_BASE}/agents/by-name/${encodeURIComponent(name)}`);
+        if (!res.ok) throw new Error('Agent not found');
+        
+        const data = await res.json();
+        currentAgent = data.agent;
+        agentSkills = data.skills || [];
+        agentReviews = data.reviews || [];
+        
+        renderPage();
+    } catch (err) {
+        console.error('Error loading agent by name:', err);
+        showError('Agent Not Found', 'This agent doesn\'t exist or has been removed. <a href="/marketplace">Browse the marketplace</a>.');
+    }
 }
 
 /**
- * Load agent profile from API
+ * Load agent by ID (legacy URL) — then upgrade URL bar to vanity
  */
-async function loadAgent(id) {
+async function loadAgentById(id) {
     try {
         const res = await fetch(`${API_BASE}/agents/${id}`);
         if (!res.ok) throw new Error('Agent not found');
@@ -45,20 +64,60 @@ async function loadAgent(id) {
         agentSkills = data.skills || [];
         agentReviews = data.reviews || [];
         
-        // Update page title
-        document.title = `${currentAgent.agent_name} — SquidBay`;
+        // Upgrade URL bar to vanity URL (no reload)
+        if (currentAgent.agent_name) {
+            const vanityUrl = `/agent/${encodeURIComponent(currentAgent.agent_name)}`;
+            window.history.replaceState(null, '', vanityUrl);
+        }
         
-        // Render the page
-        renderAgentPage(currentAgent, agentSkills, agentReviews);
-        
-        // Hide loader, show content
-        document.getElementById('page-loader').classList.add('hidden');
-        document.getElementById('agent-content').classList.remove('hidden');
-        
+        renderPage();
     } catch (err) {
-        console.error('Error loading agent:', err);
+        console.error('Error loading agent by ID:', err);
         showError('Agent Not Found', 'This agent doesn\'t exist or has been removed. <a href="/marketplace">Browse the marketplace</a>.');
     }
+}
+
+/**
+ * Render the page after data is loaded
+ */
+function renderPage() {
+    // Update page title
+    document.title = `${currentAgent.agent_name} — SquidBay`;
+    
+    // Update og/canonical meta tags dynamically
+    updateMeta('og:title', `${currentAgent.agent_name} — SquidBay`);
+    updateMeta('og:description', currentAgent.bio || `${currentAgent.agent_name} on SquidBay — the AI agent skill marketplace`);
+    updateMeta('og:url', `https://squidbay.io/agent/${encodeURIComponent(currentAgent.agent_name)}`);
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.href = `https://squidbay.io/agent/${encodeURIComponent(currentAgent.agent_name)}`;
+    
+    // Render the page
+    renderAgentPage(currentAgent, agentSkills, agentReviews);
+    
+    // Hide loader, show content
+    document.getElementById('page-loader').classList.add('hidden');
+    document.getElementById('agent-content').classList.remove('hidden');
+}
+
+/**
+ * Update meta tag content
+ */
+function updateMeta(property, content) {
+    let el = document.querySelector(`meta[property="${property}"]`);
+    if (!el) {
+        el = document.querySelector(`meta[name="${property}"]`);
+    }
+    if (el) el.setAttribute('content', content);
+}
+
+/**
+ * Build vanity skill URL
+ */
+function skillVanityUrl(skill) {
+    if (skill.slug && currentAgent && currentAgent.agent_name) {
+        return `/skill/${encodeURIComponent(currentAgent.agent_name)}/${encodeURIComponent(skill.slug)}`;
+    }
+    return `/skill?id=${skill.id}`;
 }
 
 /**
@@ -150,7 +209,7 @@ function renderAgentPage(agent, skills, reviews) {
 }
 
 /**
- * Render a skill card for the agent page
+ * Render a skill card for the agent page — uses vanity URLs
  */
 function renderSkillCard(skill) {
     const icon = skill.icon || '🤖';
@@ -167,6 +226,9 @@ function renderSkillCard(skill) {
     const hasPkg = skill.price_full_package;
     const lowestPrice = getLowestPrice(skill);
     
+    // Vanity URL for this skill
+    const link = skillVanityUrl(skill);
+    
     // Build tier buttons (compact version for agent page)
     let tierButtons = '<div class="tier-buttons">';
     if (hasExec) {
@@ -181,7 +243,7 @@ function renderSkillCard(skill) {
     tierButtons += '</div>';
     
     return `
-        <a href="skill.html?id=${skill.id}" class="skill-card">
+        <a href="${link}" class="skill-card">
             <div class="skill-card-top">
                 <span class="skill-icon">${icon}</span>
             </div>
@@ -207,11 +269,15 @@ function renderSkillCard(skill) {
 }
 
 /**
- * Render a review card
+ * Render a review card — review skill links use vanity URLs
  */
 function renderReviewCard(review, agent) {
     const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
     const date = formatDate(review.created_at);
+    
+    // Build skill link — use vanity if we have the slug from the skills array
+    const matchedSkill = agentSkills.find(s => s.id === review.skill_id);
+    const skillLink = matchedSkill ? skillVanityUrl(matchedSkill) : `/skill?id=${review.skill_id}`;
     
     let replyHtml = '';
     if (review.reply) {
@@ -233,7 +299,7 @@ function renderReviewCard(review, agent) {
                 <span class="review-author">${esc(review.reviewer_name || 'Anonymous Agent')}</span>
                 <span class="review-stars">${stars}</span>
             </div>
-            <div class="review-skill">Re: <a href="skill.html?id=${review.skill_id}">${esc(review.skill_name)}</a></div>
+            <div class="review-skill">Re: <a href="${skillLink}">${esc(review.skill_name)}</a></div>
             ${review.comment ? `<p class="review-comment">${esc(review.comment)}</p>` : ''}
             <div class="review-date">${date}</div>
             ${replyHtml}
