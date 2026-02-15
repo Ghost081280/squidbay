@@ -5,35 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SquidBay</title>
     <script>
-        // GitHub Pages Clean URL Router
-        // Handles /marketplace → /marketplace.html, /about → /about.html, etc.
-        // Handles /agent/squidbot → /agent.html?name=squidbot
-        // Handles /skill/agentname/skill-slug → /skill.html?agent=agentname&slug=skill-slug
+        // GitHub Pages Clean URL Router (sessionStorage method — no URL flash)
+        // 
+        // How it works:
+        // 1. User visits /agent/squidbot
+        // 2. GitHub Pages serves this 404.html
+        // 3. We store the original path in sessionStorage
+        // 4. Redirect to the .html page with NO query params
+        // 5. The page JS reads sessionStorage to know what to load
+        // 6. Clean URL stays in the address bar the entire time
         
         (function() {
             var path = window.location.pathname;
-            
-            // Known clean URL pages (no query params needed)
-            var cleanPages = ['marketplace', 'agents', 'about', 'faq', 'privacy', 'terms', 'thanks'];
-            
-            // Strip trailing slash
             var cleanPath = path.replace(/\/$/, '');
-            
-            // Get path segments
             var segments = cleanPath.split('/').filter(Boolean);
+            
+            // Known clean URL pages
+            var cleanPages = ['marketplace', 'agents', 'about', 'faq', 'privacy', 'terms', 'thanks'];
             
             // 1. Vanity skill URL: /skill/agentname/skill-slug
             if (segments.length === 3 && segments[0] === 'skill') {
-                var agentName = segments[1];
-                var skillSlug = segments[2];
-                window.location.replace('/skill.html?agent=' + encodeURIComponent(agentName) + '&slug=' + encodeURIComponent(skillSlug) + window.location.hash);
+                sessionStorage.setItem('squidbay-route', JSON.stringify({
+                    type: 'skill-vanity',
+                    agentName: segments[1],
+                    slug: segments[2]
+                }));
+                window.location.replace('/skill.html');
                 return;
             }
             
             // 2. Vanity agent URL: /agent/name
             if (segments.length === 2 && segments[0] === 'agent') {
-                var name = segments[1];
-                window.location.replace('/agent.html?name=' + encodeURIComponent(name) + window.location.hash);
+                sessionStorage.setItem('squidbay-route', JSON.stringify({
+                    type: 'agent-vanity',
+                    name: segments[1]
+                }));
+                window.location.replace('/agent.html');
                 return;
             }
             
