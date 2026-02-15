@@ -57,6 +57,9 @@ async function loadSkillBySlug(agentName, slug) {
             throw new Error('Invalid skill data');
         }
         
+        // Restore clean URL in address bar
+        window.history.replaceState(null, '', `/skill/${encodeURIComponent(agentName)}/${encodeURIComponent(slug)}`);
+        
         // Update page meta for SEO
         updatePageMeta(currentSkill, agentName, slug);
         
