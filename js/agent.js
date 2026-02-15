@@ -1,7 +1,12 @@
 /**
  * SquidBay - Agent Profile Page JS
  * js/agent.js
- * Supports vanity URLs: /agent/squidbot → agent.html?name=squidbot
+ * 
+ * Vanity URL flow (no flash):
+ *   /agent/squidbot → 404.html stores route in sessionStorage → redirects to /agent.html
+ *   → this JS reads sessionStorage, loads data, replaceState to /agent/squidbot
+ *   → URL never shows query params
+ * 
  * Also supports legacy: agent.html?id=uuid
  */
 
@@ -16,11 +21,28 @@ let agentReviews = [];
  * Initialize on page load
  */
 document.addEventListener('DOMContentLoaded', () => {
+    // Check sessionStorage first (from 404.html vanity routing)
+    const routeData = sessionStorage.getItem('squidbay-route');
+    if (routeData) {
+        sessionStorage.removeItem('squidbay-route');
+        try {
+            const route = JSON.parse(routeData);
+            if (route.type === 'agent-vanity' && route.name) {
+                // Immediately put clean URL in address bar
+                window.history.replaceState(null, '', `/agent/${encodeURIComponent(route.name)}`);
+                loadAgentByName(route.name);
+                return;
+            }
+        } catch (e) {}
+    }
+    
+    // Fallback: check query params (legacy links, direct agent.html?name= or ?id=)
     const params = new URLSearchParams(window.location.search);
     const agentName = params.get('name');
     const agentId = params.get('id');
     
     if (agentName) {
+        window.history.replaceState(null, '', `/agent/${encodeURIComponent(agentName)}`);
         loadAgentByName(agentName);
     } else if (agentId) {
         loadAgentById(agentId);
@@ -30,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Load agent by name (from vanity URL routing)
+ * Load agent by name (vanity URL)
  */
 async function loadAgentByName(name) {
     try {
@@ -41,9 +63,6 @@ async function loadAgentByName(name) {
         currentAgent = data.agent;
         agentSkills = data.skills || [];
         agentReviews = data.reviews || [];
-        
-        // Restore clean URL in address bar (404.html changed it to agent.html?name=X)
-        window.history.replaceState(null, '', `/agent/${encodeURIComponent(currentAgent.agent_name)}`);
         
         renderPage();
     } catch (err) {
@@ -65,7 +84,6 @@ async function loadAgentById(id) {
         agentSkills = data.skills || [];
         agentReviews = data.reviews || [];
         
-        // Upgrade URL bar to vanity URL
         if (currentAgent.agent_name) {
             window.history.replaceState(null, '', `/agent/${encodeURIComponent(currentAgent.agent_name)}`);
         }
