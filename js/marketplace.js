@@ -1,7 +1,7 @@
 /**
  * SquidBay Marketplace - JavaScript
  * Connected to Railway Backend API
- * With Tiered Pricing Support
+ * With Tiered Pricing Support + Vanity URLs
  * ================================
  */
 
@@ -55,6 +55,43 @@
         'automation': '🤖',
         'uncategorized': '🤖'
     };
+
+    // --------------------------------------------------------------------------
+    // Vanity URL Helpers
+    // --------------------------------------------------------------------------
+    
+    /**
+     * Build skill URL — uses vanity URL if slug + agent_name available, else falls back to ?id=
+     */
+    function skillUrl(skill) {
+        if (skill.slug && skill.agent_name) {
+            return `/skill/${encodeURIComponent(skill.agent_name)}/${encodeURIComponent(skill.slug)}`;
+        }
+        return `/skill?id=${skill.id}`;
+    }
+    
+    /**
+     * Build skill URL with tier pre-selected
+     */
+    function skillTierUrl(skill, tier) {
+        if (skill.slug && skill.agent_name) {
+            return `/skill/${encodeURIComponent(skill.agent_name)}/${encodeURIComponent(skill.slug)}?tier=${tier}`;
+        }
+        return `/skill?id=${skill.id}&tier=${tier}`;
+    }
+    
+    /**
+     * Build agent profile URL — uses vanity URL if agent_name available
+     */
+    function agentUrl(skill) {
+        if (skill.agent_name) {
+            return `/agent/${encodeURIComponent(skill.agent_name)}`;
+        }
+        if (skill.agent_id) {
+            return `/agent?id=${skill.agent_id}`;
+        }
+        return '#';
+    }
 
     // --------------------------------------------------------------------------
     // Load Skills from API — with pagination
@@ -223,8 +260,7 @@
                 <div class="legend-item">
                     <span class="legend-icon pkg">📦</span>
                     <div class="legend-text">
-                        <strong>Full Package</strong>
-                        <span>Everything included. Blueprint + code your agent auto-installs and manages.</span>
+                        <strong>Everything included. Blueprint + code your agent auto-installs and manages.</strong>
                     </div>
                 </div>
             </div>
@@ -235,7 +271,7 @@
     }
 
     // --------------------------------------------------------------------------
-    // Render Skill Card (with Tier Buttons)
+    // Render Skill Card (with Tier Buttons + Vanity URLs)
     // --------------------------------------------------------------------------
     
     function renderSkillCard(skill) {
@@ -253,7 +289,7 @@
         
         // Agent identity
         const agentName = skill.agent_name || 'Agent-' + skill.id.substring(0, 6);
-        const agentLink = skill.agent_id ? `agent.html?id=${skill.agent_id}` : '#';
+        const agentLink = agentUrl(skill);
         const verified = skill.agent_card_verified === 1;
         const verifiedBadge = verified ? '<span title="Verified Agent" style="color: #00ff88; margin-left: 4px;">✓</span>' : '';
         
@@ -269,16 +305,19 @@
         const hasPkg = skill.price_full_package;
         const lowestPrice = getLowestPrice(skill);
         
-        // Build tier buttons - compact pills that link to skill page
+        // Vanity URLs for skill page
+        const skillLink = skillUrl(skill);
+        
+        // Build tier buttons - compact pills that link to skill page with vanity URLs
         let tierButtons = '<div class="tier-buttons">';
         if (hasExec) {
-            tierButtons += `<a href="skill.html?id=${skill.id}&tier=execution" class="tier-btn tier-exec" title="${(skill.price_execution || skill.price_sats).toLocaleString()} sats">⚡ Execution</a>`;
+            tierButtons += `<a href="${skillTierUrl(skill, 'execution')}" class="tier-btn tier-exec" title="${(skill.price_execution || skill.price_sats).toLocaleString()} sats">⚡ Execution</a>`;
         }
         if (hasFile) {
-            tierButtons += `<a href="skill.html?id=${skill.id}&tier=skill_file" class="tier-btn tier-file" title="${skill.price_skill_file.toLocaleString()} sats">📄 Skill File</a>`;
+            tierButtons += `<a href="${skillTierUrl(skill, 'skill_file')}" class="tier-btn tier-file" title="${skill.price_skill_file.toLocaleString()} sats">📄 Skill File</a>`;
         }
         if (hasPkg) {
-            tierButtons += `<a href="skill.html?id=${skill.id}&tier=full_package" class="tier-btn tier-pkg" title="${skill.price_full_package.toLocaleString()} sats">📦 Full Package</a>`;
+            tierButtons += `<a href="${skillTierUrl(skill, 'full_package')}" class="tier-btn tier-pkg" title="${skill.price_full_package.toLocaleString()} sats">📦 Full Package</a>`;
         }
         tierButtons += '</div>';
         
@@ -306,7 +345,7 @@
                     </div>
                 </div>
                 
-                <h3 class="skill-name"><a href="skill.html?id=${skill.id}" style="color: inherit; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00D9FF'" onmouseout="this.style.color='inherit'">${escapeHtml(skill.name)}</a></h3>
+                <h3 class="skill-name"><a href="${skillLink}" style="color: inherit; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00D9FF'" onmouseout="this.style.color='inherit'">${escapeHtml(skill.name)}</a></h3>
                 <p class="skill-description">${escapeHtml(skill.description)}</p>
                 
                 <!-- Tier Buttons -->
@@ -340,7 +379,7 @@
                     </div>
                 </div>
                 
-                <a href="skill.html?id=${skill.id}" class="btn-invoke">
+                <a href="${skillLink}" class="btn-invoke">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                     </svg>
@@ -657,7 +696,7 @@
         initFilters();
         
         console.log('🦑 SquidBay Marketplace ready!');
-        console.log('🦑 Tiered pricing enabled!');
+        console.log('🦑 Tiered pricing + vanity URLs enabled!');
     }
     
     if (document.readyState === 'loading') {
