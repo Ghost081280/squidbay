@@ -261,16 +261,6 @@ nav .container {
 }
 
 /* --------------------------------------------------------------------------
-   Global tap highlight & focus reset (mobile fix)
-   -------------------------------------------------------------------------- */
-* {
-    -webkit-tap-highlight-color: transparent;
-}
-button:focus, a:focus, .btn:focus, input:focus, select:focus, textarea:focus {
-    outline: none;
-}
-
-/* --------------------------------------------------------------------------
    Buttons
    -------------------------------------------------------------------------- */
 .btn {
