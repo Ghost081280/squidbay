@@ -6,16 +6,16 @@
 (function() {
     'use strict';
 
-    // Component paths
+    // Component paths (absolute — required for Railway server-side routing)
     const COMPONENTS = {
-        nav: 'components/nav.html',
-        footer: 'components/footer.html',
-        chatbot: 'components/chatbot.html'
+        nav: '/components/nav.html',
+        footer: '/components/footer.html',
+        chatbot: '/components/chatbot.html'
     };
     
     // Chatbot assets
-    const CHATBOT_CSS = 'components/chatbot.css';
-    const CHATBOT_JS = 'components/chatbot.js';
+    const CHATBOT_CSS = '/components/chatbot.css';
+    const CHATBOT_JS = '/components/chatbot.js';
 
     // Current page detection
     const currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
