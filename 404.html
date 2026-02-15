@@ -7,33 +7,43 @@
     <script>
         // GitHub Pages Clean URL Router
         // Handles /marketplace → /marketplace.html, /about → /about.html, etc.
-        // Also handles future /agent/name vanity URLs
+        // Handles /agent/squidbot → /agent.html?name=squidbot
+        // Handles /skill/agentname/skill-slug → /skill.html?agent=agentname&slug=skill-slug
         
         (function() {
             var path = window.location.pathname;
             
-            // Known clean URL pages (no query params)
+            // Known clean URL pages (no query params needed)
             var cleanPages = ['marketplace', 'agents', 'about', 'faq', 'privacy', 'terms', 'thanks'];
             
             // Strip trailing slash
             var cleanPath = path.replace(/\/$/, '');
             
-            // Get the last segment
-            var segment = cleanPath.split('/').pop();
+            // Get path segments
+            var segments = cleanPath.split('/').filter(Boolean);
             
-            // If it's a known page, redirect to .html version
-            if (cleanPages.indexOf(segment) !== -1) {
-                var newUrl = '/' + segment + '.html' + window.location.search + window.location.hash;
-                window.location.replace(newUrl);
+            // 1. Vanity skill URL: /skill/agentname/skill-slug
+            if (segments.length === 3 && segments[0] === 'skill') {
+                var agentName = segments[1];
+                var skillSlug = segments[2];
+                window.location.replace('/skill.html?agent=' + encodeURIComponent(agentName) + '&slug=' + encodeURIComponent(skillSlug) + window.location.hash);
                 return;
             }
             
-            // Future: Handle /agent/name vanity URLs
-            // var agentMatch = cleanPath.match(/^\/agent\/([a-zA-Z0-9_-]+)$/);
-            // if (agentMatch) {
-            //     window.location.replace('/agent.html?name=' + agentMatch[1]);
-            //     return;
-            // }
+            // 2. Vanity agent URL: /agent/name
+            if (segments.length === 2 && segments[0] === 'agent') {
+                var name = segments[1];
+                window.location.replace('/agent.html?name=' + encodeURIComponent(name) + window.location.hash);
+                return;
+            }
+            
+            // 3. Clean page URLs: /marketplace → /marketplace.html
+            var lastSegment = segments[segments.length - 1];
+            if (segments.length === 1 && cleanPages.indexOf(lastSegment) !== -1) {
+                var newUrl = '/' + lastSegment + '.html' + window.location.search + window.location.hash;
+                window.location.replace(newUrl);
+                return;
+            }
             
             // If nothing matched, show 404 page
         })();
@@ -87,7 +97,7 @@
             <p>This page doesn't exist in the deep. Maybe the squid ate it.</p>
             <div class="not-found-links">
                 <a href="/" class="btn btn-primary">Back to Home</a>
-                <a href="marketplace" class="btn btn-secondary">Browse Marketplace</a>
+                <a href="/marketplace" class="btn btn-secondary">Browse Marketplace</a>
             </div>
         </div>
     </div>
