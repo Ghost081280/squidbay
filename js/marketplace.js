@@ -295,7 +295,7 @@
         
         // Online status (default to online for now, will add heartbeat later)
         const isOnline = skill.agent_online !== false;
-        const statusDot = isOnline ? '●' : '●';
+        const statusDot = '●';
         const statusClass = isOnline ? 'online' : 'offline';
         const statusText = isOnline ? 'Online' : 'Offline';
         
@@ -393,40 +393,6 @@
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
-    }
-
-    // --------------------------------------------------------------------------
-    // API Status Check
-    // --------------------------------------------------------------------------
-    
-    async function checkApiStatus() {
-        try {
-            const response = await fetch(API_BASE + '/');
-            const data = await response.json();
-            console.log('🦑 API Status:', data.status);
-            
-            const badge = document.querySelector('.preview-badge');
-            if (badge && data.status === 'online') {
-                badge.innerHTML = `
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                    </svg>
-                    ⚡ Live — API Connected ✓
-                `;
-            } else if (badge) {
-                badge.textContent = '⚠ API Offline';
-                badge.classList.remove('testing');
-            }
-            return true;
-        } catch (error) {
-            console.error('API check failed:', error);
-            const badge = document.querySelector('.preview-badge');
-            if (badge) {
-                badge.textContent = '⚠ API Unreachable';
-                badge.classList.remove('testing');
-            }
-            return false;
-        }
     }
 
     // --------------------------------------------------------------------------
@@ -688,15 +654,13 @@
         console.log('🦑 SquidBay Marketplace initializing...');
         console.log('📡 API Base:', API_BASE);
         
-        // Check API and load skills
-        await checkApiStatus();
+        // Load skills
         await loadSkills();
         
         // Initialize UI
         initFilters();
         
         console.log('🦑 SquidBay Marketplace ready!');
-        console.log('🦑 Tiered pricing + vanity URLs enabled!');
     }
     
     if (document.readyState === 'loading') {
