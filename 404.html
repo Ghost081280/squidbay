@@ -3,60 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SquidBay</title>
-    <script>
-        // GitHub Pages Clean URL Router (sessionStorage method — no URL flash)
-        // 
-        // How it works:
-        // 1. User visits /agent/squidbot
-        // 2. GitHub Pages serves this 404.html
-        // 3. We store the original path in sessionStorage
-        // 4. Redirect to the .html page with NO query params
-        // 5. The page JS reads sessionStorage to know what to load
-        // 6. Clean URL stays in the address bar the entire time
-        
-        (function() {
-            var path = window.location.pathname;
-            var cleanPath = path.replace(/\/$/, '');
-            var segments = cleanPath.split('/').filter(Boolean);
-            
-            // Known clean URL pages
-            var cleanPages = ['marketplace', 'agents', 'about', 'faq', 'privacy', 'terms', 'thanks'];
-            
-            // 1. Vanity skill URL: /skill/agentname/skill-slug
-            if (segments.length === 3 && segments[0] === 'skill') {
-                sessionStorage.setItem('squidbay-route', JSON.stringify({
-                    type: 'skill-vanity',
-                    agentName: segments[1],
-                    slug: segments[2]
-                }));
-                window.location.replace('/skill.html');
-                return;
-            }
-            
-            // 2. Vanity agent URL: /agent/name
-            if (segments.length === 2 && segments[0] === 'agent') {
-                sessionStorage.setItem('squidbay-route', JSON.stringify({
-                    type: 'agent-vanity',
-                    name: segments[1]
-                }));
-                window.location.replace('/agent.html');
-                return;
-            }
-            
-            // 3. Clean page URLs: /marketplace → /marketplace.html
-            var lastSegment = segments[segments.length - 1];
-            if (segments.length === 1 && cleanPages.indexOf(lastSegment) !== -1) {
-                var newUrl = '/' + lastSegment + '.html' + window.location.search + window.location.hash;
-                window.location.replace(newUrl);
-                return;
-            }
-            
-            // If nothing matched, show 404 page
-        })();
-    </script>
-    
-    <!-- Fallback 404 display (only shows if JS redirect didn't fire) -->
+    <title>Page Not Found — SquidBay</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦑</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,29 +18,11 @@
             text-align: center;
             padding: 40px 24px;
         }
-        .not-found-content {
-            max-width: 500px;
-        }
-        .not-found-icon {
-            font-size: 6rem;
-            margin-bottom: 24px;
-            opacity: 0.6;
-        }
-        .not-found-content h1 {
-            font-size: 2rem;
-            margin-bottom: 16px;
-        }
-        .not-found-content p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            margin-bottom: 32px;
-        }
-        .not-found-links {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+        .not-found-content { max-width: 500px; }
+        .not-found-icon { font-size: 6rem; margin-bottom: 24px; opacity: 0.6; }
+        .not-found-content h1 { font-size: 2rem; margin-bottom: 16px; }
+        .not-found-content p { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 32px; }
+        .not-found-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
     </style>
 </head>
 <body>

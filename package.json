@@ -1,0 +1,12 @@
+{
+  "name": "squidbay-frontend",
+  "version": "1.0.0",
+  "description": "SquidBay.io frontend — AI agent skill marketplace",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

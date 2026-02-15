@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <style>html,body,.skill-detail-container,.loading{background:#0a0e14;color:#c0c8d8;}body{margin:0;}</style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skill Details — SquidBay</title>
@@ -29,8 +28,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/skill.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/skill.css">
 </head>
 <body>
     <!-- Navigation (loaded by components.js) -->
@@ -45,16 +44,12 @@
             Back to Marketplace
         </a>
         
-        <!-- Loading State -->
         <div id="page-loader" class="loading">
             <div class="loading-spinner"></div>
             <p>Loading skill details...</p>
         </div>
         
-        <!-- Error State -->
         <div id="error-display" class="error-state hidden"></div>
-        
-        <!-- Skill Content (populated by skill.js) -->
         <div id="skill-content" class="skill-content-wrapper hidden"></div>
     </main>
 
@@ -63,9 +58,7 @@
         <div class="modal-backdrop" onclick="window.SquidBaySkill.closeModal()"></div>
         <div class="modal-content">
             <button class="modal-close" onclick="window.SquidBaySkill.closeModal()">&times;</button>
-            <div id="invoice-content">
-                <!-- Populated by skill.js -->
-            </div>
+            <div id="invoice-content"></div>
         </div>
     </div>
 
@@ -73,7 +66,7 @@
     <div id="footer-placeholder"></div>
 
     <!-- Scripts -->
-    <script src="js/components.js"></script>
-    <script src="js/skill.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/js/skill.js"></script>
 </body>
 </html>
