@@ -2,12 +2,11 @@
  * SquidBay - Agent Profile Page JS
  * js/agent.js
  * 
- * Vanity URL flow (no flash):
- *   /agent/squidbot → 404.html stores route in sessionStorage → redirects to /agent.html
- *   → this JS reads sessionStorage, loads data, replaceState to /agent/squidbot
- *   → URL never shows query params
+ * Server-side routing (Railway):
+ *   /agent/squidbot → Express serves agent.html → this JS reads window.location.pathname
+ *   No redirects, no sessionStorage, no query params, no flash
  * 
- * Also supports legacy: agent.html?id=uuid
+ * Legacy support: agent.html?id=uuid or agent.html?name=X still work
  */
 
 const API_BASE = 'https://squidbay-api-production.up.railway.app';
@@ -21,28 +20,20 @@ let agentReviews = [];
  * Initialize on page load
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Check sessionStorage first (from 404.html vanity routing)
-    const routeData = sessionStorage.getItem('squidbay-route');
-    if (routeData) {
-        sessionStorage.removeItem('squidbay-route');
-        try {
-            const route = JSON.parse(routeData);
-            if (route.type === 'agent-vanity' && route.name) {
-                // Immediately put clean URL in address bar
-                window.history.replaceState(null, '', `/agent/${encodeURIComponent(route.name)}`);
-                loadAgentByName(route.name);
-                return;
-            }
-        } catch (e) {}
+    // 1. Check URL path first: /agent/squidbot
+    const pathMatch = window.location.pathname.match(/^\/agent\/([^\/]+)\/?$/);
+    if (pathMatch) {
+        const name = decodeURIComponent(pathMatch[1]);
+        loadAgentByName(name);
+        return;
     }
     
-    // Fallback: check query params (legacy links, direct agent.html?name= or ?id=)
+    // 2. Fallback: query params (legacy links)
     const params = new URLSearchParams(window.location.search);
     const agentName = params.get('name');
     const agentId = params.get('id');
     
     if (agentName) {
-        window.history.replaceState(null, '', `/agent/${encodeURIComponent(agentName)}`);
         loadAgentByName(agentName);
     } else if (agentId) {
         loadAgentById(agentId);
@@ -52,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Load agent by name (vanity URL)
+ * Load agent by name
  */
 async function loadAgentByName(name) {
     try {
@@ -64,6 +55,12 @@ async function loadAgentByName(name) {
         agentSkills = data.skills || [];
         agentReviews = data.reviews || [];
         
+        // Ensure clean URL in address bar
+        const cleanUrl = `/agent/${encodeURIComponent(currentAgent.agent_name)}`;
+        if (window.location.pathname !== cleanUrl) {
+            window.history.replaceState(null, '', cleanUrl);
+        }
+        
         renderPage();
     } catch (err) {
         console.error('Error loading agent by name:', err);
@@ -72,7 +69,7 @@ async function loadAgentByName(name) {
 }
 
 /**
- * Load agent by ID (legacy URL) — then upgrade to vanity
+ * Load agent by ID (legacy) — then upgrade URL to vanity
  */
 async function loadAgentById(id) {
     try {
@@ -95,9 +92,6 @@ async function loadAgentById(id) {
     }
 }
 
-/**
- * Render the page after data is loaded
- */
 function renderPage() {
     document.title = `${currentAgent.agent_name} — SquidBay`;
     
@@ -167,22 +161,10 @@ function renderAgentPage(agent, skills, reviews) {
         </div>
         
         <div class="stats-bar">
-            <div class="stat-box">
-                <div class="stat-number">${totalSkills}</div>
-                <div class="stat-label">Skills</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number">${totalJobs.toLocaleString()}</div>
-                <div class="stat-label">Jobs Done</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number">⭐ ${avgRating || '0'}</div>
-                <div class="stat-label">Avg Rating</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number">${totalReviews}</div>
-                <div class="stat-label">Reviews</div>
-            </div>
+            <div class="stat-box"><div class="stat-number">${totalSkills}</div><div class="stat-label">Skills</div></div>
+            <div class="stat-box"><div class="stat-number">${totalJobs.toLocaleString()}</div><div class="stat-label">Jobs Done</div></div>
+            <div class="stat-box"><div class="stat-number">⭐ ${avgRating || '0'}</div><div class="stat-label">Avg Rating</div></div>
+            <div class="stat-box"><div class="stat-number">${totalReviews}</div><div class="stat-label">Reviews</div></div>
         </div>
         
         <section class="section">
@@ -220,25 +202,14 @@ function renderSkillCard(skill) {
     
     return `
         <a href="${link}" class="skill-card">
-            <div class="skill-card-top">
-                <span class="skill-icon">${icon}</span>
-            </div>
+            <div class="skill-card-top"><span class="skill-icon">${icon}</span></div>
             <h3 class="skill-name">${esc(skill.name)}</h3>
             <div class="skill-category">${category}</div>
             ${tierButtons}
             <div class="skill-summary-stats">
-                <div class="summary-stat">
-                    <span class="summary-label">From</span>
-                    <span class="summary-value price">${lowestPrice.toLocaleString()} sats</span>
-                </div>
-                <div class="summary-stat">
-                    <span class="summary-label">Response</span>
-                    <span class="summary-value">~${responseTime}</span>
-                </div>
-                <div class="summary-stat">
-                    <span class="summary-label">Success</span>
-                    <span class="summary-value success">${successRate}%</span>
-                </div>
+                <div class="summary-stat"><span class="summary-label">From</span><span class="summary-value price">${lowestPrice.toLocaleString()} sats</span></div>
+                <div class="summary-stat"><span class="summary-label">Response</span><span class="summary-value">~${responseTime}</span></div>
+                <div class="summary-stat"><span class="summary-label">Success</span><span class="summary-value success">${successRate}%</span></div>
             </div>
         </a>
     `;
