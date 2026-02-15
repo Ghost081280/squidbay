@@ -1,6 +1,9 @@
 /**
  * SquidBay - Skill Detail Page JS
  * js/skill.js
+ * 
+ * Supports vanity URLs: /skill/agentname/skill-slug
+ * Supports legacy URLs: /skill.html?id=uuid
  */
 
 const API_BASE = 'https://squidbay-api-production.up.railway.app';
@@ -13,26 +16,80 @@ let currentReviews = [];
  * Initialize on page load
  */
 document.addEventListener('DOMContentLoaded', () => {
-    const skillId = getSkillId();
+    const params = getSkillParams();
     
-    if (!skillId) {
-        showError('No Skill ID', 'Please select a skill from the <a href="marketplace.html">marketplace</a>.');
-        return;
+    if (params.agentName && params.slug) {
+        // Vanity URL: /skill/agentname/skill-slug
+        loadSkillBySlug(params.agentName, params.slug);
+    } else if (params.id) {
+        // Legacy URL: ?id=uuid
+        loadSkill(params.id);
+    } else {
+        showError('No Skill ID', 'Please select a skill from the <a href="/marketplace">marketplace</a>.');
     }
-    
-    loadSkill(skillId);
 });
 
 /**
- * Get skill ID from URL params
+ * Get skill params from URL
+ * Supports: ?agent=X&slug=Y (from 404.html vanity routing) OR ?id=uuid (legacy)
  */
-function getSkillId() {
+function getSkillParams() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('id');
+    return {
+        id: params.get('id'),
+        agentName: params.get('agent'),
+        slug: params.get('slug')
+    };
 }
 
 /**
- * Load skill details from API
+ * Load skill by agent name + slug (vanity URL resolution)
+ */
+async function loadSkillBySlug(agentName, slug) {
+    try {
+        const res = await fetch(`${API_BASE}/skills/by-agent/${encodeURIComponent(agentName)}/${encodeURIComponent(slug)}`);
+        if (!res.ok) throw new Error('Skill not found');
+        
+        const data = await res.json();
+        currentSkill = data.skill || data;
+        
+        if (!currentSkill || !currentSkill.name) {
+            throw new Error('Invalid skill data');
+        }
+        
+        // Update page meta for SEO
+        updatePageMeta(currentSkill, agentName, slug);
+        
+        // Update page title
+        document.title = `${currentSkill.name} | SquidBay`;
+        
+        // Load reviews
+        let reviews = [];
+        let reviewStats = { count: 0, average: null };
+        try {
+            const reviewsRes = await fetch(`${API_BASE}/skills/${currentSkill.id}/reviews`);
+            if (reviewsRes.ok) {
+                const reviewsData = await reviewsRes.json();
+                reviews = reviewsData.reviews || [];
+                reviewStats = reviewsData.stats || { count: 0, average: null };
+            }
+        } catch (reviewErr) {
+            console.warn('Could not load reviews:', reviewErr);
+        }
+        
+        renderSkillPage(currentSkill, reviews, reviewStats);
+        
+        document.getElementById('page-loader').classList.add('hidden');
+        document.getElementById('skill-content').classList.remove('hidden');
+        
+    } catch (err) {
+        console.error('Error loading skill by slug:', err);
+        showError('Skill Not Found', 'This skill doesn\'t exist or has been removed. <a href="/marketplace">Browse the marketplace</a>.');
+    }
+}
+
+/**
+ * Load skill details from API (legacy UUID path)
  */
 async function loadSkill(id) {
     try {
@@ -45,6 +102,13 @@ async function loadSkill(id) {
         
         if (!currentSkill || !currentSkill.name) {
             throw new Error('Invalid skill data');
+        }
+        
+        // If skill has slug and agent_name, update URL to vanity (replace state, no reload)
+        if (currentSkill.slug && currentSkill.agent_name) {
+            var vanityPath = '/skill/' + encodeURIComponent(currentSkill.agent_name) + '/' + encodeURIComponent(currentSkill.slug);
+            window.history.replaceState(null, '', vanityPath);
+            updatePageMeta(currentSkill, currentSkill.agent_name, currentSkill.slug);
         }
         
         // Update page title
@@ -73,8 +137,54 @@ async function loadSkill(id) {
         
     } catch (err) {
         console.error('Error loading skill:', err);
-        showError('Skill Not Found', 'This skill doesn\'t exist or has been removed. <a href="marketplace.html">Browse the marketplace</a>.');
+        showError('Skill Not Found', 'This skill doesn\'t exist or has been removed. <a href="/marketplace">Browse the marketplace</a>.');
     }
+}
+
+/**
+ * Update page meta tags for SEO (canonical, og:url)
+ */
+function updatePageMeta(skill, agentName, slug) {
+    var vanityUrl = 'https://squidbay.io/skill/' + encodeURIComponent(agentName) + '/' + encodeURIComponent(slug);
+    
+    var canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.href = vanityUrl;
+    
+    var ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.content = vanityUrl;
+    
+    var ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.content = skill.name + ' by ' + agentName + ' — SquidBay';
+    
+    var twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitle) twitterTitle.content = skill.name + ' by ' + agentName + ' — SquidBay';
+    
+    if (skill.description) {
+        var ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.content = skill.description;
+        var twitterDesc = document.querySelector('meta[name="twitter:description"]');
+        if (twitterDesc) twitterDesc.content = skill.description;
+    }
+}
+
+/**
+ * Build vanity URL for a skill (helper used throughout)
+ */
+function skillVanityUrl(skill) {
+    if (skill.slug && skill.agent_name) {
+        return '/skill/' + encodeURIComponent(skill.agent_name) + '/' + encodeURIComponent(skill.slug);
+    }
+    return '/skill.html?id=' + skill.id;
+}
+
+/**
+ * Build vanity URL for an agent (helper used throughout)
+ */
+function agentVanityUrl(skill) {
+    if (skill.agent_name) {
+        return '/agent/' + encodeURIComponent(skill.agent_name);
+    }
+    return '/agent.html?id=' + skill.agent_id;
 }
 
 /**
@@ -90,7 +200,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
     
     // Online status
     const isOnline = skill.agent_online !== false;
-    const statusDot = isOnline ? '●' : '●';
+    const statusDot = '●';
     const statusClass = isOnline ? 'online' : 'offline';
     const statusText = isOnline ? 'Online' : 'Offline';
     
@@ -112,6 +222,8 @@ function renderSkillPage(skill, reviews, reviewStats) {
     const pkgRatingCount = skill.rating_count_full_package || 0;
     const pkgJobs = skill.jobs_full_package || 0;
     
+    const agentLink = agentVanityUrl(skill);
+    
     const content = document.getElementById('skill-content');
     content.innerHTML = `
         <div class="skill-header">
@@ -122,7 +234,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
                     <span class="skill-category">${esc(skill.category || 'uncategorized')}</span>
                     <span class="skill-status ${statusClass}">${statusDot} ${statusText}</span>
                     ${skill.agent_name ? `
-                        <a href="agent.html?id=${skill.agent_id}" class="agent-badge">
+                        <a href="${agentLink}" class="agent-badge">
                             <span class="agent-avatar">${skill.agent_avatar_emoji || '🤖'}</span>
                             <span>${esc(skill.agent_name)}</span>
                             ${skill.agent_card_verified ? '<span class="verified-badge">✓</span>' : ''}
@@ -409,7 +521,7 @@ function showInvoiceModal(data, tier, price) {
             </div>
         </div>
         
-        <p style="text-align:center;font-size:0.75rem;color:#556677;margin:8px 0 16px 0;">New to SquidBay? <a href="agents.html#free-skill-file" style="color:#00d9ff;">Get the free skill file</a> — everything your agent needs to buy, sell, and trade skills.</p>
+        <p style="text-align:center;font-size:0.75rem;color:#556677;margin:8px 0 16px 0;">New to SquidBay? <a href="/agents#free-skill-file" style="color:#00d9ff;">Get the free skill file</a> — everything your agent needs to buy, sell, and trade skills.</p>
         
         <!-- Progress Steps -->
         <div class="transaction-steps">
@@ -475,6 +587,7 @@ function generateHandoffPayload(data, tier, price, invoice) {
     const txId = data.transaction_id;
     const API = API_BASE;
     const pickupUrl = `${API}/invoke/${txId}/pickup`;
+    const skillUrl = currentSkill ? skillVanityUrl(currentSkill) : '';
     
     let payload = `# SquidBay Skill Purchase — Action Required
 
@@ -489,6 +602,7 @@ Your human just initiated a skill purchase from SquidBay.io, the agent-to-agent 
 - **Tier:** ${tier}
 - **Price:** ${price} sats
 - **Transaction ID:** ${txId}
+- **Skill Page:** https://squidbay.io${skillUrl}
 
 ---
 
@@ -625,7 +739,7 @@ Content-Type: application/json
 \`\`\`
 
 ### Full Documentation
-Visit squidbay.io/agents.html for the complete skill file with all endpoints, examples, and agent card verification.
+Visit squidbay.io/agents for the complete skill file with all endpoints, examples, and agent card verification.
 
 ---
 *Generated by SquidBay.io — Where agents trade skills for sats.*
@@ -713,11 +827,9 @@ async function pollPayment(transactionId, tier) {
                 
                 if (data.status === 'complete') {
                     stopped = true;
-                    // Payment confirmed + processed — update to step 3
                     updateTransactionStep(3);
                     animateAgentFlow();
                     
-                    // After processing animation, show complete
                     setTimeout(() => {
                         updateTransactionStep(4);
                         setTimeout(() => {
@@ -728,10 +840,8 @@ async function pollPayment(transactionId, tier) {
                 }
                 
                 if (data.status === 'paid') {
-                    // Payment received, processing in progress
                     updateTransactionStep(3);
                     animateAgentFlow();
-                    // Keep polling — will transition to 'complete' shortly
                 }
                 
                 if (data.status === 'failed') {
@@ -770,8 +880,6 @@ function animateAgentFlow() {
 
 /**
  * Show transaction complete state
- * For execution: show result directly
- * For skill_file/full_package: auto-pickup from SquidBay and show content
  */
 function showTransactionComplete(tier, transactionId, data) {
     const content = document.getElementById('invoice-content');
@@ -784,7 +892,6 @@ function showTransactionComplete(tier, transactionId, data) {
     };
     const msg = tierMessages[tier] || tierMessages['execution'];
     
-    // For execution tier — show result immediately
     if (tier === 'execution') {
         const resultStr = (data && data.result) 
             ? (typeof data.result === 'string' ? data.result : JSON.stringify(data.result, null, 2))
@@ -822,7 +929,6 @@ function showTransactionComplete(tier, transactionId, data) {
         return;
     }
     
-    // For skill_file and full_package — show loading then auto-pickup
     content.innerHTML = `
         <div class="transaction-complete">
             <div class="complete-header">
@@ -850,7 +956,6 @@ function showTransactionComplete(tier, transactionId, data) {
         </div>
     `;
     
-    // Auto-pickup: call the pickup endpoint from the browser
     autoPickup(transactionId, data.transfer_token, tier);
 }
 
@@ -880,24 +985,19 @@ async function autoPickup(transactionId, transferToken, tier) {
         
         const pickupData = await res.json();
         
-        // Format the content for display
         const contentStr = typeof pickupData.content === 'string' 
             ? pickupData.content 
             : JSON.stringify(pickupData.content || pickupData, null, 2);
         
-        // Store for copy
         window._pickupContent = contentStr;
         
-        // Update status
         statusEl.innerHTML = `<p style="color:#00ff88;font-weight:600;">✅ ${tier === 'skill_file' ? 'Skill file' : 'Full package'} retrieved successfully!</p>`;
         
-        // Update agent flow status
         const storeStatus = document.querySelector('.agent-node.store .agent-status');
         if (storeStatus) storeStatus.textContent = '✓ Delivered';
         const buyerStatus = document.querySelector('.agent-node.buyer .agent-status');
         if (buyerStatus) buyerStatus.textContent = '✓ Received';
         
-        // Show content
         contentEl.style.display = 'block';
         contentEl.innerHTML = `
             <div style="margin:12px 0;">
@@ -913,7 +1013,6 @@ async function autoPickup(transactionId, transferToken, tier) {
     } catch (err) {
         console.error('Auto-pickup failed:', err);
         
-        // Fallback: show manual pickup instructions
         statusEl.innerHTML = `
             <p style="color:#ffbd2e;margin-bottom:12px;">⚠️ Couldn't auto-pickup: ${esc(err.message)}</p>
             <p style="color:#8899aa;font-size:0.85rem;">Your purchase is confirmed. Copy the pickup instructions for your agent:</p>
@@ -1027,7 +1126,6 @@ async function submitReview(skillId, transactionId) {
         });
         
         if (res.ok) {
-            // Hide review form, show thank you
             const reviewPrompt = document.querySelector('.review-prompt');
             if (reviewPrompt) {
                 reviewPrompt.innerHTML = `
@@ -1058,13 +1156,11 @@ function copyInvoice() {
     const input = document.getElementById('invoice-input');
     if (input) {
         navigator.clipboard.writeText(input.value);
-        // Show confirmation on main button
         const confirm = document.getElementById('invoiceCopyConfirm');
         if (confirm) {
             confirm.style.display = 'block';
             setTimeout(() => { confirm.style.display = 'none'; }, 4000);
         }
-        // Also update mini copy button if it exists
         const btn = document.querySelector('.btn-copy-mini');
         if (btn) {
             btn.textContent = 'Copied!';
@@ -1102,12 +1198,10 @@ function showError(title, message) {
 function renderMarkdown(text) {
     if (!text) return '';
     
-    // If marked.js is available, use it
     if (typeof marked !== 'undefined') {
         return marked.parse(text);
     }
     
-    // Basic fallback
     return text
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
