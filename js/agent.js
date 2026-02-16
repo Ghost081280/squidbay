@@ -14,7 +14,8 @@ const API_BASE = 'https://squidbay-api-production.up.railway.app';
 // State
 let currentAgent = null;
 let agentSkills = [];
-let agentReviews = [];
+let agentReviews = [];      // Agent-level reviews (shown in reviews section)
+let skillReviews = [];       // Skill reviews (used for stats only, shown on skill pages)
 
 /**
  * Initialize on page load
@@ -53,7 +54,8 @@ async function loadAgentByName(name) {
         const data = await res.json();
         currentAgent = data.agent;
         agentSkills = data.skills || [];
-        agentReviews = data.reviews || [];
+        agentReviews = data.agent_reviews || [];
+        skillReviews = data.skill_reviews || data.reviews || [];
         
         // Ensure clean URL in address bar
         const cleanUrl = `/agent/${encodeURIComponent(currentAgent.agent_name)}`;
@@ -79,7 +81,8 @@ async function loadAgentById(id) {
         const data = await res.json();
         currentAgent = data.agent;
         agentSkills = data.skills || [];
-        agentReviews = data.reviews || [];
+        agentReviews = data.agent_reviews || [];
+        skillReviews = data.skill_reviews || data.reviews || [];
         
         if (currentAgent.agent_name) {
             window.history.replaceState(null, '', `/agent/${encodeURIComponent(currentAgent.agent_name)}`);
@@ -122,9 +125,9 @@ function skillVanityUrl(skill) {
 function renderAgentPage(agent, skills, reviews) {
     const totalSkills = skills.length;
     const totalJobs = skills.reduce((sum, s) => sum + (s.success_count || 0) + (s.fail_count || 0), 0);
-    const totalReviews = skills.reduce((sum, s) => sum + (s.rating_count || 0), 0);
+    const totalSkillReviews = skills.reduce((sum, s) => sum + (s.rating_count || 0), 0);
     const totalRatingSum = skills.reduce((sum, s) => sum + (s.rating_sum || 0), 0);
-    const avgRating = totalReviews > 0 ? (totalRatingSum / totalReviews).toFixed(1) : null;
+    const avgRating = totalSkillReviews > 0 ? (totalRatingSum / totalSkillReviews).toFixed(1) : null;
     
     const isOnline = agent.online !== false;
     const statusClass = isOnline ? 'online' : 'offline';
@@ -164,7 +167,7 @@ function renderAgentPage(agent, skills, reviews) {
             <div class="stat-box"><div class="stat-number">${totalSkills}</div><div class="stat-label">Skills</div></div>
             <div class="stat-box"><div class="stat-number">${totalJobs.toLocaleString()}</div><div class="stat-label">Jobs Done</div></div>
             <div class="stat-box"><div class="stat-number">⭐ ${avgRating || '0'}</div><div class="stat-label">Avg Rating</div></div>
-            <div class="stat-box"><div class="stat-number">${totalReviews}</div><div class="stat-label">Reviews</div></div>
+            <div class="stat-box"><div class="stat-number">${totalSkillReviews}</div><div class="stat-label">Skill Reviews</div></div>
         </div>
         
         <section class="section">
@@ -175,9 +178,9 @@ function renderAgentPage(agent, skills, reviews) {
         </section>
         
         <section class="section">
-            <h2 class="section-title">Reviews (${reviews.length})</h2>
+            <h2 class="section-title">Agent Reviews (${agentReviews.length})</h2>
             <div class="reviews-list">
-                ${reviews.length > 0 ? reviews.map(r => renderReviewCard(r, agent)).join('') : '<p class="empty-state">No reviews yet — be the first buyer!</p>'}
+                ${agentReviews.length > 0 ? agentReviews.map(r => renderAgentReviewCard(r, agent)).join('') : '<p class="empty-state">No agent reviews yet. Reviews here reflect the overall experience working with this agent. Individual skill reviews appear on each skill\'s page.</p>'}
             </div>
         </section>
     `;
@@ -215,6 +218,37 @@ function renderSkillCard(skill) {
     `;
 }
 
+function renderAgentReviewCard(review, agent) {
+    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+    const date = formatDate(review.created_at);
+    
+    let replyHtml = '';
+    if (review.reply) {
+        replyHtml = `
+            <div class="review-reply">
+                <div class="reply-header">
+                    <span class="reply-author">${esc(agent.agent_name)} replied</span>
+                    <span class="reply-date">${formatDate(review.reply_at)}</span>
+                </div>
+                <p class="reply-text">${esc(review.reply)}</p>
+            </div>
+        `;
+    }
+    
+    return `
+        <div class="review-card">
+            <div class="review-header">
+                <span class="review-author">${esc(review.reviewer_name || 'Anonymous Agent')}</span>
+                <span class="review-stars">${stars}</span>
+            </div>
+            ${review.comment ? `<p class="review-comment">${esc(review.comment)}</p>` : ''}
+            <div class="review-date">${date}</div>
+            ${replyHtml}
+        </div>
+    `;
+}
+
+// Legacy: renderReviewCard for skill reviews (kept for backwards compat if needed)
 function renderReviewCard(review, agent) {
     const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
     const date = formatDate(review.created_at);
