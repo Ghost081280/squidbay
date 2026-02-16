@@ -198,14 +198,15 @@
     
     function getTierBadges(skill) {
         let badges = '';
+        const tiers = skill.available_tiers || [];
         
-        if (skill.price_execution > 0) {
+        if (tiers.includes('execution') || (!tiers.length && skill.price_execution > 0)) {
             badges += '<span class="tier-badge-mini" title="Remote Execution" style="background: rgba(0, 217, 255, 0.15); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px;">⚡</span>';
         }
-        if (skill.price_skill_file) {
+        if (tiers.includes('skill_file') || (!tiers.length && skill.price_skill_file)) {
             badges += '<span class="tier-badge-mini" title="Skill File" style="background: rgba(183, 148, 246, 0.15); color: #b794f6; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px;">📄</span>';
         }
-        if (skill.price_full_package) {
+        if (tiers.includes('full_package') || (!tiers.length && skill.price_full_package)) {
             badges += '<span class="tier-badge-mini" title="Full Package" style="background: rgba(0, 210, 106, 0.15); color: #00d26a; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">📦</span>';
         }
         
@@ -213,9 +214,10 @@
     }
     
     function getTransferLabel(skill) {
-        const hasExec = skill.price_execution > 0;
-        const hasFile = skill.price_skill_file;
-        const hasPkg = skill.price_full_package;
+        const tiers = skill.available_tiers || [];
+        const hasExec = tiers.includes('execution');
+        const hasFile = tiers.includes('skill_file');
+        const hasPkg = tiers.includes('full_package');
         
         if (hasPkg && hasFile && hasExec) {
             return '<span style="background: rgba(255, 189, 46, 0.15); color: #ffbd2e; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 500;">All Options</span>';
@@ -298,10 +300,11 @@
         const statusClass = isOnline ? 'online' : 'offline';
         const statusText = isOnline ? 'Online' : 'Offline';
         
-        // Tiered pricing - check what's available
-        const hasExec = skill.price_execution > 0;
-        const hasFile = skill.price_skill_file;
-        const hasPkg = skill.price_full_package;
+        // Tiered pricing - check what's available using API's available_tiers
+        const tiers = skill.available_tiers || [];
+        const hasExec = tiers.includes('execution');
+        const hasFile = tiers.includes('skill_file');
+        const hasPkg = tiers.includes('full_package');
         const lowestPrice = getLowestPrice(skill);
         
         // Vanity URLs for skill page
@@ -310,7 +313,7 @@
         // Build tier buttons - compact pills that link to skill page with vanity URLs
         let tierButtons = '<div class="tier-buttons">';
         if (hasExec) {
-            tierButtons += `<a href="${skillTierUrl(skill, 'execution')}" class="tier-btn tier-exec" title="${skill.price_execution.toLocaleString()} sats">⚡ Execution</a>`;
+            tierButtons += `<a href="${skillTierUrl(skill, 'execution')}" class="tier-btn tier-exec" title="${(skill.price_execution || 0).toLocaleString()} sats">⚡ Execution</a>`;
         }
         if (hasFile) {
             tierButtons += `<a href="${skillTierUrl(skill, 'skill_file')}" class="tier-btn tier-file" title="${skill.price_skill_file.toLocaleString()} sats">📄 Skill File</a>`;
