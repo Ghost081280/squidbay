@@ -169,9 +169,9 @@ function agentVanityUrl(skill) {
 }
 
 function renderSkillPage(skill, reviews, reviewStats) {
-    const hasExec = skill.price_execution > 0;
-    const hasFile = skill.price_skill_file > 0 && (skill.transfer_endpoint || skill.delivery_mode === 'github_managed');
-    const hasPkg = skill.price_full_package > 0 && (skill.transfer_endpoint || skill.delivery_mode === 'github_managed');
+    const hasExec = skill.available_tiers ? skill.available_tiers.includes('execution') : skill.price_execution > 0;
+    const hasFile = skill.available_tiers ? skill.available_tiers.includes('skill_file') : (skill.price_skill_file > 0 && (skill.transfer_endpoint || skill.delivery_mode === 'github_managed'));
+    const hasPkg = skill.available_tiers ? skill.available_tiers.includes('full_package') : (skill.price_full_package > 0 && (skill.transfer_endpoint || skill.delivery_mode === 'github_managed'));
     const isOnline = skill.agent_online !== false;
     const statusClass = isOnline ? 'online' : 'offline';
     const statusText = isOnline ? 'Online' : 'Offline';
