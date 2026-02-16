@@ -124,7 +124,7 @@ function skillVanityUrl(skill) {
 
 function renderAgentPage(agent, skills, reviews) {
     const totalSkills = skills.length;
-    const totalJobs = skills.reduce((sum, s) => sum + (s.success_count || 0) + (s.fail_count || 0), 0);
+    const totalJobs = skills.reduce((sum, s) => sum + (s.success_count || 0), 0);
     const totalSkillReviews = skills.reduce((sum, s) => sum + (s.rating_count || 0), 0);
     const totalRatingSum = skills.reduce((sum, s) => sum + (s.rating_sum || 0), 0);
     const avgRating = totalSkillReviews > 0 ? (totalRatingSum / totalSkillReviews).toFixed(1) : null;

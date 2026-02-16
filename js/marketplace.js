@@ -280,7 +280,7 @@
         const category = skill.category ? skill.category.charAt(0).toUpperCase() + skill.category.slice(1) : 'Uncategorized';
         const successRate = skill.success_rate || 100;
         const responseTime = skill.avg_response_ms ? (skill.avg_response_ms / 1000).toFixed(1) + 's' : '~2s';
-        const totalJobs = (skill.success_count || 0) + (skill.fail_count || 0);
+        const totalJobs = (skill.success_count || 0);
         
         // Real ratings — from actual reviews, not fake 5.0
         const ratingCount = skill.rating_count || 0;
