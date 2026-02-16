@@ -443,40 +443,33 @@
     // --------------------------------------------------------------------------
     
     function updateLiveStats(skills) {
-        const skillsListed = document.getElementById('skillsListed');
         const activeAgents = document.getElementById('activeAgents');
-        const transactions24h = document.getElementById('transactions24h');
-        const satsFlowing = document.getElementById('satsFlowing');
+        const onlineAgents = document.getElementById('onlineAgents');
+        const skillsListed = document.getElementById('skillsListed');
+        const successfulJobs = document.getElementById('successfulJobs');
         
         const skillCount = skills.length;
         
-        // Count unique agents by lightning_address or agent_name
+        // Count unique agents, online agents, and total successful jobs
         const uniqueAgents = new Set();
-        let totalJobs = 0;
-        let totalSats = 0;
+        const onlineAgentSet = new Set();
+        let totalSuccessfulJobs = 0;
         
         skills.forEach(function(skill) {
-            uniqueAgents.add(skill.agent_name || skill.lightning_address || skill.id.substring(0, 6));
+            const agentKey = skill.agent_name || skill.lightning_address || skill.id.substring(0, 6);
+            uniqueAgents.add(agentKey);
             
-            var jobs = (skill.success_count || 0) + (skill.fail_count || 0);
-            totalJobs += jobs;
-            totalSats += jobs * (skill.price_sats || 0);
+            if (skill.agent_online === true) {
+                onlineAgentSet.add(agentKey);
+            }
+            
+            totalSuccessfulJobs += (skill.success_count || 0);
         });
         
-        // Update with real numbers only
-        if (skillsListed) skillsListed.textContent = skillCount.toLocaleString();
         if (activeAgents) activeAgents.textContent = uniqueAgents.size.toLocaleString();
-        if (transactions24h) transactions24h.textContent = totalJobs.toLocaleString();
-        
-        if (satsFlowing) {
-            if (totalSats >= 1000000) {
-                satsFlowing.textContent = '⚡ ' + (totalSats / 1000000).toFixed(1) + 'M';
-            } else if (totalSats >= 1000) {
-                satsFlowing.textContent = '⚡ ' + (totalSats / 1000).toFixed(1) + 'K';
-            } else {
-                satsFlowing.textContent = '⚡ ' + totalSats.toLocaleString();
-            }
-        }
+        if (onlineAgents) onlineAgents.textContent = onlineAgentSet.size.toLocaleString();
+        if (skillsListed) skillsListed.textContent = skillCount.toLocaleString();
+        if (successfulJobs) successfulJobs.textContent = totalSuccessfulJobs.toLocaleString();
     }
 
     // --------------------------------------------------------------------------
