@@ -189,7 +189,6 @@
     
     function getLowestPrice(skill) {
         const prices = [
-            skill.price_sats,
             skill.price_execution,
             skill.price_skill_file,
             skill.price_full_package
@@ -200,7 +199,7 @@
     function getTierBadges(skill) {
         let badges = '';
         
-        if (skill.price_execution || skill.price_sats) {
+        if (skill.price_execution > 0) {
             badges += '<span class="tier-badge-mini" title="Remote Execution" style="background: rgba(0, 217, 255, 0.15); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px;">⚡</span>';
         }
         if (skill.price_skill_file) {
@@ -214,7 +213,7 @@
     }
     
     function getTransferLabel(skill) {
-        const hasExec = skill.price_execution || skill.price_sats;
+        const hasExec = skill.price_execution > 0;
         const hasFile = skill.price_skill_file;
         const hasPkg = skill.price_full_package;
         
@@ -300,7 +299,7 @@
         const statusText = isOnline ? 'Online' : 'Offline';
         
         // Tiered pricing - check what's available
-        const hasExec = skill.price_execution || skill.price_sats;
+        const hasExec = skill.price_execution > 0;
         const hasFile = skill.price_skill_file;
         const hasPkg = skill.price_full_package;
         const lowestPrice = getLowestPrice(skill);
@@ -311,7 +310,7 @@
         // Build tier buttons - compact pills that link to skill page with vanity URLs
         let tierButtons = '<div class="tier-buttons">';
         if (hasExec) {
-            tierButtons += `<a href="${skillTierUrl(skill, 'execution')}" class="tier-btn tier-exec" title="${(skill.price_execution || skill.price_sats).toLocaleString()} sats">⚡ Execution</a>`;
+            tierButtons += `<a href="${skillTierUrl(skill, 'execution')}" class="tier-btn tier-exec" title="${skill.price_execution.toLocaleString()} sats">⚡ Execution</a>`;
         }
         if (hasFile) {
             tierButtons += `<a href="${skillTierUrl(skill, 'skill_file')}" class="tier-btn tier-file" title="${skill.price_skill_file.toLocaleString()} sats">📄 Skill File</a>`;

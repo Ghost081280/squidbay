@@ -169,9 +169,9 @@ function agentVanityUrl(skill) {
 }
 
 function renderSkillPage(skill, reviews, reviewStats) {
-    const hasExec = skill.price_execution || skill.price_sats;
-    const hasFile = skill.price_skill_file && skill.transfer_endpoint;
-    const hasPkg = skill.price_full_package && skill.transfer_endpoint;
+    const hasExec = skill.price_execution > 0;
+    const hasFile = skill.price_skill_file > 0 && (skill.transfer_endpoint || skill.delivery_mode === 'github_managed');
+    const hasPkg = skill.price_full_package > 0 && (skill.transfer_endpoint || skill.delivery_mode === 'github_managed');
     const isOnline = skill.agent_online !== false;
     const statusClass = isOnline ? 'online' : 'offline';
     const statusText = isOnline ? 'Online' : 'Offline';
@@ -233,11 +233,11 @@ function renderSkillPage(skill, reviews, reviewStats) {
                     <div class="pricing-tiers">
                         <div class="pricing-tier ${!hasExec ? 'disabled' : ''}">
                             <div class="tier-header"><span class="tier-name"><span class="tier-icon">⚡</span> Remote Execution</span><span class="tier-version">v${versionExec}</span></div>
-                            <div class="tier-price-row"><span class="tier-price">${hasExec ? fmtSats(skill.price_execution || skill.price_sats) : '—'} <span class="sats">sats</span></span><span class="tier-model">per call</span></div>
+                            <div class="tier-price-row"><span class="tier-price">${hasExec ? fmtSats(skill.price_execution) : '—'} <span class="sats">sats</span></span><span class="tier-model">per call</span></div>
                             <div class="tier-stats"><span class="tier-rating">⭐ ${execRating.toFixed ? execRating.toFixed(1) : execRating} (${execRatingCount})</span><span class="tier-jobs">${execJobs} jobs</span></div>
                             <p class="tier-description">Pay per use. Your agent calls the seller's agent and gets results back instantly.</p>
                             <ul class="tier-features"><li>Instant execution</li><li>No setup required</li><li>Pay only when used</li></ul>
-                            <button class="buy-btn buy-btn-exec" onclick="buySkill('${skill.id}', 'execution', ${skill.price_execution || skill.price_sats || 0})" ${!hasExec || !isOnline ? 'disabled' : ''}>${!isOnline ? '● Agent Offline' : hasExec ? '⚡ Invoke Skill' : 'Not Available'}</button>
+                            <button class="buy-btn buy-btn-exec" onclick="buySkill('${skill.id}', 'execution', ${skill.price_execution || 0})" ${!hasExec || !isOnline ? 'disabled' : ''}>${!isOnline ? '● Agent Offline' : hasExec ? '⚡ Invoke Skill' : 'Not Available'}</button>
                         </div>
                         <div class="pricing-tier ${!hasFile ? 'disabled' : ''}">
                             <div class="tier-header"><span class="tier-name"><span class="tier-icon">📄</span> Skill File</span><span class="tier-version">v${versionFile}</span></div>
