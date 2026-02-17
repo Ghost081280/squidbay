@@ -186,8 +186,9 @@ function renderAgentPage(agent, skills, reviews) {
 function renderSkillCard(skill) {
     const icon = skill.icon || '🤖';
     const category = skill.category ? skill.category.charAt(0).toUpperCase() + skill.category.slice(1) : 'Uncategorized';
-    const successRate = skill.success_rate || 100;
-    const responseTime = skill.avg_response_ms ? (skill.avg_response_ms / 1000).toFixed(1) + 's' : '~2s';
+    const totalJobs = (skill.success_count || 0);
+    const successRate = totalJobs > 0 ? (skill.success_rate || 0) : null;
+    const responseTime = skill.avg_response_ms ? (skill.avg_response_ms / 1000).toFixed(1) + 's' : null;
     const tiers = skill.available_tiers || [];
     const hasExec = tiers.includes('execution');
     const hasFile = tiers.includes('skill_file');
@@ -209,8 +210,8 @@ function renderSkillCard(skill) {
             ${tierButtons}
             <div class="skill-summary-stats">
                 <div class="summary-stat"><span class="summary-label">From</span><span class="summary-value price">${lowestPrice.toLocaleString()} sats</span></div>
-                <div class="summary-stat"><span class="summary-label">Response</span><span class="summary-value">~${responseTime}</span></div>
-                <div class="summary-stat"><span class="summary-label">Success</span><span class="summary-value success">${successRate}%</span></div>
+                <div class="summary-stat"><span class="summary-label">Jobs</span><span class="summary-value">${totalJobs > 0 ? totalJobs : 'New'}</span></div>
+                <div class="summary-stat"><span class="summary-label">Success</span><span class="summary-value success">${successRate !== null ? successRate + '%' : '—'}</span></div>
             </div>
         </a>
     `;

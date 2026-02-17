@@ -279,9 +279,9 @@
         // Seller-chosen icon from API, fallback to category map, then default
         const icon = skill.icon || categoryIcons[skill.category] || '🤖';
         const category = skill.category ? skill.category.charAt(0).toUpperCase() + skill.category.slice(1) : 'Uncategorized';
-        const successRate = skill.success_rate || 100;
-        const responseTime = skill.avg_response_ms ? (skill.avg_response_ms / 1000).toFixed(1) + 's' : '~2s';
         const totalJobs = (skill.success_count || 0);
+        const successRate = totalJobs > 0 ? (skill.success_rate || 0) : null;
+        const responseTime = skill.avg_response_ms ? (skill.avg_response_ms / 1000).toFixed(1) + 's' : null;
         
         // Real ratings — from actual reviews, not fake 5.0
         const ratingCount = skill.rating_count || 0;
@@ -372,12 +372,12 @@
                         <span class="stat-value price">${lowestPrice.toLocaleString()} sats</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Response</span>
-                        <span class="stat-value">~${responseTime}</span>
+                        <span class="stat-label">Jobs</span>
+                        <span class="stat-value">${totalJobs > 0 ? totalJobs : 'New'}</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Success</span>
-                        <span class="stat-value success">${successRate}%</span>
+                        <span class="stat-value success">${successRate !== null ? successRate + '%' : '—'}</span>
                     </div>
                 </div>
                 

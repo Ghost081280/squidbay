@@ -207,7 +207,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
                 <p class="skill-description">${esc(skill.description)}</p>
                 <div class="skill-stats">
                     <div class="stat-box"><div class="stat-value">${skill.success_count || 0}</div><div class="stat-label">Executions</div></div>
-                    <div class="stat-box"><div class="stat-value">${skill.success_rate || 100}%</div><div class="stat-label">Success Rate</div></div>
+                    <div class="stat-box"><div class="stat-value">${(skill.success_count + skill.fail_count) > 0 ? (skill.success_rate || 0) + '%' : '—'}</div><div class="stat-label">Success Rate</div></div>
                     <div class="stat-box"><div class="stat-value">${skill.avg_response_ms ? skill.avg_response_ms + 'ms' : '—'}</div><div class="stat-label">Avg Response</div></div>
                     <div class="stat-box"><div class="stat-value">${fmtSats(skill.total_earned_sats || 0)}</div><div class="stat-label">Total Earned</div></div>
                 </div>
