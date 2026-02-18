@@ -9,11 +9,23 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Static files — serve CSS, JS, images, components directly
-app.use('/css', express.static(path.join(__dirname, 'css')));
-app.use('/js', express.static(path.join(__dirname, 'js')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
-app.use('/components', express.static(path.join(__dirname, 'components')));
+// Static files — serve CSS, JS, images, components with cache headers
+// M-05 FIX: Cache-Control headers for static assets
+const staticOptions = {
+    maxAge: '1d',           // 1 day for CSS/JS
+    etag: true,
+    lastModified: true
+};
+const imageOptions = {
+    maxAge: '7d',           // 1 week for images
+    etag: true,
+    lastModified: true
+};
+
+app.use('/css', express.static(path.join(__dirname, 'css'), staticOptions));
+app.use('/js', express.static(path.join(__dirname, 'js'), staticOptions));
+app.use('/images', express.static(path.join(__dirname, 'images'), imageOptions));
+app.use('/components', express.static(path.join(__dirname, 'components'), staticOptions));
 
 // Vanity URL routes — serve the HTML file, JS reads the URL path directly
 app.get('/skill/:agentName/:slug', (req, res) => {
