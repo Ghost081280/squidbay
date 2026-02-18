@@ -26,6 +26,8 @@
     </style>
 </head>
 <body>
+    <div id="nav-placeholder"></div>
+
     <div class="not-found">
         <div class="not-found-content">
             <div class="not-found-icon">🦑</div>
@@ -37,5 +39,15 @@
             </div>
         </div>
     </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="/js/components.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+        // L-06: Log 404 hits for broken link visibility
+        console.warn('404 hit:', window.location.pathname + window.location.search);
+    </script>
 </body>
 </html>
