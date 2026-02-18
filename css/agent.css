@@ -464,9 +464,7 @@
     margin: 0 auto 20px;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
+/* F-09: @keyframes spin removed — defined once in styles.css */
 
 .error-state {
     text-align: center;

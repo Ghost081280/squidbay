@@ -72,9 +72,7 @@
     animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
+/* F-09: @keyframes spin removed — defined once in styles.css */
 
 .empty-state {
     text-align: center;
@@ -1001,21 +999,45 @@
     border-radius: 4px;
     font-size: 0.7rem;
     font-weight: 500;
+    margin-right: 4px;
 }
 
+/* F-11: Class-based selectors (JS no longer uses inline styles) */
+.tier-badge-exec,
 .tier-badge-mini[title="Remote Execution"] {
     background: rgba(0, 217, 255, 0.15);
-    color: var(--primary);
+    color: #00d9ff;
 }
 
+.tier-badge-file,
 .tier-badge-mini[title="Skill File"] {
     background: rgba(183, 148, 246, 0.15);
-    color: var(--purple);
+    color: #b794f6;
 }
 
+.tier-badge-pkg,
 .tier-badge-mini[title="Full Package"] {
     background: rgba(0, 210, 106, 0.15);
-    color: var(--green);
+    color: #00d26a;
+    margin-right: 0;
+}
+
+/* Transfer labels */
+.transfer-label {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.transfer-label-all {
+    background: rgba(255, 189, 46, 0.15);
+    color: #ffbd2e;
+}
+
+.transfer-label-own {
+    background: rgba(0, 210, 106, 0.15);
+    color: #00d26a;
 }
 
 /* --------------------------------------------------------------------------
