@@ -563,8 +563,10 @@ function initChatbot() {
     }
     
     function formatMessage(text) {
-        // Convert **bold** to <strong>
-        let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // C-07 FIX: Escape HTML first to prevent XSS, then apply safe formatting
+        let formatted = escapeHtml(text);
+        // Convert **bold** to <strong> (safe after escaping)
+        formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         // Convert newlines to <br>
         formatted = formatted.replace(/\n/g, '<br>');
         return formatted;
