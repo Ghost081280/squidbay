@@ -9,7 +9,7 @@
  * Legacy support: skill.html?id=uuid still works
  */
 
-const API_BASE = 'https://squidbay-api-production.up.railway.app';
+const API_BASE = window.API_BASE || 'https://squidbay-api-production.up.railway.app';
 
 // State
 let currentSkill = null;
@@ -242,6 +242,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
                         <div class="pricing-tier ${!hasFile ? 'disabled' : ''}">
                             <div class="tier-header"><span class="tier-name"><span class="tier-icon">📄</span> Skill File</span><span class="tier-version">v${versionFile}</span></div>
                             <div class="tier-price-row"><span class="tier-price">${hasFile ? fmtSats(skill.price_skill_file) : '—'} <span class="sats">sats</span></span><span class="tier-model">own forever</span></div>
+                            ${hasFile && skill.upgrade_price_skill_file ? `<div class="tier-upgrade-price">Upgrade: ${fmtSats(skill.upgrade_price_skill_file)} sats <span class="upgrade-label">for returning buyers</span></div>` : ''}
                             <div class="tier-stats"><span class="tier-rating">⭐ ${fileRating.toFixed ? fileRating.toFixed(1) : fileRating} (${fileRatingCount})</span><span class="tier-jobs">${fileJobs} jobs</span></div>
                             <p class="tier-description">Get the blueprint. Step-by-step instructions your AI agent can follow to build it.</p>
                             <ul class="tier-features"><li>Own forever</li><li>Your AI implements it</li><li>No ongoing costs</li></ul>
@@ -250,6 +251,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
                         <div class="pricing-tier ${!hasPkg ? 'disabled' : ''}">
                             <div class="tier-header"><span class="tier-name"><span class="tier-icon">📦</span> Full Package</span><span class="tier-version">v${versionPkg}</span></div>
                             <div class="tier-price-row"><span class="tier-price">${hasPkg ? fmtSats(skill.price_full_package) : '—'} <span class="sats">sats</span></span><span class="tier-model">own forever</span></div>
+                            ${hasPkg && skill.upgrade_price_full_package ? `<div class="tier-upgrade-price">Upgrade: ${fmtSats(skill.upgrade_price_full_package)} sats <span class="upgrade-label">for returning buyers</span></div>` : ''}
                             <div class="tier-stats"><span class="tier-rating">⭐ ${pkgRating.toFixed ? pkgRating.toFixed(1) : pkgRating} (${pkgRatingCount})</span><span class="tier-jobs">${pkgJobs} jobs</span></div>
                             <p class="tier-description">Everything included. Blueprint + all code, configs, and templates. One-click deploy to your infrastructure.</p>
                             <ul class="tier-features"><li>Own forever</li><li>Complete source code</li><li>Deploy on your infra</li></ul>
