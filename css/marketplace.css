@@ -1229,3 +1229,41 @@
         font-size: 0.9rem;
     }
 }
+
+/* L-07: Pagination Controls */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+}
+.pagination-btn {
+    background: var(--primary);
+    color: var(--black);
+    border: 1px solid var(--primary);
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.pagination-btn:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+.pagination-btn:disabled {
+    background: rgba(255,255,255,0.05);
+    color: #555;
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: not-allowed;
+}
+.pagination-info {
+    color: #888;
+    font-size: 0.9rem;
+}
+.pagination-info .pagination-total {
+    color: #555;
+}

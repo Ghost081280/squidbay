@@ -10,6 +10,7 @@
     /* Primary - Teal/Cyan accent */
     --primary: #00D9FF;
     --primary-dark: #00B8D9;
+    --primary-light: #33E5FF;
     --primary-glow: rgba(0, 217, 255, 0.15);
     
     /* Background - Deep ocean */
@@ -900,7 +901,7 @@ nav .container {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all var(--transition);
+    transition: all var(--transition-base);
 }
 
 .chat-send-btn:disabled {
