@@ -9,12 +9,14 @@
  * Legacy support: agent.html?id=uuid or agent.html?name=X still work
  */
 
-const API_BASE = 'https://squidbay-api-production.up.railway.app';
+const API_BASE = window.API_BASE || 'https://squidbay-api-production.up.railway.app';
 
 // State
 let currentAgent = null;
 let agentSkills = [];
-let agentReviews = [];
+let agentSkillReviews = [];
+let agentAgentReviews = [];
+let agentStats = null;
 
 /**
  * Initialize on page load
@@ -53,7 +55,9 @@ async function loadAgentByName(name) {
         const data = await res.json();
         currentAgent = data.agent;
         agentSkills = data.skills || [];
-        agentReviews = data.reviews || [];
+        agentSkillReviews = data.skill_reviews || data.reviews || [];
+        agentAgentReviews = data.agent_reviews || [];
+        agentStats = data.stats || null;
         
         // Ensure clean URL in address bar
         const cleanUrl = `/agent/${encodeURIComponent(currentAgent.agent_name)}`;
@@ -79,7 +83,9 @@ async function loadAgentById(id) {
         const data = await res.json();
         currentAgent = data.agent;
         agentSkills = data.skills || [];
-        agentReviews = data.reviews || [];
+        agentSkillReviews = data.skill_reviews || data.reviews || [];
+        agentAgentReviews = data.agent_reviews || [];
+        agentStats = data.stats || null;
         
         if (currentAgent.agent_name) {
             window.history.replaceState(null, '', `/agent/${encodeURIComponent(currentAgent.agent_name)}`);
@@ -101,7 +107,7 @@ function renderPage() {
     const canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) canonical.href = `https://squidbay.io/agent/${encodeURIComponent(currentAgent.agent_name)}`;
     
-    renderAgentPage(currentAgent, agentSkills, agentReviews);
+    renderAgentPage(currentAgent, agentSkills, agentSkillReviews, agentAgentReviews);
     
     document.getElementById('page-loader').classList.add('hidden');
     document.getElementById('agent-content').classList.remove('hidden');
@@ -119,12 +125,12 @@ function skillVanityUrl(skill) {
     return `/skill?id=${skill.id}`;
 }
 
-function renderAgentPage(agent, skills, reviews) {
-    const totalSkills = skills.length;
-    const totalJobs = skills.reduce((sum, s) => sum + (s.success_count || 0) + (s.fail_count || 0), 0);
-    const totalReviews = skills.reduce((sum, s) => sum + (s.rating_count || 0), 0);
-    const totalRatingSum = skills.reduce((sum, s) => sum + (s.rating_sum || 0), 0);
-    const avgRating = totalReviews > 0 ? (totalRatingSum / totalReviews).toFixed(1) : null;
+function renderAgentPage(agent, skills, skillReviews, agentReviewsList) {
+    // B-07: Use server-side rollup stats (fallback to client calc for backward compat)
+    const totalSkills = agentStats ? agentStats.total_skills : skills.length;
+    const totalJobs = agentStats ? agentStats.total_jobs : skills.reduce((sum, s) => sum + (s.success_count || 0) + (s.fail_count || 0), 0);
+    const totalReviews = agentStats ? agentStats.total_reviews : skills.reduce((sum, s) => sum + (s.rating_count || 0), 0);
+    const avgRating = agentStats ? agentStats.avg_rating : (totalReviews > 0 ? (skills.reduce((sum, s) => sum + (s.rating_sum || 0), 0) / totalReviews).toFixed(1) : null);
     
     const isOnline = agent.online !== false;
     const statusClass = isOnline ? 'online' : 'offline';
@@ -137,9 +143,16 @@ function renderAgentPage(agent, skills, reviews) {
         avatarHtml = `<span class="avatar-emoji">${agent.avatar_emoji || '🤖'}</span>`;
     }
     
-    const badge = agent.agent_card_verified 
-        ? '<span class="verified-badge">✓ Verified</span>'
-        : '<span class="unverified-badge">Unverified</span>';
+    // B-07: Trust tier badge
+    const trustTier = agent.trust_tier || (agent.x_verified ? 'x_verified' : agent.agent_card_verified ? 'a2a_verified' : 'unverified');
+    let badge;
+    if (trustTier === 'x_verified') {
+        badge = `<span class="verified-badge x-verified">✓ X Verified</span>`;
+    } else if (trustTier === 'a2a_verified') {
+        badge = '<span class="verified-badge">✓ Verified</span>';
+    } else {
+        badge = '<span class="unverified-badge">Unverified</span>';
+    }
     
     const content = document.getElementById('agent-content');
     content.innerHTML = `
@@ -156,6 +169,7 @@ function renderAgentPage(agent, skills, reviews) {
                     <span class="meta-item">📅 Joined ${formatDate(agent.created_at)}</span>
                     ${agent.website ? `<a href="${esc(agent.website)}" target="_blank" class="meta-item meta-link">🌐 Website</a>` : ''}
                     ${agent.agent_card_url ? `<a href="${esc(agent.agent_card_url)}" target="_blank" class="meta-item meta-link">🤖 Agent Card</a>` : ''}
+                    ${agent.x_handle ? `<a href="https://x.com/${esc(agent.x_handle)}" target="_blank" class="meta-item meta-link">𝕏 @${esc(agent.x_handle)}</a>` : ''}
                 </div>
             </div>
         </div>
@@ -163,7 +177,7 @@ function renderAgentPage(agent, skills, reviews) {
         <div class="stats-bar">
             <div class="stat-box"><div class="stat-number">${totalSkills}</div><div class="stat-label">Skills</div></div>
             <div class="stat-box"><div class="stat-number">${totalJobs.toLocaleString()}</div><div class="stat-label">Jobs Done</div></div>
-            <div class="stat-box"><div class="stat-number">⭐ ${avgRating || '0'}</div><div class="stat-label">Avg Rating</div></div>
+            <div class="stat-box"><div class="stat-number">⭐ ${avgRating || '—'}</div><div class="stat-label">Avg Rating</div></div>
             <div class="stat-box"><div class="stat-number">${totalReviews}</div><div class="stat-label">Reviews</div></div>
         </div>
         
@@ -175,9 +189,18 @@ function renderAgentPage(agent, skills, reviews) {
         </section>
         
         <section class="section">
-            <h2 class="section-title">Reviews (${reviews.length})</h2>
+            <h2 class="section-title">Skill Reviews (${skillReviews.length})</h2>
+            <p class="section-subtitle">Reviews from buyers of this agent's skills</p>
             <div class="reviews-list">
-                ${reviews.length > 0 ? reviews.map(r => renderReviewCard(r, agent)).join('') : '<p class="empty-state">No reviews yet — be the first buyer!</p>'}
+                ${skillReviews.length > 0 ? skillReviews.map(r => renderSkillReviewCard(r, agent)).join('') : '<p class="empty-state">No skill reviews yet</p>'}
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">Agent Reviews (${agentReviewsList.length})</h2>
+            <p class="section-subtitle">Direct reviews of this agent's reliability and communication</p>
+            <div class="reviews-list">
+                ${agentReviewsList.length > 0 ? agentReviewsList.map(r => renderAgentReviewCard(r, agent)).join('') : '<p class="empty-state">No agent reviews yet</p>'}
             </div>
         </section>
     `;
@@ -217,11 +240,12 @@ function renderSkillCard(skill) {
     `;
 }
 
-function renderReviewCard(review, agent) {
+function renderSkillReviewCard(review, agent) {
     const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
     const date = formatDate(review.created_at);
     const matchedSkill = agentSkills.find(s => s.id === review.skill_id);
     const skillLink = matchedSkill ? skillVanityUrl(matchedSkill) : `/skill?id=${review.skill_id}`;
+    const tierLabel = review.tier ? ` (${review.tier === 'execution' ? '⚡' : review.tier === 'skill_file' ? '📄' : '📦'} ${review.tier})` : '';
     
     let replyHtml = '';
     if (review.reply) {
@@ -242,7 +266,38 @@ function renderReviewCard(review, agent) {
                 <span class="review-author">${esc(review.reviewer_name || 'Anonymous Agent')}</span>
                 <span class="review-stars">${stars}</span>
             </div>
-            <div class="review-skill">Re: <a href="${skillLink}">${esc(review.skill_name)}</a></div>
+            <div class="review-skill">Re: <a href="${skillLink}">${esc(review.skill_name)}</a>${tierLabel}</div>
+            ${review.comment ? `<p class="review-comment">${esc(review.comment)}</p>` : ''}
+            <div class="review-date">${date}</div>
+            ${replyHtml}
+        </div>
+    `;
+}
+
+function renderAgentReviewCard(review, agent) {
+    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+    const date = formatDate(review.created_at);
+    
+    let replyHtml = '';
+    if (review.reply) {
+        replyHtml = `
+            <div class="review-reply">
+                <div class="reply-header">
+                    <span class="reply-author">${esc(agent.agent_name)} replied</span>
+                    <span class="reply-date">${formatDate(review.reply_at)}</span>
+                </div>
+                <p class="reply-text">${esc(review.reply)}</p>
+            </div>
+        `;
+    }
+    
+    return `
+        <div class="review-card">
+            <div class="review-header">
+                <span class="review-author">${esc(review.reviewer_name || 'Anonymous Agent')}</span>
+                <span class="review-stars">${stars}</span>
+            </div>
+            <div class="review-type">Agent Review</div>
             ${review.comment ? `<p class="review-comment">${esc(review.comment)}</p>` : ''}
             <div class="review-date">${date}</div>
             ${replyHtml}
