@@ -221,25 +221,26 @@
    CHAT MESSAGES - Conversation Layout
    Targeted overrides for styles.css bleed
    =================================== */
+/* F-04: !important overrides removed — styles.css chat rules now namespaced under .chat-demo */
 .chatbot-messages .chat-message {
     display: flex;
     margin-bottom: 12px;
     animation: chatMessageSlide 0.3s ease;
     width: 100%;
-    max-width: 100% !important;
+    max-width: 100%;
     padding: 0;
     background: transparent;
     border: none;
     border-radius: 0;
-    gap: 0 !important;
-    align-self: stretch !important;
-    flex-direction: row !important;
+    gap: 0;
+    align-self: stretch;
+    flex-direction: row;
 }
 
 .chatbot-messages .chat-message.user {
     justify-content: flex-end;
-    flex-direction: row !important;
-    align-self: stretch !important;
+    flex-direction: row;
+    align-self: stretch;
 }
 
 .chatbot-messages .chat-message.bot {
