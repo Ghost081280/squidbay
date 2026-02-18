@@ -12,7 +12,8 @@
     // API Configuration
     // --------------------------------------------------------------------------
     
-    const API_BASE = 'https://squidbay-api-production.up.railway.app';
+    // F-01: Use centralized config
+    const API_BASE = (window.SQUIDBAY_CONFIG && window.SQUIDBAY_CONFIG.API_BASE) || 'https://squidbay-api-production.up.railway.app';
     
     // Category icons mapping — dynamic, grows with marketplace
     const categoryIcons = {
@@ -201,13 +202,13 @@
         const tiers = skill.available_tiers || [];
         
         if (tiers.includes('execution') || (!tiers.length && skill.price_execution > 0)) {
-            badges += '<span class="tier-badge-mini" title="Remote Execution" style="background: rgba(0, 217, 255, 0.15); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px;">⚡</span>';
+            badges += '<span class="tier-badge-mini tier-badge-exec" title="Remote Execution">⚡</span>';
         }
         if (tiers.includes('skill_file') || (!tiers.length && skill.price_skill_file)) {
-            badges += '<span class="tier-badge-mini" title="Skill File" style="background: rgba(183, 148, 246, 0.15); color: #b794f6; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px;">📄</span>';
+            badges += '<span class="tier-badge-mini tier-badge-file" title="Skill File">📄</span>';
         }
         if (tiers.includes('full_package') || (!tiers.length && skill.price_full_package)) {
-            badges += '<span class="tier-badge-mini" title="Full Package" style="background: rgba(0, 210, 106, 0.15); color: #00d26a; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">📦</span>';
+            badges += '<span class="tier-badge-mini tier-badge-pkg" title="Full Package">📦</span>';
         }
         
         return badges;
@@ -220,9 +221,9 @@
         const hasPkg = tiers.includes('full_package');
         
         if (hasPkg && hasFile && hasExec) {
-            return '<span style="background: rgba(255, 189, 46, 0.15); color: #ffbd2e; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 500;">All Options</span>';
+            return '<span class="transfer-label transfer-label-all">All Options</span>';
         } else if (hasPkg || hasFile) {
-            return '<span style="background: rgba(0, 210, 106, 0.15); color: #00d26a; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 500;">Own It</span>';
+            return '<span class="transfer-label transfer-label-own">Own It</span>';
         }
         return '';
     }
@@ -478,146 +479,7 @@
     // Invoke Modal - Real API Connection
     // --------------------------------------------------------------------------
     
-    window.showInvokeModal = async function(skillName, agent, price, skillId) {
-        const modal = document.getElementById('invokeModal');
-        const content = document.getElementById('modalContent');
-        
-        if (!modal || !content) {
-            console.error('Modal elements not found');
-            return;
-        }
-        
-        // Show loading first
-        content.innerHTML = `
-            <div class="processing-animation">
-                <div class="spinner"></div>
-                <h3>Connecting to API...</h3>
-                <p>Generating Lightning invoice</p>
-            </div>
-        `;
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        
-        // Create real invoice from API
-        let invoiceData = null;
-        if (skillId) {
-            try {
-                const response = await fetch(API_BASE + '/invoke', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        skill_id: skillId,
-                        params: { demo: true }
-                    })
-                });
-                if (response.ok) {
-                    invoiceData = await response.json();
-                }
-            } catch (error) {
-                console.log('Invoice creation failed:', error);
-            }
-        }
-        
-        // Use real invoice or show error
-        if (invoiceData && invoiceData.invoice) {
-            const invoiceString = invoiceData.invoice.substring(0, 50);
-            const transactionId = invoiceData.transaction_id;
-            const usdAmount = (price * 0.0004).toFixed(2);
-            
-            content.innerHTML = `
-                <div class="modal-header">
-                    <h3>⚡ Invoke ${escapeHtml(skillName)}</h3>
-                    <p>Provider: ${escapeHtml(agent)}</p>
-                </div>
-                <div class="invoice-display">
-                    <div class="invoice-amount">${price.toLocaleString()} sats</div>
-                    <div class="invoice-usd">≈ $${usdAmount} USD</div>
-                    <div class="qr-placeholder">
-                        <div class="qr-center-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="invoice-string">${invoiceString}...</div>
-                    <div class="transaction-id">TX: ${transactionId.substring(0, 8)}...</div>
-                </div>
-                <div class="agent-note">
-                    <span class="agent-note-icon">🤖</span>
-                    <span>Your AI Agent will complete this transaction</span>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                    <button class="btn btn-primary" onclick="simulatePayment('${escapeHtml(skillName)}', ${price}, '${transactionId}')">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                        </svg>
-                        Simulate Payment
-                    </button>
-                </div>
-            `;
-        } else {
-            content.innerHTML = `
-                <div class="modal-header">
-                    <h3>⚠️ Invoice Error</h3>
-                    <p>Could not generate Lightning invoice</p>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn btn-primary" onclick="closeModal()" style="width: 100%;">Close</button>
-                </div>
-            `;
-        }
-    };
-    
-    window.simulatePayment = function(skillName, price, transactionId) {
-        const content = document.getElementById('modalContent');
-        
-        content.innerHTML = `
-            <div class="processing-animation">
-                <div class="spinner"></div>
-                <h3>Processing Payment...</h3>
-                <p>Waiting for Lightning confirmation</p>
-            </div>
-        `;
-        
-        setTimeout(function() {
-            content.innerHTML = `
-                <div class="processing-animation">
-                    <div class="spinner"></div>
-                    <h3>Payment Confirmed!</h3>
-                    <p>Executing skill...</p>
-                </div>
-            `;
-            
-            setTimeout(function() {
-                showSuccess(skillName, price, transactionId);
-            }, 1500);
-        }, 2000);
-    };
-    
-    function showSuccess(skillName, price, transactionId) {
-        const content = document.getElementById('modalContent');
-        
-        content.innerHTML = `
-            <div class="success-animation">
-                <div class="success-icon-large">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </div>
-                <h3>Skill Executed!</h3>
-                <p>${price.toLocaleString()} sats paid • ~2.1s execution time</p>
-                <div class="result-box">
-                    <div class="result-label">Result</div>
-                    <div class="result-value">Skill completed successfully ✓</div>
-                </div>
-                <div class="transaction-complete">Transaction: ${transactionId.substring(0, 8)}... ✓</div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-primary" onclick="closeModal()" style="width: 100%;">Done</button>
-            </div>
-        `;
-    }
+    // F-02: Invoke modal removed — purchases happen on skill detail page (skill.html)
     
     window.closeModal = function() {
         const modal = document.getElementById('invokeModal');
