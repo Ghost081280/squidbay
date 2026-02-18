@@ -37,7 +37,7 @@ app.get('/agent/:name', (req, res) => {
 });
 
 // Clean page URLs (no .html needed)
-const pages = ['marketplace', 'agents', 'about', 'faq', 'privacy', 'terms', 'thanks', 'api', 'refund'];
+const pages = ['marketplace', 'agents', 'about', 'faq', 'help', 'privacy', 'terms', 'thanks', 'api', 'refund'];
 pages.forEach(page => {
     app.get(`/${page}`, (req, res) => {
         res.sendFile(path.join(__dirname, `${page}.html`));
