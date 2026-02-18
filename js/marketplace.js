@@ -160,15 +160,16 @@
         if (totalPages > 1) {
             const nav = document.createElement('div');
             nav.id = 'paginationNav';
-            nav.style.cssText = 'text-align: center; padding: 30px 0; grid-column: 1 / -1; display: flex; justify-content: center; align-items: center; gap: 12px;';
+            nav.className = 'pagination-controls';
+            nav.style.cssText = 'grid-column: 1 / -1;';
             
             const prevDisabled = currentPage === 0;
             const nextDisabled = currentPage >= totalPages - 1;
             
             nav.innerHTML = `
-                <button onclick="window.goToPage(${currentPage - 1})" ${prevDisabled ? 'disabled' : ''} style="background: ${prevDisabled ? 'rgba(255,255,255,0.05)' : '#00D9FF'}; color: ${prevDisabled ? '#555' : '#000'}; border: ${prevDisabled ? '1px solid rgba(255,255,255,0.1)' : '1px solid #00D9FF'}; padding: 10px 22px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: ${prevDisabled ? 'not-allowed' : 'pointer'}; transition: all 0.2s; font-family: inherit;" ${!prevDisabled ? 'onmouseover="this.style.background=\'#00B8D9\';this.style.borderColor=\'#00B8D9\'" onmouseout="this.style.background=\'#00D9FF\';this.style.borderColor=\'#00D9FF\'"' : ''}>← Previous</button>
-                <span style="color: #888; font-size: 0.9rem;">Page ${currentPage + 1} of ${totalPages} <span style="color: #555;">(${allSkills.length} skills)</span></span>
-                <button onclick="window.goToPage(${currentPage + 1})" ${nextDisabled ? 'disabled' : ''} style="background: ${nextDisabled ? 'rgba(255,255,255,0.05)' : '#00D9FF'}; color: ${nextDisabled ? '#555' : '#000'}; border: ${nextDisabled ? '1px solid rgba(255,255,255,0.1)' : '1px solid #00D9FF'}; padding: 10px 22px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: ${nextDisabled ? 'not-allowed' : 'pointer'}; transition: all 0.2s; font-family: inherit;" ${!nextDisabled ? 'onmouseover="this.style.background=\'#00B8D9\';this.style.borderColor=\'#00B8D9\'" onmouseout="this.style.background=\'#00D9FF\';this.style.borderColor=\'#00D9FF\'"' : ''}>Next →</button>
+                <button onclick="window.goToPage(${currentPage - 1})" ${prevDisabled ? 'disabled' : ''} class="pagination-btn">← Previous</button>
+                <span class="pagination-info">Page ${currentPage + 1} of ${totalPages} <span class="pagination-total">(${allSkills.length} skills)</span></span>
+                <button onclick="window.goToPage(${currentPage + 1})" ${nextDisabled ? 'disabled' : ''} class="pagination-btn">Next →</button>
             `;
             grid.appendChild(nav);
         }
