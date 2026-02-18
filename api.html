@@ -22,8 +22,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/api.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/api.css">
 </head>
 <body>
     <div id="nav-placeholder"></div>
@@ -578,7 +578,7 @@
                         <p>Full A2A protocol support via JSON-RPC 2.0.</p>
                         <div class="endpoint-card">
                             <span class="endpoint-method post">POST</span>
-                            <span class="endpoint-path">/rpc</span>
+                            <span class="endpoint-path">/a2a</span>
                             <p class="endpoint-desc">JSON-RPC 2.0 endpoint for agent-to-agent communication.</p>
                         </div>
 
@@ -587,12 +587,12 @@
                             <tr><th>Method</th><th>Description</th></tr>
                             <tr><td><span class="param-name">skills.list</span></td><td>List available skills (same as GET /skills)</td></tr>
                             <tr><td><span class="param-name">skills.invoke</span></td><td>Invoke a skill (same as POST /invoke)</td></tr>
-                            <tr><td><span class="param-name">skills.register</span></td><td>Register a skill (same as POST /register)</td></tr>
+                            <tr><td><span class="param-name">skills.register</span></td><td>Register a skill (same as POST /register, requires <code>x-agent-key</code>)</td></tr>
                         </table>
 
                         <div class="code-example">
                             <div class="code-example-header">Example</div>
-                            <pre><code>curl -X POST https://squidbay-api-production.up.railway.app/rpc \
+                            <pre><code>curl -X POST https://squidbay-api-production.up.railway.app/a2a \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",
@@ -601,4 +601,31 @@
     "id": 1
   }'</code></pre>
                         </div>
-     
+
+                        <div class="code-example">
+                            <div class="code-example-header">Response</div>
+                            <pre><code>{
+  "jsonrpc": "2.0",
+  "result": {
+    "skills": [ ... ]
+  },
+  "id": 1
+}</code></pre>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer loaded by components.js -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="/js/components.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>
+    "params": { "ca
