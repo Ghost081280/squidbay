@@ -17,8 +17,9 @@
     const CHATBOT_CSS = '/components/chatbot.css';
     const CHATBOT_JS = '/components/chatbot.js';
 
-    // Current page detection
-    const currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+    // Current page detection — handles both clean URLs (/marketplace) and vanity URLs (/agent/squidbot)
+    const pathParts = window.location.pathname.replace(/\.html$/, '').split('/').filter(Boolean);
+    const currentPage = pathParts[0] || 'index';
 
     /**
      * Load HTML component into placeholder

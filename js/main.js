@@ -163,26 +163,23 @@
     // Note: Tentacle parallax and Chat Demo moved to js/index.js
 
     // --------------------------------------------------------------------------
-    // Scroll Progress Bar (Horizontal only)
+    // Scroll Progress Bar (defers to components.js if already initialized)
     // --------------------------------------------------------------------------
     
     function initScrollProgress() {
-        // Create horizontal progress bar if not exists
-        if (!document.getElementById('scroll-progress')) {
-            const progressBar = document.createElement('div');
-            progressBar.className = 'scroll-progress';
-            progressBar.id = 'scroll-progress';
-            document.body.prepend(progressBar);
-        }
+        // components.js handles this when nav loads — only init here as fallback
+        if (document.getElementById('scroll-progress')) return;
         
-        const horizontal = document.getElementById('scroll-progress');
+        const progressBar = document.createElement('div');
+        progressBar.className = 'scroll-progress';
+        progressBar.id = 'scroll-progress';
+        document.body.prepend(progressBar);
         
         function updateProgress() {
             const scrollTop = window.scrollY;
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
             const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-            
-            if (horizontal) horizontal.style.width = progress + '%';
+            progressBar.style.width = progress + '%';
         }
         
         window.addEventListener('scroll', updateProgress, { passive: true });
@@ -190,24 +187,22 @@
     }
     
     // --------------------------------------------------------------------------
-    // Back to Top Button
+    // Back to Top Button (defers to components.js if already initialized)
     // --------------------------------------------------------------------------
     
     function initBackToTop() {
-        // Create button if not exists
-        if (!document.getElementById('back-to-top')) {
-            const btn = document.createElement('button');
-            btn.className = 'back-to-top';
-            btn.id = 'back-to-top';
-            btn.setAttribute('aria-label', 'Back to top');
-            btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>';
-            btn.onclick = function() {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            };
-            document.body.appendChild(btn);
-        }
+        // components.js handles this when footer loads — only init here as fallback
+        if (document.getElementById('back-to-top')) return;
         
-        const btn = document.getElementById('back-to-top');
+        const btn = document.createElement('button');
+        btn.className = 'back-to-top';
+        btn.id = 'back-to-top';
+        btn.setAttribute('aria-label', 'Back to top');
+        btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>';
+        btn.onclick = function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+        document.body.appendChild(btn);
         
         function toggleVisibility() {
             if (window.scrollY > 300) {
