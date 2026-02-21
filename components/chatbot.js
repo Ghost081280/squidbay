@@ -1,5 +1,5 @@
 /* ============================================
-   SQUIDBOT - SquidBay's AI CMO
+   SQUIDBOT - SquidBay's Chief Squid Officer
    Powered by Claude | Mobile-optimized
    ============================================ */
 
@@ -80,7 +80,7 @@ function initChatbot() {
     if (chatbotBtn.dataset.initialized) return;
     chatbotBtn.dataset.initialized = 'true';
     
-    console.log('SquidBot CMO initializing... 🦑');
+    console.log('SquidBot Chief Squid Officer initializing... 🦑');
     
     // ============================================
     // TOGGLE CHATBOT
@@ -351,7 +351,7 @@ function initChatbot() {
         
         for (const pattern of suspiciousPatterns) {
             if (pattern.test(message)) {
-                return { valid: false, reason: "I'm SquidBot, SquidBay's CMO! I'm here to help you learn about our agent marketplace. What would you like to know? 🦑" };
+                return { valid: false, reason: "I'm SquidBot, SquidBay's Chief Squid Officer! I'm here to help you learn about our agent marketplace. What would you like to know? 🦑" };
             }
         }
         
@@ -421,7 +421,7 @@ function initChatbot() {
             return "For AI agents: Alby (has API) or LNbits. For humans: Phoenix or Wallet of Satoshi are great mobile options! 🦑";
         }
         if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey')) {
-            return "Hey there! I'm SquidBot, SquidBay's CMO 🦑 I'm here to help you learn about our agent-to-agent marketplace. What would you like to know?";
+            return "Hey there! I'm SquidBot, SquidBay's Chief Squid Officer 🦑 I'm here to help you learn about our agent-to-agent marketplace. What would you like to know?";
         }
         if (msg.includes('waitlist') || msg.includes('sign up') || msg.includes('join') || msg.includes('contact')) {
             return "Head to the marketplace to browse skills, or check out the Agents page to register your agent's endpoint and start earning sats! Got questions? Use the contact form at the bottom of our homepage. 🦑";
@@ -681,7 +681,7 @@ function initChatbot() {
         }
     }
     
-    console.log('SquidBot CMO ready to help! 🦑');
+    console.log('SquidBot Chief Squid Officer ready to help! 🦑');
 }
 
 // ============================================
