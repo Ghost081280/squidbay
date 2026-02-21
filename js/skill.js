@@ -219,15 +219,15 @@ function agentVanityUrl(skill) {
 }
 
 /**
- * N-F02: Build tier HTML — active tiers render normally, disabled tiers render smaller at bottom
- * N-F03: Jobs show "New" for listings < 7 days with 0 jobs, otherwise show count
+ * N-F02: Build tier HTML — active tiers render normally, disabled tiers render compact at bottom
+ * N-F03: Jobs always show the number. 0 is 0.
  */
-function buildTierHtml(tierKey, icon, label, isAvailable, isOnline, skill, version, rating, ratingCount, jobs, isNew, model, description, features, btnText, offlineText) {
+function buildTierHtml(tierKey, icon, label, isAvailable, isOnline, skill, version, rating, ratingCount, jobs, model, description, features, btnText, offlineText) {
     const priceKey = tierKey === 'execution' ? 'price_execution' : tierKey === 'skill_file' ? 'price_skill_file' : 'price_full_package';
     const price = skill[priceKey];
     const upgradeKey = tierKey === 'skill_file' ? 'upgrade_price_skill_file' : tierKey === 'full_package' ? 'upgrade_price_full_package' : null;
     const upgradePrice = upgradeKey ? skill[upgradeKey] : null;
-    const jobsDisplay = jobs > 0 ? `${jobs} jobs` : (isNew ? 'New' : '0 jobs');
+    const jobsDisplay = `${jobs} jobs`;
     const btnClass = tierKey === 'execution' ? 'buy-btn-exec' : tierKey === 'skill_file' ? 'buy-btn-file' : 'buy-btn-pkg';
     
     if (!isAvailable) {
@@ -273,9 +273,6 @@ function renderSkillPage(skill, reviews, reviewStats) {
     
     // N-F01: Total jobs across all tiers
     const totalJobs = (skill.success_count || 0) + (skill.fail_count || 0);
-    // N-F03: "New" badge — listings < 7 days old with 0 jobs
-    const createdDate = skill.created_at ? new Date(skill.created_at) : null;
-    const isNew = totalJobs === 0 && createdDate && (Date.now() - createdDate.getTime()) < 7 * 24 * 60 * 60 * 1000;
     
     const content = document.getElementById('skill-content');
     content.innerHTML = `
@@ -294,7 +291,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
             <div class="skill-main">
                 <p class="skill-description">${esc(skill.description)}</p>
                 <div class="skill-stats">
-                    <div class="stat-box"><div class="stat-value">${totalJobs > 0 ? totalJobs : 'New'}</div><div class="stat-label">Jobs</div></div>
+                    <div class="stat-box"><div class="stat-value">${totalJobs}</div><div class="stat-label">Jobs</div></div>
                     <div class="stat-box"><div class="stat-value">${totalJobs > 0 ? (skill.success_rate || 0) + '%' : '—'}</div><div class="stat-label">Success Rate</div></div>
                     <div class="stat-box"><div class="stat-value">${reviewStats.count > 0 ? '⭐ ' + (reviewStats.average || 0) : '—'}</div><div class="stat-label">Reviews (${reviewStats.count})</div></div>
                     <div class="stat-box"><div class="stat-value">${formatDate(skill.created_at)}</div><div class="stat-label">Listed Since</div></div>
@@ -320,15 +317,15 @@ function renderSkillPage(skill, reviews, reviewStats) {
                 <div class="pricing-card">
                     <div class="pricing-header"><h3>⚡ Invoke This Skill</h3><p class="pricing-subhead">Pay with any Lightning wallet. Your agent handles the rest.</p></div>
                     <div class="pricing-tiers">
-                        ${buildTierHtml('execution', '⚡', 'Remote Execution', hasExec, isOnline, skill, versionExec, execRating, execRatingCount, execJobs, isNew, 'per call', 
+                        ${buildTierHtml('execution', '⚡', 'Remote Execution', hasExec, isOnline, skill, versionExec, execRating, execRatingCount, execJobs, 'per call', 
                             'Pay per use. Your agent calls the seller\'s agent and gets results back instantly.',
                             ['Instant execution', 'No setup required', 'Pay only when used'],
                             '⚡ Invoke Skill', '● Agent Offline')}
-                        ${buildTierHtml('skill_file', '📄', 'Skill File', hasFile, isOnline, skill, versionFile, fileRating, fileRatingCount, fileJobs, isNew, 'own forever',
+                        ${buildTierHtml('skill_file', '📄', 'Skill File', hasFile, isOnline, skill, versionFile, fileRating, fileRatingCount, fileJobs, 'own forever',
                             'Get the blueprint. Step-by-step instructions your AI agent can follow to build it.',
                             ['Own forever', 'Your AI implements it', 'No ongoing costs'],
                             '📄 Invoke Skill', '● Agent Offline')}
-                        ${buildTierHtml('full_package', '📦', 'Full Package', hasPkg, isOnline, skill, versionPkg, pkgRating, pkgRatingCount, pkgJobs, isNew, 'own forever',
+                        ${buildTierHtml('full_package', '📦', 'Full Package', hasPkg, isOnline, skill, versionPkg, pkgRating, pkgRatingCount, pkgJobs, 'own forever',
                             'Everything included. Blueprint + all code, configs, and templates. One-click deploy to your infrastructure.',
                             ['Own forever', 'Complete source code', 'Deploy on your infra'],
                             '📦 Invoke Skill', '● Agent Offline')}
