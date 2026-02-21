@@ -15,6 +15,46 @@ const API_BASE = window.API_BASE || 'https://squidbay-api-production.up.railway.
 let currentSkill = null;
 let currentReviews = [];
 
+// N-C03: BTC price cache for USD conversion
+let btcPriceCache = { price: null, fetchedAt: 0 };
+const BTC_CACHE_MS = 5 * 60 * 1000; // 5 minute cache
+
+async function fetchBtcPrice() {
+    const now = Date.now();
+    if (btcPriceCache.price && (now - btcPriceCache.fetchedAt) < BTC_CACHE_MS) {
+        return btcPriceCache.price;
+    }
+    try {
+        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+        if (!res.ok) throw new Error('CoinGecko API error');
+        const data = await res.json();
+        btcPriceCache.price = data.bitcoin.usd;
+        btcPriceCache.fetchedAt = now;
+        return btcPriceCache.price;
+    } catch (err) {
+        console.warn('BTC price fetch failed:', err);
+        return btcPriceCache.price; // return stale cache or null
+    }
+}
+
+function satsToUsd(sats, btcPrice) {
+    if (!btcPrice || !sats) return null;
+    return (sats / 100000000) * btcPrice;
+}
+
+function fmtUsd(usd) {
+    if (usd === null || usd === undefined) return '';
+    if (usd < 0.01) return '≈ <$0.01';
+    return '≈ $' + usd.toFixed(2);
+}
+
+function fmtSatsWithUsd(sats, btcPrice) {
+    const base = fmtSats(sats);
+    if (!btcPrice || !sats) return base + ' sats';
+    const usd = satsToUsd(sats, btcPrice);
+    return `${base} sats <span class="usd-approx">(${fmtUsd(usd)})</span>`;
+}
+
 /**
  * Initialize on page load
  */
@@ -84,6 +124,11 @@ async function loadSkillBySlug(agentName, slug) {
         document.getElementById('page-loader').classList.add('hidden');
         document.getElementById('skill-content').classList.remove('hidden');
         
+        // N-C03: Fetch BTC price and update USD displays after render
+        fetchBtcPrice().then(btcPrice => {
+            if (btcPrice) updateUsdDisplays(btcPrice);
+        });
+        
     } catch (err) {
         console.error('Error loading skill by slug:', err);
         showError('Skill Not Found', 'This skill doesn\'t exist or has been removed. <a href="/marketplace">Browse the marketplace</a>.');
@@ -129,6 +174,11 @@ async function loadSkill(id) {
         renderSkillPage(currentSkill, reviews, reviewStats);
         document.getElementById('page-loader').classList.add('hidden');
         document.getElementById('skill-content').classList.remove('hidden');
+        
+        // N-C03: Fetch BTC price and update USD displays after render
+        fetchBtcPrice().then(btcPrice => {
+            if (btcPrice) updateUsdDisplays(btcPrice);
+        });
         
     } catch (err) {
         console.error('Error loading skill:', err);
@@ -234,7 +284,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
                     <div class="pricing-tiers">
                         <div class="pricing-tier ${!hasExec ? 'disabled' : ''}">
                             <div class="tier-header"><span class="tier-name"><span class="tier-icon">⚡</span> Remote Execution</span><span class="tier-version">v${versionExec}</span></div>
-                            <div class="tier-price-row"><span class="tier-price">${hasExec ? fmtSats(skill.price_execution) : '—'} <span class="sats">sats</span></span><span class="tier-model">per call</span></div>
+                            <div class="tier-price-row"><span class="tier-price" data-sats="${skill.price_execution || 0}">${hasExec ? fmtSats(skill.price_execution) : '—'} <span class="sats">sats</span></span><span class="tier-model">per call</span></div>
                             <div class="tier-stats"><span class="tier-rating">⭐ ${execRating.toFixed ? execRating.toFixed(1) : execRating} (${execRatingCount})</span><span class="tier-jobs">${execJobs} jobs</span></div>
                             <p class="tier-description">Pay per use. Your agent calls the seller's agent and gets results back instantly.</p>
                             <ul class="tier-features"><li>Instant execution</li><li>No setup required</li><li>Pay only when used</li></ul>
@@ -242,7 +292,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
                         </div>
                         <div class="pricing-tier ${!hasFile ? 'disabled' : ''}">
                             <div class="tier-header"><span class="tier-name"><span class="tier-icon">📄</span> Skill File</span><span class="tier-version">v${versionFile}</span></div>
-                            <div class="tier-price-row"><span class="tier-price">${hasFile ? fmtSats(skill.price_skill_file) : '—'} <span class="sats">sats</span></span><span class="tier-model">own forever</span></div>
+                            <div class="tier-price-row"><span class="tier-price" data-sats="${skill.price_skill_file || 0}">${hasFile ? fmtSats(skill.price_skill_file) : '—'} <span class="sats">sats</span></span><span class="tier-model">own forever</span></div>
                             ${hasFile && skill.upgrade_price_skill_file ? `<div class="tier-upgrade-price">Upgrade: ${fmtSats(skill.upgrade_price_skill_file)} sats <span class="upgrade-label">for returning buyers</span></div>` : ''}
                             <div class="tier-stats"><span class="tier-rating">⭐ ${fileRating.toFixed ? fileRating.toFixed(1) : fileRating} (${fileRatingCount})</span><span class="tier-jobs">${fileJobs} jobs</span></div>
                             <p class="tier-description">Get the blueprint. Step-by-step instructions your AI agent can follow to build it.</p>
@@ -251,7 +301,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
                         </div>
                         <div class="pricing-tier ${!hasPkg ? 'disabled' : ''}">
                             <div class="tier-header"><span class="tier-name"><span class="tier-icon">📦</span> Full Package</span><span class="tier-version">v${versionPkg}</span></div>
-                            <div class="tier-price-row"><span class="tier-price">${hasPkg ? fmtSats(skill.price_full_package) : '—'} <span class="sats">sats</span></span><span class="tier-model">own forever</span></div>
+                            <div class="tier-price-row"><span class="tier-price" data-sats="${skill.price_full_package || 0}">${hasPkg ? fmtSats(skill.price_full_package) : '—'} <span class="sats">sats</span></span><span class="tier-model">own forever</span></div>
                             ${hasPkg && skill.upgrade_price_full_package ? `<div class="tier-upgrade-price">Upgrade: ${fmtSats(skill.upgrade_price_full_package)} sats <span class="upgrade-label">for returning buyers</span></div>` : ''}
                             <div class="tier-stats"><span class="tier-rating">⭐ ${pkgRating.toFixed ? pkgRating.toFixed(1) : pkgRating} (${pkgRatingCount})</span><span class="tier-jobs">${pkgJobs} jobs</span></div>
                             <p class="tier-description">Everything included. Blueprint + all code, configs, and templates. One-click deploy to your infrastructure.</p>
@@ -292,10 +342,17 @@ function showInvoiceModal(data, tier, price) {
     const sellerName = currentSkill?.agent_name || 'Seller';
     const handoffPayload = generateHandoffPayload(data, tier, price, invoice);
     
+    // N-C03: USD amount
+    const btcPrice = btcPriceCache.price;
+    const usdAmount = btcPrice ? satsToUsd(price, btcPrice) : null;
+    const usdStr = usdAmount !== null ? `<span class="usd-approx" style="font-size:0.9rem;color:#8899aa;margin-left:8px;">(${fmtUsd(usdAmount)})</span>` : '';
+    
     const content = document.getElementById('invoice-content');
     content.innerHTML = `
         <div class="invoice-header"><h3>⚡ Lightning Transaction</h3><div class="invoice-tier-badge">${tierNames[tier] || tier}</div></div>
-        <div class="invoice-amount-display"><span class="amount">${fmtSats(price)}</span><span class="currency">sats</span></div>
+        <div class="invoice-amount-display"><span class="amount">${fmtSats(price)}</span><span class="currency">sats</span>${usdStr}</div>
+        <div class="invoice-countdown" id="invoice-countdown" style="text-align:center;font-size:0.8rem;color:#8899aa;margin:-8px 0 12px 0;">Invoice expires in <span id="countdown-timer" style="color:#ffbd2e;font-weight:600;">10:00</span></div>
+        <div id="qr-code-container" style="display:flex;justify-content:center;margin:16px 0;"></div>
         <div class="agent-flow">
             <div class="agent-node buyer"><div class="agent-icon">🤖</div><div class="agent-label">Your Agent</div></div>
             <div class="flow-arrow"><div class="flow-line"></div><div class="flow-data" id="flow-data-1">💰</div></div>
@@ -305,7 +362,7 @@ function showInvoiceModal(data, tier, price) {
         </div>
         <div class="handoff-section" style="background:linear-gradient(135deg,rgba(0,217,255,0.05) 0%,rgba(0,255,136,0.05) 100%);border:1px solid rgba(0,217,255,0.2);border-radius:12px;padding:20px;margin:16px 0;">
             <h4 style="margin:0 0 8px 0;color:#ffbd2e;font-size:0.95rem;">⚡ Pay the Invoice</h4>
-            <p style="margin:0 0 12px 0;font-size:0.8rem;color:#8899aa;">Copy the Lightning invoice and pay from any wallet — Cash App, Phoenix, Alby, Wallet of Satoshi.</p>
+            <p style="margin:0 0 12px 0;font-size:0.8rem;color:#8899aa;">Scan the QR code with any Lightning wallet, or copy the invoice below.</p>
             <button onclick="copyInvoice()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffbd2e 0%,#f5a623 100%);color:#000;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-bottom:8px;">⚡ Copy Invoice — Pay from Any Wallet</button>
             <div id="invoiceCopyConfirm" style="display:none;text-align:center;color:#00ff88;font-size:0.8rem;margin-bottom:8px;">✓ Invoice copied!</div>
             <div style="border-top:1px solid rgba(0,217,255,0.15);margin:12px 0;padding-top:12px;">
@@ -334,6 +391,34 @@ function showInvoiceModal(data, tier, price) {
     window._handoffPayload = handoffPayload;
     document.getElementById('invoice-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
+    
+    // N-C02: Generate QR code for Lightning invoice
+    const qrContainer = document.getElementById('qr-code-container');
+    if (qrContainer && typeof QRCode !== 'undefined') {
+        qrContainer.innerHTML = '';
+        try {
+            new QRCode(qrContainer, {
+                text: 'lightning:' + invoice,
+                width: 220,
+                height: 220,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+            // Style the QR code container
+            const qrImg = qrContainer.querySelector('img');
+            const qrCanvas = qrContainer.querySelector('canvas');
+            if (qrImg) { qrImg.style.borderRadius = '12px'; qrImg.style.border = '4px solid #fff'; }
+            if (qrCanvas) { qrCanvas.style.borderRadius = '12px'; qrCanvas.style.border = '4px solid #fff'; }
+        } catch (qrErr) {
+            console.warn('QR code generation failed:', qrErr);
+            qrContainer.innerHTML = '<p style="color:#556677;font-size:0.8rem;">QR code unavailable</p>';
+        }
+    }
+    
+    // N-U04: Invoice expiry countdown (10 minutes)
+    startInvoiceCountdown(10 * 60, data.transaction_id);
+    
     pollPayment(data.transaction_id, tier);
 }
 
@@ -420,12 +505,73 @@ function showTransactionFailed(errorMsg) { document.getElementById('invoice-cont
 
 function copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => { const c = document.getElementById('pickupCopyConfirm'); if (c) { c.style.display = 'block'; setTimeout(() => { c.style.display = 'none'; }, 4000); } }); }
 function copyInvoice() { const i = document.getElementById('invoice-input'); if (i) { navigator.clipboard.writeText(i.value); const c = document.getElementById('invoiceCopyConfirm'); if (c) { c.style.display = 'block'; setTimeout(() => { c.style.display = 'none'; }, 4000); } } }
-function closeModal() { document.getElementById('invoice-modal').classList.add('hidden'); document.body.style.overflow = ''; }
+function closeModal() { if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; } document.getElementById('invoice-modal').classList.add('hidden'); document.body.style.overflow = ''; }
 function showError(title, message) { document.getElementById('page-loader').classList.add('hidden'); document.getElementById('skill-content').classList.add('hidden'); const e = document.getElementById('error-display'); e.innerHTML = `<h2>${title}</h2><p>${message}</p>`; e.classList.remove('hidden'); }
 function renderMarkdown(text) { if (!text) return ''; if (typeof marked !== 'undefined') return marked.parse(text); return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>'); }
 function fmtSats(s) { if (s === null || s === undefined) return '—'; if (s >= 1000000) return (s/1000000).toFixed(1)+'M'; if (s >= 1000) return (s/1000).toFixed(1)+'k'; return s.toLocaleString(); }
 function formatDate(d) { if (!d) return ''; return new Date(d).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); }
 function esc(s) { if (!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// N-U04: Invoice expiry countdown
+let countdownInterval = null;
+function startInvoiceCountdown(seconds, transactionId) {
+    if (countdownInterval) clearInterval(countdownInterval);
+    let remaining = seconds;
+    const timerEl = document.getElementById('countdown-timer');
+    const countdownEl = document.getElementById('invoice-countdown');
+    if (!timerEl) return;
+    
+    countdownInterval = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+            showInvoiceExpired(transactionId);
+            return;
+        }
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        // Turn red under 2 minutes
+        if (remaining < 120) {
+            timerEl.style.color = '#ff6b6b';
+        }
+    }, 1000);
+}
+
+function showInvoiceExpired(transactionId) {
+    const content = document.getElementById('invoice-content');
+    if (!content) return;
+    const tierName = currentSkill?.name || 'this skill';
+    content.innerHTML = `
+        <div class="transaction-complete">
+            <div class="complete-header">
+                <div class="complete-icon">⏰</div>
+                <h3 class="complete-title">Invoice Expired</h3>
+            </div>
+            <p class="complete-message" style="color:#8899aa;margin:12px 0;">This Lightning invoice has expired. No payment was processed.</p>
+            <button onclick="window.SquidBaySkill.closeModal()" style="width:100%;padding:14px;background:linear-gradient(135deg,#00d9ff 0%,#00a8cc 100%);color:#000;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:12px;">Generate New Invoice</button>
+        </div>
+    `;
+}
+
+// N-C03: Update all tier price elements with USD after BTC price loads
+function updateUsdDisplays(btcPrice) {
+    document.querySelectorAll('.tier-price[data-sats]').forEach(el => {
+        const sats = parseInt(el.getAttribute('data-sats'));
+        if (!sats || sats <= 0) return;
+        // Check if USD already appended
+        if (el.querySelector('.usd-approx')) return;
+        const usd = satsToUsd(sats, btcPrice);
+        if (usd !== null) {
+            const usdSpan = document.createElement('span');
+            usdSpan.className = 'usd-approx';
+            usdSpan.style.cssText = 'font-size:0.75rem;color:#8899aa;margin-left:6px;font-weight:400;';
+            usdSpan.textContent = fmtUsd(usd);
+            el.appendChild(usdSpan);
+        }
+    });
+}
 
 window.buySkill = buySkill;
 window.copyInvoice = copyInvoice;
