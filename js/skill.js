@@ -218,6 +218,38 @@ function agentVanityUrl(skill) {
     return '/agent.html?id=' + skill.agent_id;
 }
 
+/**
+ * N-F02: Build tier HTML — active tiers render normally, disabled tiers render smaller at bottom
+ * N-F03: Jobs show "New" for listings < 7 days with 0 jobs, otherwise show count
+ */
+function buildTierHtml(tierKey, icon, label, isAvailable, isOnline, skill, version, rating, ratingCount, jobs, isNew, model, description, features, btnText, offlineText) {
+    const priceKey = tierKey === 'execution' ? 'price_execution' : tierKey === 'skill_file' ? 'price_skill_file' : 'price_full_package';
+    const price = skill[priceKey];
+    const upgradeKey = tierKey === 'skill_file' ? 'upgrade_price_skill_file' : tierKey === 'full_package' ? 'upgrade_price_full_package' : null;
+    const upgradePrice = upgradeKey ? skill[upgradeKey] : null;
+    const jobsDisplay = jobs > 0 ? `${jobs} jobs` : (isNew ? 'New' : '0 jobs');
+    const btnClass = tierKey === 'execution' ? 'buy-btn-exec' : tierKey === 'skill_file' ? 'buy-btn-file' : 'buy-btn-pkg';
+    
+    if (!isAvailable) {
+        // N-F02: Disabled tiers — compact, at visual bottom via CSS order
+        return `<div class="pricing-tier disabled" style="order:99;">
+            <div class="tier-header"><span class="tier-name"><span class="tier-icon">${icon}</span> ${label}</span></div>
+            <div class="tier-price-row"><span class="tier-price">—</span><span class="tier-model">${model}</span></div>
+            <button class="buy-btn ${btnClass}" disabled>Not Available</button>
+        </div>`;
+    }
+    
+    return `<div class="pricing-tier" style="order:0;">
+        <div class="tier-header"><span class="tier-name"><span class="tier-icon">${icon}</span> ${label}</span><span class="tier-version">v${version}</span></div>
+        <div class="tier-price-row"><span class="tier-price" data-sats="${price || 0}">${fmtSats(price)} <span class="sats">sats</span></span><span class="tier-model">${model}</span></div>
+        ${upgradePrice ? `<div class="tier-upgrade-price">Upgrade: ${fmtSats(upgradePrice)} sats <span class="upgrade-label">for returning buyers</span></div>` : ''}
+        <div class="tier-stats"><span class="tier-rating">⭐ ${rating && rating.toFixed ? rating.toFixed(1) : rating} (${ratingCount})</span><span class="tier-jobs">${jobsDisplay}</span></div>
+        <p class="tier-description">${description}</p>
+        <ul class="tier-features">${features.map(f => `<li>${f}</li>`).join('')}</ul>
+        <button class="buy-btn ${btnClass}" onclick="buySkill('${skill.id}', '${tierKey}', ${price || 0})" ${!isOnline ? 'disabled' : ''}>${!isOnline ? offlineText : btnText}</button>
+    </div>`;
+}
+
 function renderSkillPage(skill, reviews, reviewStats) {
     const hasExec = skill.available_tiers ? skill.available_tiers.includes('execution') : skill.price_execution > 0;
     const hasFile = skill.available_tiers ? skill.available_tiers.includes('skill_file') : (skill.price_skill_file > 0 && (skill.transfer_endpoint || skill.delivery_mode === 'github_managed'));
@@ -239,6 +271,12 @@ function renderSkillPage(skill, reviews, reviewStats) {
     const pkgJobs = skill.jobs_full_package || 0;
     const agentLink = agentVanityUrl(skill);
     
+    // N-F01: Total jobs across all tiers
+    const totalJobs = (skill.success_count || 0) + (skill.fail_count || 0);
+    // N-F03: "New" badge — listings < 7 days old with 0 jobs
+    const createdDate = skill.created_at ? new Date(skill.created_at) : null;
+    const isNew = totalJobs === 0 && createdDate && (Date.now() - createdDate.getTime()) < 7 * 24 * 60 * 60 * 1000;
+    
     const content = document.getElementById('skill-content');
     content.innerHTML = `
         <div class="skill-header">
@@ -256,10 +294,10 @@ function renderSkillPage(skill, reviews, reviewStats) {
             <div class="skill-main">
                 <p class="skill-description">${esc(skill.description)}</p>
                 <div class="skill-stats">
-                    <div class="stat-box"><div class="stat-value">${skill.success_count || 0}</div><div class="stat-label">Executions</div></div>
-                    <div class="stat-box"><div class="stat-value">${(skill.success_count + skill.fail_count) > 0 ? (skill.success_rate || 0) + '%' : '—'}</div><div class="stat-label">Success Rate</div></div>
-                    <div class="stat-box"><div class="stat-value">${skill.avg_response_ms ? skill.avg_response_ms + 'ms' : '—'}</div><div class="stat-label">Avg Response</div></div>
-                    <div class="stat-box"><div class="stat-value">${fmtSats(skill.total_earned_sats || 0)}</div><div class="stat-label">Total Earned</div></div>
+                    <div class="stat-box"><div class="stat-value">${totalJobs > 0 ? totalJobs : 'New'}</div><div class="stat-label">Jobs</div></div>
+                    <div class="stat-box"><div class="stat-value">${totalJobs > 0 ? (skill.success_rate || 0) + '%' : '—'}</div><div class="stat-label">Success Rate</div></div>
+                    <div class="stat-box"><div class="stat-value">${reviewStats.count > 0 ? '⭐ ' + (reviewStats.average || 0) : '—'}</div><div class="stat-label">Reviews (${reviewStats.count})</div></div>
+                    <div class="stat-box"><div class="stat-value">${formatDate(skill.created_at)}</div><div class="stat-label">Listed Since</div></div>
                 </div>
                 ${skill.details ? `<div class="skill-details"><h3>Documentation</h3><div class="skill-details-content">${renderMarkdown(skill.details)}</div></div>` : ''}
                 <div class="reviews-section">
@@ -282,32 +320,18 @@ function renderSkillPage(skill, reviews, reviewStats) {
                 <div class="pricing-card">
                     <div class="pricing-header"><h3>⚡ Invoke This Skill</h3><p class="pricing-subhead">Pay with any Lightning wallet. Your agent handles the rest.</p></div>
                     <div class="pricing-tiers">
-                        <div class="pricing-tier ${!hasExec ? 'disabled' : ''}">
-                            <div class="tier-header"><span class="tier-name"><span class="tier-icon">⚡</span> Remote Execution</span><span class="tier-version">v${versionExec}</span></div>
-                            <div class="tier-price-row"><span class="tier-price" data-sats="${skill.price_execution || 0}">${hasExec ? fmtSats(skill.price_execution) : '—'} <span class="sats">sats</span></span><span class="tier-model">per call</span></div>
-                            <div class="tier-stats"><span class="tier-rating">⭐ ${execRating.toFixed ? execRating.toFixed(1) : execRating} (${execRatingCount})</span><span class="tier-jobs">${execJobs} jobs</span></div>
-                            <p class="tier-description">Pay per use. Your agent calls the seller's agent and gets results back instantly.</p>
-                            <ul class="tier-features"><li>Instant execution</li><li>No setup required</li><li>Pay only when used</li></ul>
-                            <button class="buy-btn buy-btn-exec" onclick="buySkill('${skill.id}', 'execution', ${skill.price_execution || 0})" ${!hasExec || !isOnline ? 'disabled' : ''}>${!isOnline ? '● Agent Offline' : hasExec ? '⚡ Invoke Skill' : 'Not Available'}</button>
-                        </div>
-                        <div class="pricing-tier ${!hasFile ? 'disabled' : ''}">
-                            <div class="tier-header"><span class="tier-name"><span class="tier-icon">📄</span> Skill File</span><span class="tier-version">v${versionFile}</span></div>
-                            <div class="tier-price-row"><span class="tier-price" data-sats="${skill.price_skill_file || 0}">${hasFile ? fmtSats(skill.price_skill_file) : '—'} <span class="sats">sats</span></span><span class="tier-model">own forever</span></div>
-                            ${hasFile && skill.upgrade_price_skill_file ? `<div class="tier-upgrade-price">Upgrade: ${fmtSats(skill.upgrade_price_skill_file)} sats <span class="upgrade-label">for returning buyers</span></div>` : ''}
-                            <div class="tier-stats"><span class="tier-rating">⭐ ${fileRating.toFixed ? fileRating.toFixed(1) : fileRating} (${fileRatingCount})</span><span class="tier-jobs">${fileJobs} jobs</span></div>
-                            <p class="tier-description">Get the blueprint. Step-by-step instructions your AI agent can follow to build it.</p>
-                            <ul class="tier-features"><li>Own forever</li><li>Your AI implements it</li><li>No ongoing costs</li></ul>
-                            <button class="buy-btn buy-btn-file" onclick="buySkill('${skill.id}', 'skill_file', ${skill.price_skill_file || 0})" ${!hasFile || !isOnline ? 'disabled' : ''}>${!isOnline ? '● Agent Offline' : hasFile ? '📄 Invoke Skill' : 'Not Available'}</button>
-                        </div>
-                        <div class="pricing-tier ${!hasPkg ? 'disabled' : ''}">
-                            <div class="tier-header"><span class="tier-name"><span class="tier-icon">📦</span> Full Package</span><span class="tier-version">v${versionPkg}</span></div>
-                            <div class="tier-price-row"><span class="tier-price" data-sats="${skill.price_full_package || 0}">${hasPkg ? fmtSats(skill.price_full_package) : '—'} <span class="sats">sats</span></span><span class="tier-model">own forever</span></div>
-                            ${hasPkg && skill.upgrade_price_full_package ? `<div class="tier-upgrade-price">Upgrade: ${fmtSats(skill.upgrade_price_full_package)} sats <span class="upgrade-label">for returning buyers</span></div>` : ''}
-                            <div class="tier-stats"><span class="tier-rating">⭐ ${pkgRating.toFixed ? pkgRating.toFixed(1) : pkgRating} (${pkgRatingCount})</span><span class="tier-jobs">${pkgJobs} jobs</span></div>
-                            <p class="tier-description">Everything included. Blueprint + all code, configs, and templates. One-click deploy to your infrastructure.</p>
-                            <ul class="tier-features"><li>Own forever</li><li>Complete source code</li><li>Deploy on your infra</li></ul>
-                            <button class="buy-btn buy-btn-pkg" onclick="buySkill('${skill.id}', 'full_package', ${skill.price_full_package || 0})" ${!hasPkg || !isOnline ? 'disabled' : ''}>${!isOnline ? '● Agent Offline' : hasPkg ? '📦 Invoke Skill' : 'Not Available'}</button>
-                        </div>
+                        ${buildTierHtml('execution', '⚡', 'Remote Execution', hasExec, isOnline, skill, versionExec, execRating, execRatingCount, execJobs, isNew, 'per call', 
+                            'Pay per use. Your agent calls the seller\'s agent and gets results back instantly.',
+                            ['Instant execution', 'No setup required', 'Pay only when used'],
+                            '⚡ Invoke Skill', '● Agent Offline')}
+                        ${buildTierHtml('skill_file', '📄', 'Skill File', hasFile, isOnline, skill, versionFile, fileRating, fileRatingCount, fileJobs, isNew, 'own forever',
+                            'Get the blueprint. Step-by-step instructions your AI agent can follow to build it.',
+                            ['Own forever', 'Your AI implements it', 'No ongoing costs'],
+                            '📄 Invoke Skill', '● Agent Offline')}
+                        ${buildTierHtml('full_package', '📦', 'Full Package', hasPkg, isOnline, skill, versionPkg, pkgRating, pkgRatingCount, pkgJobs, isNew, 'own forever',
+                            'Everything included. Blueprint + all code, configs, and templates. One-click deploy to your infrastructure.',
+                            ['Own forever', 'Complete source code', 'Deploy on your infra'],
+                            '📦 Invoke Skill', '● Agent Offline')}
                     </div>
                 </div>
                 <div class="agent-transaction-card">
