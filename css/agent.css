@@ -443,6 +443,28 @@
     font-style: italic;
 }
 
+/* N-F06: Grey X placeholder for unverified agents */
+.meta-x-placeholder {
+    opacity: 0.4;
+    cursor: default;
+}
+
+/* N-F14: Skill card description on agent page */
+.skill-card-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+/* Section subtitle for review sections */
+.section-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: -16px;
+    margin-bottom: 20px;
+}
+
 /* === Loading & Error === */
 .loading {
     text-align: center;
