@@ -412,14 +412,12 @@
         font-size: 0.9rem;
     }
 
-    /* Callout box — the main offender */
+    /* Callout box — contained within content flow */
     .callout {
-        padding: 16px;
-        margin-left: -16px;
-        margin-right: -16px;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
+        padding: 20px;
+        margin-left: 0;
+        margin-right: 0;
+        border-radius: 12px;
         overflow: hidden;
     }
 
