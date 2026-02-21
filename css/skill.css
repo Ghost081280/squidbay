@@ -1494,4 +1494,45 @@
     .transaction-steps {
         padding: 0;
     }
+
+    /* N-F04: Modal padding and close button */
+    .modal-content {
+        padding: 20px 16px;
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .modal-close {
+        top: 10px;
+        right: 10px;
+        width: 36px;
+        height: 36px;
+    }
+
+    /* Pricing tiers on mobile — single column, no flex-direction tricks */
+    .pricing-tiers {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Upgrade price */
+    .tier-upgrade-price {
+        font-size: 0.75rem;
+    }
+
+    /* Review header wrapping */
+    .review-header {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .review-tier {
+        font-size: 0.75rem;
+    }
+
+    .review-date {
+        margin-left: 0;
+        width: 100%;
+        font-size: 0.75rem;
+    }
 }

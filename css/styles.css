@@ -2256,3 +2256,561 @@ body.menu-open {
         justify-content: center;
     }
 }
+/* ==========================================================================
+   SquidBay — Mobile Responsive Fixes (N-F04)
+   Target: 375px minimum width (iPhone SE / small Android)
+   
+   This file is loaded AFTER all page-specific CSS files.
+   It provides surgical fixes only — no duplication of existing rules.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Global: Prevent horizontal overflow everywhere
+   -------------------------------------------------------------------------- */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+pre, code, .code-block-small, .agent-code-block pre {
+    max-width: 100%;
+    overflow-x: auto;
+    word-break: break-all;
+}
+
+/* --------------------------------------------------------------------------
+   375px — Core mobile fixes
+   -------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+
+    /* === Global Layout === */
+    .container {
+        padding: 0 12px;
+    }
+
+    /* === Skill Detail Page === */
+    .skill-detail-container {
+        padding: 100px 12px 60px;
+    }
+
+    .skill-title {
+        font-size: 1.4rem;
+    }
+
+    .skill-icon-large {
+        width: 72px;
+        height: 72px;
+        font-size: 2.8rem;
+    }
+
+    /* Skill stats grid — 2 columns on small screens */
+    .skill-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .stat-box {
+        padding: 14px 10px;
+    }
+
+    .stat-box .stat-value {
+        font-size: 1.1rem;
+    }
+
+    .stat-box .stat-label {
+        font-size: 0.7rem;
+    }
+
+    /* Pricing sidebar — tighter on mobile */
+    .pricing-card {
+        border-radius: var(--radius-lg);
+    }
+
+    .pricing-tier {
+        padding: 14px 16px;
+    }
+
+    .tier-price {
+        font-size: 1rem;
+    }
+
+    .tier-description {
+        font-size: 0.8rem;
+    }
+
+    .tier-features {
+        font-size: 0.75rem;
+    }
+
+    .buy-btn {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+
+    /* === Invoice Modal — critical at 375px === */
+    .modal-content {
+        padding: 16px;
+        margin: 8px;
+        max-height: 95vh;
+        border-radius: var(--radius-lg);
+    }
+
+    .invoice-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .invoice-amount-display .amount {
+        font-size: 1.8rem;
+    }
+
+    .invoice-amount-display .currency {
+        font-size: 0.85rem;
+    }
+
+    /* QR code smaller on mobile */
+    #qr-code-container img,
+    #qr-code-container canvas {
+        width: 180px !important;
+        height: 180px !important;
+    }
+
+    /* Agent flow — vertical on tiny screens */
+    .agent-flow {
+        flex-direction: column;
+        gap: 8px;
+        padding: 16px 12px;
+    }
+
+    .agent-flow .flow-arrow {
+        display: none;
+    }
+
+    .agent-flow .agent-node {
+        flex-direction: row;
+        gap: 10px;
+        min-width: auto;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .agent-node .agent-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+
+    .agent-node .agent-label {
+        max-width: none;
+        font-size: 0.8rem;
+    }
+
+    /* Handoff section tighter */
+    .handoff-section {
+        padding: 14px !important;
+    }
+
+    .handoff-section h4 {
+        font-size: 0.85rem !important;
+    }
+
+    .handoff-section p {
+        font-size: 0.75rem !important;
+    }
+
+    /* Transaction steps */
+    .step {
+        font-size: 0.8rem;
+    }
+
+    /* Transaction details */
+    .detail-value {
+        font-size: 0.65rem;
+    }
+
+    .invoice-string-mini input {
+        font-size: 0.6rem;
+    }
+
+    /* === Marketplace Page === */
+    .marketplace-header {
+        padding: 100px 0 32px;
+    }
+
+    .marketplace-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .search-box {
+        padding: 12px 14px;
+    }
+
+    .search-box input {
+        font-size: 0.9rem;
+    }
+
+    /* Stats ticker — 2x2 grid */
+    .stats-ticker {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 0 12px;
+    }
+
+    .ticker-value {
+        font-size: 1.1rem;
+    }
+
+    .ticker-label {
+        font-size: 0.65rem;
+    }
+
+    /* Skill cards */
+    .skills-section {
+        padding: 40px 0 80px;
+    }
+
+    .skill-card {
+        padding: 16px;
+    }
+
+    .skill-name {
+        font-size: 1.1rem;
+    }
+
+    .skill-description {
+        font-size: 0.85rem;
+    }
+
+    /* Tier buttons on cards */
+    .tier-btn {
+        padding: 4px 8px;
+        font-size: 0.65rem;
+    }
+
+    /* Marketplace CTA */
+    .marketplace-cta {
+        padding: 60px 0;
+    }
+
+    /* Agent section code blocks */
+    .agent-code-block pre {
+        font-size: 0.7rem;
+        padding: 14px;
+    }
+
+    .agent-section-content h2 {
+        font-size: 1.4rem;
+    }
+
+    /* === Agent Profile Page === */
+    .agent-detail-container {
+        padding: 100px 12px 60px;
+    }
+
+    .agent-avatar {
+        width: 72px;
+        height: 72px;
+    }
+
+    .agent-avatar .avatar-emoji {
+        font-size: 2.2rem;
+    }
+
+    .agent-name {
+        font-size: 1.3rem;
+    }
+
+    .agent-bio {
+        font-size: 0.9rem;
+    }
+
+    /* Stats bar — 2 columns */
+    .agent-detail-container .stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .stat-number {
+        font-size: 1.4rem;
+    }
+
+    .stat-label {
+        font-size: 0.65rem;
+    }
+
+    /* Skills grid on agent page */
+    .agent-detail-container .skills-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Review cards */
+    .review-header {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .review-date {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    /* === Agents Guide Page === */
+    .guide-header {
+        padding: 100px 0 32px;
+    }
+
+    .guide-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .guide-grid {
+        padding: 0 12px;
+    }
+
+    .guide-section h2 {
+        font-size: 1.15rem;
+    }
+
+    .guide-section p {
+        font-size: 0.85rem;
+    }
+
+    /* Tier cards in guide */
+    .tier-card {
+        padding: 18px 14px;
+    }
+
+    /* Wallet table scroll */
+    .wallet-table {
+        font-size: 0.8rem;
+    }
+
+    .wallet-table th,
+    .wallet-table td {
+        padding: 8px 6px;
+    }
+
+    /* API link box */
+    .api-link-box {
+        flex-direction: column;
+        text-align: center;
+        padding: 16px;
+    }
+
+    .api-link-box a {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Callout buttons */
+    .callout {
+        padding: 16px;
+    }
+
+    .callout-buttons button {
+        font-size: 0.85rem;
+        padding: 10px 18px;
+    }
+
+    /* Step cards */
+    .step-card {
+        padding: 16px;
+    }
+
+    /* === Help Page === */
+    .help-header {
+        padding: 100px 0 32px !important;
+    }
+
+    .help-nav {
+        gap: 6px;
+    }
+
+    .help-nav-btn {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+    }
+
+    .help-nav-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .help-question {
+        padding: 14px 16px;
+    }
+
+    .help-question h3 {
+        font-size: 0.88rem;
+    }
+
+    .help-answer-inner {
+        padding: 0 16px 14px;
+        font-size: 0.85rem;
+    }
+
+    .code-block-small {
+        padding: 10px 12px;
+        font-size: 0.75rem;
+    }
+
+    .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .contact-card {
+        padding: 18px;
+    }
+
+    .cta-box {
+        padding: 24px 16px;
+    }
+
+    .cta-box .btn {
+        width: 100%;
+        margin: 4px 0;
+    }
+
+    /* === API Page === */
+    .api-header {
+        padding: 100px 0 32px;
+    }
+
+    /* === Footer — tighter spacing === */
+    .footer-top {
+        gap: 24px;
+        padding-bottom: 24px;
+    }
+
+    .footer-columns {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .footer-column h4 {
+        font-size: 0.7rem;
+        margin-bottom: 8px;
+    }
+
+    .footer-column a {
+        font-size: 0.75rem;
+    }
+
+    .footer-column li {
+        margin-bottom: 6px;
+    }
+
+    .footer-bottom {
+        gap: 12px;
+    }
+
+    .footer-btc {
+        font-size: 0.75rem;
+    }
+
+    /* === Cookie consent === */
+    .cookie-consent-inner {
+        padding: 0 4px;
+    }
+
+    .cookie-consent-text p {
+        font-size: 0.8rem;
+    }
+
+    .cookie-consent-buttons .btn {
+        padding: 8px 14px;
+        font-size: 0.8rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   320px — Extreme small (Galaxy Fold, etc.)
+   -------------------------------------------------------------------------- */
+@media (max-width: 360px) {
+    .container {
+        padding: 0 10px;
+    }
+
+    .skill-title {
+        font-size: 1.2rem;
+    }
+
+    .skill-icon-large {
+        width: 60px;
+        height: 60px;
+        font-size: 2.4rem;
+    }
+
+    .invoice-amount-display .amount {
+        font-size: 1.5rem;
+    }
+
+    #qr-code-container img,
+    #qr-code-container canvas {
+        width: 150px !important;
+        height: 150px !important;
+    }
+
+    .agent-name {
+        font-size: 1.1rem;
+    }
+
+    .help-nav-btn {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+
+    /* Tier legend collapses on very small */
+    .legend-items {
+        gap: 8px;
+    }
+
+    .legend-item {
+        padding: 8px;
+    }
+
+    .legend-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Touch target enforcement (44px minimum per Apple HIG)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .buy-btn,
+    .btn-invoke,
+    .tier-btn,
+    .help-question,
+    .help-nav-btn,
+    .chip,
+    .pagination-btn,
+    .cookie-consent-buttons .btn,
+    .back-link {
+        min-height: 44px;
+    }
+
+    /* Ensure modal close button is easily tappable */
+    .modal-close {
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Safe area insets (notched phones)
+   -------------------------------------------------------------------------- */
+@supports (padding: env(safe-area-inset-bottom)) {
+    .cookie-consent {
+        padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    }
+
+    .mobile-menu-panel {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
