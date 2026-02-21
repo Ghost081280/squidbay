@@ -15,6 +15,43 @@ let conversationHistory = [];
 let messageCount = 0;
 let lastMessageTime = 0;
 const RATE_LIMIT_MS = 2000; // 2 seconds between messages
+const SESSION_KEY = 'squidbot_conversation';
+
+// N-F15: Restore conversation from sessionStorage
+function restoreConversation() {
+    try {
+        const saved = sessionStorage.getItem(SESSION_KEY);
+        if (saved) {
+            const data = JSON.parse(saved);
+            conversationHistory = data.history || [];
+            messageCount = data.messageCount || 0;
+            return data.messages || [];
+        }
+    } catch (e) {
+        console.warn('SquidBot: Could not restore session', e);
+    }
+    return null;
+}
+
+// N-F15: Save conversation to sessionStorage
+function saveConversation() {
+    try {
+        const chatMessages = document.getElementById('squidbotMessages');
+        if (!chatMessages) return;
+        // Save DOM messages as HTML for restoration
+        const msgs = [];
+        chatMessages.querySelectorAll('.chat-message:not(.typing-indicator)').forEach(function(el) {
+            msgs.push({ className: el.className, html: el.innerHTML });
+        });
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+            history: conversationHistory,
+            messageCount: messageCount,
+            messages: msgs
+        }));
+    } catch (e) {
+        console.warn('SquidBot: Could not save session', e);
+    }
+}
 
 document.addEventListener('squidbay:components-loaded', function() {
     initChatbot();
@@ -128,6 +165,18 @@ function initChatbot() {
     
     // Initialize tooltip behavior
     initTooltipScrollBehavior();
+
+    // N-F15: Restore previous conversation from sessionStorage
+    const savedMessages = restoreConversation();
+    if (savedMessages && savedMessages.length > 0 && chatMessages) {
+        chatMessages.innerHTML = '';
+        savedMessages.forEach(function(msg) {
+            const div = document.createElement('div');
+            div.className = msg.className;
+            div.innerHTML = msg.html;
+            chatMessages.appendChild(div);
+        });
+    }
     
     // ============================================
     // EVENT LISTENERS - BUTTON
@@ -430,6 +479,9 @@ function initChatbot() {
         // Hide typing dots and type out the response
         hideTypingIndicator();
         await typeBotMessage(response);
+        
+        // N-F15: Save conversation to sessionStorage
+        saveConversation();
         
         // Re-enable send button
         if (chatSend) chatSend.disabled = false;
