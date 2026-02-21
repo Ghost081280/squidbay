@@ -166,10 +166,13 @@ function renderAgentPage(agent, skills, skillReviews, agentReviewsList) {
                 </div>
                 ${agent.bio ? `<p class="agent-bio">${esc(agent.bio)}</p>` : ''}
                 <div class="agent-meta">
-                    <span class="meta-item">📅 Joined ${formatDate(agent.created_at)}</span>
+                    <span class="meta-item">Joined ${formatDate(agent.created_at)}</span>
                     ${agent.website ? `<a href="${esc(agent.website)}" target="_blank" class="meta-item meta-link">🌐 Website</a>` : ''}
                     ${agent.agent_card_url ? `<a href="${esc(agent.agent_card_url)}" target="_blank" class="meta-item meta-link">🤖 Agent Card</a>` : ''}
-                    ${agent.x_handle ? `<a href="https://x.com/${esc(agent.x_handle)}" target="_blank" class="meta-item meta-link">𝕏 @${esc(agent.x_handle)}</a>` : ''}
+                    ${agent.x_handle
+                        ? `<a href="https://x.com/${esc(agent.x_handle)}" target="_blank" class="meta-item meta-link">𝕏 @${esc(agent.x_handle)}</a>`
+                        : `<span class="meta-item meta-x-placeholder" title="Not X verified">𝕏 Not linked</span>`
+                    }
                 </div>
             </div>
         </div>
@@ -189,18 +192,9 @@ function renderAgentPage(agent, skills, skillReviews, agentReviewsList) {
         </section>
         
         <section class="section">
-            <h2 class="section-title">Skill Reviews (${skillReviews.length})</h2>
-            <p class="section-subtitle">Reviews from buyers of this agent's skills</p>
+            <h2 class="section-title">Reviews (${agentReviewsList.length})</h2>
             <div class="reviews-list">
-                ${skillReviews.length > 0 ? skillReviews.map(r => renderSkillReviewCard(r, agent)).join('') : '<p class="empty-state">No skill reviews yet</p>'}
-            </div>
-        </section>
-        
-        <section class="section">
-            <h2 class="section-title">Agent Reviews (${agentReviewsList.length})</h2>
-            <p class="section-subtitle">Direct reviews of this agent's reliability and communication</p>
-            <div class="reviews-list">
-                ${agentReviewsList.length > 0 ? agentReviewsList.map(r => renderAgentReviewCard(r, agent)).join('') : '<p class="empty-state">No agent reviews yet</p>'}
+                ${agentReviewsList.length > 0 ? agentReviewsList.map(r => renderAgentReviewCard(r, agent)).join('') : '<p class="empty-state">No reviews yet</p>'}
             </div>
         </section>
     `;
@@ -230,10 +224,11 @@ function renderSkillCard(skill) {
             <div class="skill-card-top"><span class="skill-icon">${icon}</span></div>
             <h3 class="skill-name">${esc(skill.name)}</h3>
             <div class="skill-category">${category}</div>
+            ${skill.description ? `<p class="skill-card-desc">${esc(skill.description.length > 100 ? skill.description.slice(0, 100) + '…' : skill.description)}</p>` : ''}
             ${tierButtons}
             <div class="skill-summary-stats">
                 <div class="summary-stat"><span class="summary-label">From</span><span class="summary-value price">${lowestPrice.toLocaleString()} sats</span></div>
-                <div class="summary-stat"><span class="summary-label">Jobs</span><span class="summary-value">${totalJobs > 0 ? totalJobs : 'New'}</span></div>
+                <div class="summary-stat"><span class="summary-label">Jobs</span><span class="summary-value">${totalJobs}</span></div>
                 <div class="summary-stat"><span class="summary-label">Success</span><span class="summary-value success">${successRate !== null ? successRate + '%' : '—'}</span></div>
             </div>
         </a>
