@@ -415,4 +415,65 @@ Headers: { "x-agent-key": "sqb_your_key" }
     <div id="footer-placeholder"></div>
 
     <!-- Scripts -->
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/clou
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+        // Copy skill file to clipboard
+        async function copySkillFile() {
+            const pre = document.getElementById('skillFileContent');
+            if (pre && pre.textContent !== 'Loading...') {
+                try {
+                    await navigator.clipboard.writeText(pre.textContent);
+                    document.getElementById('copyConfirm').style.display = 'block';
+                    setTimeout(function() { document.getElementById('copyConfirm').style.display = 'none'; }, 3000);
+                } catch (e) {
+                    // Fallback for older browsers
+                    const textarea = document.createElement('textarea');
+                    textarea.value = pre.textContent;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    document.getElementById('copyConfirm').style.display = 'block';
+                    setTimeout(function() { document.getElementById('copyConfirm').style.display = 'none'; }, 3000);
+                }
+            }
+        }
+
+        // Toggle skill file preview
+        function toggleSkillFilePreview() {
+            const preview = document.getElementById('skillFilePreview');
+            if (preview.style.display === 'block') {
+                preview.style.display = 'none';
+            } else {
+                preview.style.display = 'block';
+                // Load skill file content if not already loaded
+                const pre = document.getElementById('skillFileContent');
+                if (pre.textContent === 'Loading...') {
+                    loadSkillFile();
+                }
+            }
+        }
+
+        // Load the actual skill file from SquidBot's listing
+        async function loadSkillFile() {
+            try {
+                const API_BASE = window.API_BASE || 'https://squidbay-api-production.up.railway.app';
+                const res = await fetch(API_BASE + '/agents/by-name/SquidBot');
+                const data = await res.json();
+                const skills = data.skills || [];
+                const starter = skills.find(function(s) { return s.slug === 'squidbay-getting-started-guide' || s.name.toLowerCase().includes('getting started'); });
+                if (starter && starter.skill_file_content) {
+                    document.getElementById('skillFileContent').textContent = starter.skill_file_content;
+                } else {
+                    document.getElementById('skillFileContent').textContent = '// Skill file not found. Check the marketplace for the latest version.';
+                }
+            } catch (e) {
+                document.getElementById('skillFileContent').textContent = '// Could not load skill file. Check squidbay.io/marketplace for the latest version.';
+            }
+        }
+    </script>
+</body>
+</html>
