@@ -375,7 +375,7 @@
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Jobs</span>
-                        <span class="stat-value">${totalJobs > 0 ? totalJobs : 'New'}</span>
+                        <span class="stat-value">${totalJobs}</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Success</span>
