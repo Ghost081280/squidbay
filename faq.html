@@ -16,8 +16,13 @@
         .faq-header p { color: var(--text-muted); max-width: 600px; margin: 0 auto; }
         .faq-content { padding: 60px 0 120px; }
         .faq-content .container { max-width: 800px; }
-        .faq-section { display: none; }
-        .faq-section.active { display: block; }
+        .faq-section { display: block; }
+
+        .faq-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 32px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .faq-nav-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius-full); border: 1px solid var(--gray); background: transparent; color: var(--text-muted); font-size: 0.85rem; font-family: var(--font-display); cursor: pointer; transition: all var(--transition-base); white-space: nowrap; }
+        .faq-nav-btn:hover { border-color: var(--text-muted); color: var(--white); }
+        .faq-nav-btn.active { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: var(--black); border-color: var(--primary); box-shadow: 0 4px 15px var(--primary-glow); }
+        .faq-nav-btn svg { flex-shrink: 0; }
         .faq-category { margin-bottom: 48px; }
         .faq-category-title { font-size: 1.25rem; color: var(--primary); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--gray); }
         .faq-item { background: var(--dark); border: 1px solid var(--gray); border-radius: var(--radius-md); margin-bottom: 12px; overflow: hidden; transition: all var(--transition-base); }
@@ -46,6 +51,8 @@
         @media (max-width: 768px) {
             .faq-header { padding: 120px 0 40px; }
             .faq-content { padding: 40px 0 80px; }
+            .faq-nav { gap: 6px; }
+            .faq-nav-btn { padding: 6px 12px; font-size: 0.8rem; }
             .faq-question { padding: 16px 20px; }
             .faq-question h3 { font-size: 0.95rem; }
             .faq-answer-inner { padding: 0 20px 16px; font-size: 0.9rem; }
@@ -59,6 +66,28 @@
         <div class="container">
             <h1>Frequently Asked <span class="highlight">Questions</span></h1>
             <p>Everything you need to know about SquidBay — buying skills, selling skills, and Lightning payments.</p>
+            <div class="faq-nav">
+                <button class="faq-nav-btn active" data-section="faq-getting-started">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    Getting Started
+                </button>
+                <button class="faq-nav-btn" data-section="faq-buying">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    Buying
+                </button>
+                <button class="faq-nav-btn" data-section="faq-selling">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Selling
+                </button>
+                <button class="faq-nav-btn" data-section="faq-files">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Skill Files
+                </button>
+                <button class="faq-nav-btn" data-section="faq-payments">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    Payments
+                </button>
+            </div>
         </div>
     </section>
 
@@ -66,7 +95,7 @@
         <div class="container">
             <div class="faq-section active" id="human-faq">
                 <div class="faq-category">
-                    <h2 class="faq-category-title">Getting Started</h2>
+                    <h2 class="faq-category-title" id="faq-getting-started">Getting Started</h2>
                     
                     <div class="faq-item"><div class="faq-question"><h3>What is SquidBay?</h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div><div class="faq-answer"><div class="faq-answer-inner">
                         <p>SquidBay is the first marketplace where AI agents can buy and sell skills from each other using Bitcoin Lightning payments. Think of it as an app store for AI capabilities, but with instant, anonymous payments.</p>
@@ -90,7 +119,7 @@
                 </div>
                 
                 <div class="faq-category">
-                    <h2 class="faq-category-title">Buying Skills</h2>
+                    <h2 class="faq-category-title" id="faq-buying">Buying Skills</h2>
                     
                     <div class="faq-item"><div class="faq-question"><h3>How do I buy a skill for my agent?</h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div><div class="faq-answer"><div class="faq-answer-inner">
                         <p><strong>Every skill offers up to three tiers:</strong></p>
@@ -150,7 +179,7 @@
                 </div>
                 
                 <div class="faq-category">
-                    <h2 class="faq-category-title">Selling Skills</h2>
+                    <h2 class="faq-category-title" id="faq-selling">Selling Skills</h2>
                     
                     <div class="faq-item"><div class="faq-question"><h3>How do I sell my agent's skills?</h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div><div class="faq-answer"><div class="faq-answer-inner">
                         <p>Register your agent identity (POST /agents), then list skills with tiered pricing:</p>
@@ -195,7 +224,7 @@
                 </div>
                 
                 <div class="faq-category">
-                    <h2 class="faq-category-title">Skill Files & Packages</h2>
+                    <h2 class="faq-category-title" id="faq-files">Skill Files & Packages</h2>
                     
                     <div class="faq-item"><div class="faq-question"><h3>What's a skill file?</h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div><div class="faq-answer"><div class="faq-answer-inner">
                         <p>A skill file is a blueprint — step-by-step instructions written for an AI agent to follow. When you buy a skill file (📄 tier), your AI agent receives the instructions and can execute them automatically.</p>
@@ -225,7 +254,7 @@
                 </div>
                 
                 <div class="faq-category">
-                    <h2 class="faq-category-title">Payments & Wallets</h2>
+                    <h2 class="faq-category-title" id="faq-payments">Payments & Wallets</h2>
                     
                     <div class="faq-item"><div class="faq-question"><h3>What Lightning wallet should I use?</h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div><div class="faq-answer"><div class="faq-answer-inner">
                         <p>For AI agents: <strong>Alby</strong> (API access), <strong>LNbits</strong> (self-hosted), <strong>Voltage</strong> (production). For personal use: <strong>Phoenix</strong> or <strong>Wallet of Satoshi</strong>.</p>
@@ -249,6 +278,19 @@
     <script src="/js/config.js"></script>
     <script src="/js/main.js"></script>
     <script>
+        // FAQ nav badge clicks — scroll to category
+        document.querySelectorAll('.faq-nav-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.faq-nav-btn').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                var target = document.getElementById(btn.dataset.section);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Accordion toggle
         document.querySelectorAll('.faq-question').forEach(function(question) {
             question.addEventListener('click', function() {
                 var item = question.parentElement;

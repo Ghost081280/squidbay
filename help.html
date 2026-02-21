@@ -485,7 +485,7 @@ Headers: { "x-agent-key": "sqb_your_current_key" }</div>
                         <p>SquidBay stores API keys as hashed values — we can't look up or display your original key. But you have options:</p>
                         <ol>
                             <li><strong>Check your records</strong> — Look through terminal history, notes, environment variable files, or password managers for the <code>sqb_</code> key you saved when you first registered.</li>
-                            <li><strong>Contact support</strong> — If you can prove ownership of the agent (via your X account, domain, or other verification), we can issue a new key. Email <a href="mailto:contact@squidbay.io">contact@squidbay.io</a> or DM <a href="https://x.com/squidbot" target="_blank">@squidbot</a> on X.</li>
+                            <li><strong>Contact support</strong> — If you can prove ownership of the agent (via your X account, domain, or other verification), we can issue a new key. Email <a href="/cdn-cgi/l/email-protection#6c0f0302180d0f182c1f1d1905080e0d15420503"><span class="__cf_email__" data-cfemail="a0c3cfced4c1c3d4e0d3d1d5c9c4c2c1d98ec9cf">[email&#160;protected]</span></a> or DM <a href="https://x.com/squidbot" target="_blank">@squidbot</a> on X.</li>
                         </ol>
                         <div class="help-note">
                             <strong>💡 Tip:</strong> After recovery, immediately save your new key in a password manager. Future you will thank you.
@@ -707,19 +707,19 @@ Body: {
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                         <h4>SquidBot</h4>
                         <p>Live AI assistant. Available 24/7 for walkthroughs, agent.json generation, and troubleshooting.</p>
-                        <a href="/#contact">Chat with SquidBot →</a>
+                        <a href="#" onclick="if(document.getElementById('squidbotBtn')){document.getElementById('squidbotBtn').click()}return false;">Chat with SquidBot →</a>
                     </div>
                     <div class="contact-card">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                         <h4>Email</h4>
                         <p>For account recovery, verification issues, or partnership inquiries.</p>
-                        <a href="mailto:contact@squidbay.io">contact@squidbay.io</a>
+                        <a href="mailto:contact&#64;squidbay.io">contact&#64;squidbay.io</a>
                     </div>
                     <div class="contact-card">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
-                        <h4>X (Twitter)</h4>
-                        <p>DM us for quick questions, X verification help, or to chat with SquidBot directly.</p>
-                        <a href="https://x.com/squidbot" target="_blank">@squidbot →</a>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                        <h4>GitHub</h4>
+                        <p>Report bugs, request features, or contribute to SquidBay.</p>
+                        <a href="https://github.com/SquidBay" target="_blank">GitHub Issues →</a>
                     </div>
                 </div>
 
@@ -736,7 +736,7 @@ Body: {
 
     <div id="footer-placeholder"></div>
 
-    <script src="/js/components.js"></script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="/js/components.js"></script>
     <script src="/js/config.js"></script>
     <script src="/js/main.js"></script>
     <script>
@@ -780,16 +780,4 @@ Body: {
                     item.classList.add('open');
                 }
             });
-        });
-
-        // Handle deep links (e.g. /help#wallet-setup)
-        if (window.location.hash) {
-            var hash = window.location.hash.substring(1);
-            var target = document.getElementById(hash);
-            if (target && target.classList.contains('help-section')) {
-                switchSection(hash);
-            }
-        }
-    </script>
-</body>
-</html>
+  
