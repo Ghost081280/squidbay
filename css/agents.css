@@ -35,6 +35,13 @@
     overflow: hidden;
 }
 
+/* Grid child overflow fix — without this, <main> expands past viewport */
+.guide-grid > main,
+.guide-grid > aside {
+    min-width: 0;
+    overflow: hidden;
+}
+
 /* Sidebar Nav */
 .guide-nav {
     position: sticky;
@@ -76,6 +83,8 @@
 .guide-section {
     margin-bottom: 56px;
     max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
     overflow-wrap: break-word;
     word-wrap: break-word;
 }
@@ -128,6 +137,20 @@
     font-size: 0.88em;
     color: var(--primary);
     font-family: var(--font-mono);
+}
+
+/* Prevent pre, code blocks, and tables from blowing out the layout */
+.guide-section pre {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.guide-section table {
+    max-width: 100%;
+}
+
+.guide-section .code-block {
+    max-width: 100%;
 }
 
 /* Highlight callout box */
