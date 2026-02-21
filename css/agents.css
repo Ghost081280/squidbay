@@ -372,6 +372,41 @@
     line-height: 1.5;
 }
 
+/* N-F12: SquidBot Quick Start */
+.squidbot-quickstart {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 20px 0 28px;
+    flex-wrap: wrap;
+}
+
+.btn-quickstart {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--black);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: var(--font-display);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.btn-quickstart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px var(--primary-glow);
+}
+
+.quickstart-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .guide-header {
