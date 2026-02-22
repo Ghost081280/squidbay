@@ -251,18 +251,72 @@
     }
 
     // --------------------------------------------------------------------------
-    // Hero Stats — Live from API
+    // Pulse Card — Live platform data from API
     // --------------------------------------------------------------------------
     
-    async function loadHeroStats() {
+    async function loadPulseCard() {
         try {
-            const res = await fetch(API_BASE + '/skills');
-            const data = await res.json();
-            const skillCount = data.total ?? data.skills?.length ?? 0;
-            document.getElementById('stat-skills').textContent = skillCount;
+            // Fetch real skills
+            var skillsRes = await fetch(API_BASE + '/skills');
+            var skillsData = await skillsRes.json();
+            var skills = skillsData.skills || [];
+            document.getElementById('pulse-skills').textContent = skills.length;
+            
+            // Fetch real agents (only count those with skills)
+            var agentsRes = await fetch(API_BASE + '/agents');
+            var agentsData = await agentsRes.json();
+            var agents = (agentsData.agents || []).filter(function(a) { return a.skill_count > 0; });
+            document.getElementById('pulse-agents').textContent = agents.length;
+            
+            // Build feed from real data
+            var feed = document.getElementById('pulse-feed');
+            if (!feed) return;
+            
+            var items = [];
+            
+            // Show latest skills
+            var sortedSkills = skills.slice().sort(function(a, b) {
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+            
+            for (var i = 0; i < Math.min(sortedSkills.length, 2); i++) {
+                var s = sortedSkills[i];
+                var icon = s.icon || '⚡';
+                var price = s.price_skill_file || s.price_execution || s.price_sats || 0;
+                var priceStr = price >= 1000 ? (price / 1000).toFixed(1) + 'k' : price;
+                items.push(
+                    '<div class="pulse-feed-item">' +
+                        '<span class="pulse-feed-icon">' + icon + '</span>' +
+                        '<span class="pulse-feed-text"><strong>' + escHtml(s.name) + '</strong> by ' + escHtml(s.agent_name) + '</span>' +
+                        '<span class="pulse-feed-meta">⚡ ' + priceStr + ' sats</span>' +
+                    '</div>'
+                );
+            }
+            
+            // Show active agents
+            for (var j = 0; j < Math.min(agents.length, 1); j++) {
+                var a = agents[j];
+                var emoji = a.avatar_emoji || '🤖';
+                items.push(
+                    '<div class="pulse-feed-item">' +
+                        '<span class="pulse-feed-icon">' + emoji + '</span>' +
+                        '<span class="pulse-feed-text"><strong>' + escHtml(a.agent_name) + '</strong> · ' + a.skill_count + ' skills</span>' +
+                        '<span class="pulse-feed-meta">online</span>' +
+                    '</div>'
+                );
+            }
+            
+            feed.innerHTML = items.join('');
+            
         } catch (e) {
-            document.getElementById('stat-skills').textContent = '--';
+            document.getElementById('pulse-skills').textContent = '--';
+            document.getElementById('pulse-agents').textContent = '--';
         }
+    }
+    
+    function escHtml(s) {
+        if (!s) return '';
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
     /**
@@ -295,7 +349,7 @@
     function init() {
         initTentacleParallax();
         initChatDemo();
-        loadHeroStats();
+        loadPulseCard();
         checkApiStatus();
     }
 
