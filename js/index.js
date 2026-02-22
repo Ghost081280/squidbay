@@ -251,30 +251,62 @@
     }
 
     // --------------------------------------------------------------------------
-    // Pulse Card — Live platform data from API
+    // Pulse Card — Real platform data + live sat price
     // --------------------------------------------------------------------------
     
     async function loadPulseCard() {
         try {
-            // Fetch real skills
-            var skillsRes = await fetch(API_BASE + '/skills');
-            var skillsData = await skillsRes.json();
-            var skills = skillsData.skills || [];
-            document.getElementById('pulse-skills').textContent = skills.length;
+            // 1. Check API status
+            var statusOk = false;
+            try {
+                var statusRes = await fetch(API_BASE + '/');
+                var statusData = await statusRes.json();
+                statusOk = statusData.status === 'online';
+            } catch(e) { statusOk = false; }
             
-            // Fetch real agents (only count those with skills)
-            var agentsRes = await fetch(API_BASE + '/agents');
-            var agentsData = await agentsRes.json();
-            var agents = (agentsData.agents || []).filter(function(a) { return a.skill_count > 0; });
-            document.getElementById('pulse-agents').textContent = agents.length;
+            var dot = document.getElementById('pulse-dot');
+            var statusText = document.getElementById('pulse-status');
+            if (dot && statusText) {
+                if (statusOk) {
+                    dot.classList.remove('offline');
+                    statusText.textContent = 'online';
+                } else {
+                    dot.classList.add('offline');
+                    statusText.textContent = 'offline';
+                }
+            }
             
-            // Build feed from real data
+            // 2. Fetch real skills
+            var skills = [];
+            try {
+                var skillsRes = await fetch(API_BASE + '/skills');
+                var skillsData = await skillsRes.json();
+                skills = skillsData.skills || [];
+            } catch(e) {}
+            
+            // 3. Fetch real agents (only with skills)
+            var agents = [];
+            try {
+                var agentsRes = await fetch(API_BASE + '/agents');
+                var agentsData = await agentsRes.json();
+                agents = (agentsData.agents || []).filter(function(a) { return a.skill_count > 0; });
+            } catch(e) {}
+            
+            // 4. Show counts in header
+            var counts = document.getElementById('pulse-counts');
+            if (counts) {
+                counts.textContent = '· ' + skills.length + ' skill' + (skills.length !== 1 ? 's' : '') + ' · ' + agents.length + ' agent' + (agents.length !== 1 ? 's' : '');
+            }
+            
+            // 5. Fetch live BTC price for sat converter
+            loadSatPrice();
+            
+            // 6. Build feed from real data
             var feed = document.getElementById('pulse-feed');
             if (!feed) return;
             
             var items = [];
             
-            // Show latest skills
             var sortedSkills = skills.slice().sort(function(a, b) {
                 return new Date(b.created_at) - new Date(a.created_at);
             });
@@ -293,7 +325,6 @@
                 );
             }
             
-            // Show active agents
             for (var j = 0; j < Math.min(agents.length, 1); j++) {
                 var a = agents[j];
                 var emoji = a.avatar_emoji || '🤖';
@@ -309,8 +340,32 @@
             feed.innerHTML = items.join('');
             
         } catch (e) {
-            document.getElementById('pulse-skills').textContent = '--';
-            document.getElementById('pulse-agents').textContent = '--';
+            console.warn('Pulse card load error:', e);
+        }
+    }
+    
+    async function loadSatPrice() {
+        var satsEl = document.getElementById('pulse-sats');
+        if (!satsEl) return;
+        
+        try {
+            var res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+            var data = await res.json();
+            var btcPrice = data.bitcoin.usd;
+            var satPrice = btcPrice / 100000000; // 1 sat in USD
+            var thousandSats = (satPrice * 1000);
+            
+            var display;
+            if (thousandSats >= 1) {
+                display = '1k sats ≈ $' + thousandSats.toFixed(2);
+            } else {
+                display = '1k sats ≈ $' + thousandSats.toFixed(3);
+            }
+            
+            satsEl.querySelector('.pulse-sats-value').textContent = display;
+        } catch(e) {
+            satsEl.querySelector('.pulse-sats-value').textContent = '';
+            satsEl.querySelector('.pulse-sats-label').textContent = '';
         }
     }
     
