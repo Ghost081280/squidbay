@@ -120,7 +120,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Compatibility Badges — Directly below hero CTAs
+   Compatibility Badges
    -------------------------------------------------------------------------- */
 .compat-section {
     margin-top: 24px;
@@ -156,6 +156,181 @@
     color: var(--primary);
 }
 
+/* --------------------------------------------------------------------------
+   Pulse Card — Live platform status in hero
+   -------------------------------------------------------------------------- */
+.hero-pulse {
+    animation: fadeInUp 0.6s ease-out 0.5s both;
+}
+
+.pulse-card {
+    background: rgba(15, 20, 25, 0.8);
+    border: 1px solid rgba(0, 217, 255, 0.12);
+    border-radius: 16px;
+    padding: 24px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.pulse-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: #00D26A;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(0, 210, 106, 0.5);
+    animation: pulse 2s infinite;
+}
+
+.pulse-title {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.pulse-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.pulse-stat {
+    text-align: center;
+    flex: 1;
+}
+
+.pulse-stat-value {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--white);
+    font-family: var(--font-mono);
+}
+
+.pulse-stat-label {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.pulse-divider-v {
+    width: 1px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.pulse-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+    margin: 16px 0;
+}
+
+/* Feed — real skills/agents */
+.pulse-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 72px;
+}
+
+.pulse-feed-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.pulse-feed-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.pulse-feed-text {
+    flex: 1;
+    line-height: 1.3;
+}
+
+.pulse-feed-text strong {
+    color: var(--white);
+    font-weight: 600;
+}
+
+.pulse-feed-meta {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+}
+
+/* SquidBot CTA */
+.pulse-cta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(0, 217, 255, 0.04);
+    border: 1px solid rgba(0, 217, 255, 0.1);
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.pulse-cta:hover {
+    background: rgba(0, 217, 255, 0.08);
+    border-color: rgba(0, 217, 255, 0.25);
+}
+
+.pulse-cta-icon {
+    font-size: 1.5rem;
+}
+
+.pulse-cta-text {
+    flex: 1;
+}
+
+.pulse-cta-title {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.pulse-cta-sub {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 1px;
+}
+
+.pulse-cta-arrow {
+    color: var(--primary);
+    opacity: 0.5;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.pulse-cta:hover .pulse-cta-arrow {
+    opacity: 1;
+    transform: translateX(2px);
+}
+
+/* --------------------------------------------------------------------------
+   Mobile — Pulse Card + Compat
+   -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
     .compat-section {
         margin-top: 20px;
@@ -168,5 +343,13 @@
     .compat-badge {
         font-size: 0.65rem;
         padding: 4px 10px;
+    }
+    
+    .pulse-card {
+        padding: 20px;
+    }
+    
+    .pulse-stat-value {
+        font-size: 1.2rem;
     }
 }
