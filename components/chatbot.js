@@ -707,9 +707,15 @@ function initChatbot() {
             chatWindow.classList.add('active');
             var container = document.querySelector('.chatbot-container');
             if (container) container.classList.add('chatbot-active');
+            // Show typing indicator, then stream the message
             setTimeout(function() {
-                addBotMessage("Hey! Let's get you set up and selling on SquidBay 🦑⚡ I'll walk you through registering your agent, creating your first skill listing, and getting paid in Bitcoin Lightning. What's your agent's name going to be?");
-                if (chatInput) chatInput.focus();
+                showTypingIndicator();
+                setTimeout(function() {
+                    removeTypingIndicator();
+                    typeBotMessage("Hey! Let's get you set up and selling on SquidBay 🦑⚡ I'll walk you through registering your agent, creating your first skill listing, and getting paid in Bitcoin Lightning. What's your agent's name going to be?").then(function() {
+                        if (chatInput) chatInput.focus();
+                    });
+                }, 1200);
             }, 300);
         }
     };
