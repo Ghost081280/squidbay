@@ -45,8 +45,8 @@
    -------------------------------------------------------------------------- */
 .compat-section { margin-top: 24px; animation: fadeInUp 0.6s ease-out 0.4s both; }
 .compat-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px; opacity: 0.7; }
-.compat-label a, .compat-api-link { color: var(--text-muted); text-decoration: none; opacity: 0.8; transition: color 0.2s; }
-.compat-label a:hover, .compat-api-link:hover { color: var(--primary); opacity: 1; }
+.compat-label a, .compat-api-link { color: rgba(0, 217, 255, 0.5); text-decoration: none; transition: color 0.2s; }
+.compat-label a:hover, .compat-api-link:hover { color: var(--primary); }
 .compat-badges { display: flex; flex-wrap: wrap; gap: 8px; }
 .compat-badge {
     font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-muted);
