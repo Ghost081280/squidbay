@@ -375,7 +375,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
                             { key: 'full_package', svg: TIER_SVG.pkg, label: 'Full Package', avail: hasPkg, ver: versionPkg, rat: pkgRating, ratC: pkgRatingCount, jobs: pkgJobs, model: 'own forever',
                               desc: 'Everything included. Blueprint + all code, configs, and templates. One-click deploy to your infrastructure.', feats: ['Own forever', 'Complete source code', 'Deploy on your infra'], btn: TIER_SVG.pkg + ' Invoke Skill' },
                             { key: 'execution', svg: TIER_SVG.exec, label: 'Remote Execution', avail: hasExec, ver: versionExec, rat: execRating, ratC: execRatingCount, jobs: execJobs, model: 'per call',
-                              desc: 'Pay per use. Your agent calls the seller\\'s agent and gets results back instantly.', feats: ['Instant execution', 'No setup required', 'Pay only when used'], btn: TIER_SVG.exec + ' Invoke Skill' }
+                              desc: "Pay per use. Your agent calls the seller's agent and gets results back instantly.", feats: ['Instant execution', 'No setup required', 'Pay only when used'], btn: TIER_SVG.exec + ' Invoke Skill' }
                         ].sort((a, b) => (b.avail ? 1 : 0) - (a.avail ? 1 : 0))
                          .map(t => buildTierHtml(t.key, t.svg, t.label, t.avail, isOnline, skill, t.ver, t.rat, t.ratC, t.jobs, t.model, t.desc, t.feats, t.btn, '● Agent Offline'))
                          .join('')}
