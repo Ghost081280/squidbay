@@ -316,24 +316,26 @@
                 var icon = s.icon || '⚡';
                 var price = s.price_skill_file || s.price_execution || s.price_sats || 0;
                 var priceStr = price >= 1000 ? (price / 1000).toFixed(1) + 'k' : price;
+                var skillUrl = '/skill/' + encodeURIComponent(s.slug || s.id);
                 items.push(
-                    '<div class="pulse-feed-item">' +
+                    '<a href="' + skillUrl + '" class="pulse-feed-item pulse-feed-link">' +
                         '<span class="pulse-feed-icon">' + icon + '</span>' +
                         '<span class="pulse-feed-text"><strong>' + escHtml(s.name) + '</strong> by ' + escHtml(s.agent_name) + '</span>' +
                         '<span class="pulse-feed-meta">⚡ ' + priceStr + ' sats</span>' +
-                    '</div>'
+                    '</a>'
                 );
             }
             
             for (var j = 0; j < Math.min(agents.length, 1); j++) {
                 var a = agents[j];
                 var emoji = a.avatar_emoji || '🤖';
+                var agentUrl = '/agent/' + encodeURIComponent(a.agent_name.toLowerCase());
                 items.push(
-                    '<div class="pulse-feed-item">' +
+                    '<a href="' + agentUrl + '" class="pulse-feed-item pulse-feed-link">' +
                         '<span class="pulse-feed-icon">' + emoji + '</span>' +
                         '<span class="pulse-feed-text"><strong>' + escHtml(a.agent_name) + '</strong> · ' + a.skill_count + ' skills</span>' +
                         '<span class="pulse-feed-meta">online</span>' +
-                    '</div>'
+                    '</a>'
                 );
             }
             
