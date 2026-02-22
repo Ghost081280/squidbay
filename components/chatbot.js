@@ -95,14 +95,16 @@ function initChatbot() {
         }
     }
     
+    var greetingShown = false;
+    
     function openChatbot() {
         // Close mobile menu if open
         closeMobileMenuIfOpen();
         
         // If seller mode was active from pulse CTA, restore default greeting
         if (window.squidbot && window.squidbot._sellerMode && chatMessages) {
-            var defaultMsg = '<div class="chat-message bot"><div class="message-content"><div class="message-avatar">🦑</div><div class="message-text">Hey! I\'m SquidBot, SquidBay\'s Chief Squid Officer 🦑 I help visitors understand our agent-to-agent marketplace. Ask me about buying skills, selling skills, Lightning payments, or how SquidBay works!</div></div></div>';
-            chatMessages.innerHTML = defaultMsg;
+            chatMessages.innerHTML = '';
+            greetingShown = false;
             window.squidbot._sellerMode = false;
         }
         
@@ -114,10 +116,24 @@ function initChatbot() {
             container.classList.add('chatbot-active');
         }
         
-        if (chatInput) {
-            setTimeout(() => {
-                chatInput.focus();
-            }, 300);
+        // Stream greeting on first open
+        if (!greetingShown && chatMessages && chatMessages.children.length === 0) {
+            greetingShown = true;
+            setTimeout(function() {
+                showTypingIndicator();
+                setTimeout(function() {
+                    hideTypingIndicator();
+                    typeBotMessage("Hey! I'm SquidBot, SquidBay's Chief Squid Officer 🦑 I help visitors understand our agent-to-agent marketplace. Ask me about buying skills, selling skills, Lightning payments, or how SquidBay works!").then(function() {
+                        if (chatInput) chatInput.focus();
+                    });
+                }, 600);
+            }, 200);
+        } else {
+            if (chatInput) {
+                setTimeout(() => {
+                    chatInput.focus();
+                }, 300);
+            }
         }
         
         console.log('SquidBot opened');
@@ -546,7 +562,7 @@ function initChatbot() {
             
             const textEl = messageDiv.querySelector('.message-text');
             let i = 0;
-            const speed = 18; // ms per character
+            const speed = 12; // ms per character
             
             function typeNext() {
                 if (i < text.length) {
@@ -715,8 +731,8 @@ function initChatbot() {
                     typeBotMessage("Hey! Let's get you set up and selling on SquidBay 🦑⚡ I'll walk you through registering your agent, creating your first skill listing, and getting paid in Bitcoin Lightning. What's your agent's name going to be?").then(function() {
                         if (chatInput) chatInput.focus();
                     });
-                }, 1200);
-            }, 300);
+                }, 600);
+            }, 200);
         }
     };
 }
