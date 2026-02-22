@@ -110,7 +110,7 @@
         if (!grid) return;
         
         // Inject tier legend if not already present
-        // Tier legend removed — tiers shown on skill cards and detail pages
+        injectTierLegend();
         
         try {
             const response = await fetch(API_BASE + '/skills?limit=200');
@@ -203,13 +203,13 @@
         const tiers = skill.available_tiers || [];
         
         if (tiers.includes('execution') || (!tiers.length && skill.price_execution > 0)) {
-            badges += '<span class="tier-badge-mini tier-badge-exec" title="Remote Execution">⚡</span>';
+            badges += '<span class="tier-badge-mini tier-badge-exec" title="Remote Execution"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>';
         }
         if (tiers.includes('skill_file') || (!tiers.length && skill.price_skill_file)) {
-            badges += '<span class="tier-badge-mini tier-badge-file" title="Skill File">📄</span>';
+            badges += '<span class="tier-badge-mini tier-badge-file" title="Skill File"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>';
         }
         if (tiers.includes('full_package') || (!tiers.length && skill.price_full_package)) {
-            badges += '<span class="tier-badge-mini tier-badge-pkg" title="Full Package">📦</span>';
+            badges += '<span class="tier-badge-mini tier-badge-pkg" title="Full Package"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg></span>';
         }
         
         return badges;
@@ -247,31 +247,30 @@
             <div class="legend-title">Buying Options</div>
             <div class="legend-items">
                 <div class="legend-item">
-                    <span class="legend-icon exec">⚡</span>
+                    <span class="legend-icon exec"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
                     <div class="legend-text">
                         <strong>Execution</strong>
                         <span>Rent the skill. Pay per call whenever your agent needs it.</span>
                     </div>
                 </div>
                 <div class="legend-item">
-                    <span class="legend-icon file">📄</span>
+                    <span class="legend-icon file"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
                     <div class="legend-text">
                         <strong>Skill File</strong>
                         <span>Own the blueprint. Your agent builds it locally. Check back for version updates.</span>
                     </div>
                 </div>
                 <div class="legend-item">
-                    <span class="legend-icon pkg">📦</span>
+                    <span class="legend-icon pkg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg></span>
                     <div class="legend-text">
-                        <strong>Full Package</strong>
-                        <span>Everything included. Blueprint + code your agent auto-installs and manages.</span>
+                        <strong>Everything included. Blueprint + code your agent auto-installs and manages.</strong>
                     </div>
                 </div>
             </div>
         `;
         
-        // Insert after the grid (not before — skills come first)
-        grid.parentNode.insertBefore(legend, grid.nextSibling);
+        // Insert before the grid
+        grid.parentNode.insertBefore(legend, grid);
     }
 
     // --------------------------------------------------------------------------
@@ -316,13 +315,13 @@
         // Build tier buttons - compact pills that link to skill page with vanity URLs
         let tierButtons = '<div class="tier-buttons">';
         if (hasExec) {
-            tierButtons += `<a href="${skillTierUrl(skill, 'execution')}" class="tier-btn tier-exec" title="${(skill.price_execution || 0).toLocaleString()} sats">⚡ Execution</a>`;
+            tierButtons += `<a href="${skillTierUrl(skill, 'execution')}" class="tier-btn tier-exec" title="${(skill.price_execution || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Execution</a>`;
         }
         if (hasFile) {
-            tierButtons += `<a href="${skillTierUrl(skill, 'skill_file')}" class="tier-btn tier-file" title="${skill.price_skill_file.toLocaleString()} sats">📄 Skill File</a>`;
+            tierButtons += `<a href="${skillTierUrl(skill, 'skill_file')}" class="tier-btn tier-file" title="${skill.price_skill_file.toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> Skill File</a>`;
         }
         if (hasPkg) {
-            tierButtons += `<a href="${skillTierUrl(skill, 'full_package')}" class="tier-btn tier-pkg" title="${skill.price_full_package.toLocaleString()} sats">📦 Full Package</a>`;
+            tierButtons += `<a href="${skillTierUrl(skill, 'full_package')}" class="tier-btn tier-pkg" title="${skill.price_full_package.toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg> Full Package</a>`;
         }
         tierButtons += '</div>';
         
@@ -448,29 +447,33 @@
     // --------------------------------------------------------------------------
     
     function updateLiveStats(skills) {
+        const activeAgents = document.getElementById('activeAgents');
+        const onlineAgents = document.getElementById('onlineAgents');
+        const skillsListed = document.getElementById('skillsListed');
+        const successfulJobs = document.getElementById('successfulJobs');
+        
         const skillCount = skills.length;
         
-        // Populate search meta
-        const mpSkillCount = document.getElementById('mp-skill-count');
-        if (mpSkillCount) {
-            mpSkillCount.textContent = skillCount + ' skill' + (skillCount !== 1 ? 's' : '') + ' listed';
-        }
+        // Count unique agents, online agents, and total successful jobs
+        const uniqueAgents = new Set();
+        const onlineAgentSet = new Set();
+        let totalSuccessfulJobs = 0;
         
-        // Fetch live sat rate
-        loadMarketplaceSatRate();
-    }
-    
-    async function loadMarketplaceSatRate() {
-        const el = document.getElementById('mp-sat-rate');
-        if (!el) return;
-        try {
-            const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-            const data = await res.json();
-            const satPrice = data.bitcoin.usd / 100000000;
-            el.textContent = '1k sats ≈ $' + (satPrice * 1000).toFixed(2);
-        } catch(e) {
-            el.textContent = '';
-        }
+        skills.forEach(function(skill) {
+            const agentKey = skill.agent_name || skill.lightning_address || skill.id.substring(0, 6);
+            uniqueAgents.add(agentKey);
+            
+            if (skill.agent_online === true) {
+                onlineAgentSet.add(agentKey);
+            }
+            
+            totalSuccessfulJobs += (skill.success_count || 0);
+        });
+        
+        if (activeAgents) activeAgents.textContent = uniqueAgents.size.toLocaleString();
+        if (onlineAgents) onlineAgents.textContent = onlineAgentSet.size.toLocaleString();
+        if (skillsListed) skillsListed.textContent = skillCount.toLocaleString();
+        if (successfulJobs) successfulJobs.textContent = totalSuccessfulJobs.toLocaleString();
     }
 
     // --------------------------------------------------------------------------
