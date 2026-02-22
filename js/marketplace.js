@@ -110,7 +110,7 @@
         if (!grid) return;
         
         // Inject tier legend if not already present
-        injectTierLegend();
+        // Tier legend removed — tiers shown on skill cards and detail pages
         
         try {
             const response = await fetch(API_BASE + '/skills?limit=200');
