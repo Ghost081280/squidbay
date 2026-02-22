@@ -369,18 +369,16 @@ function renderSkillPage(skill, reviews, reviewStats) {
                 <div class="pricing-card">
                     <div class="pricing-header"><h3>${TIER_SVG.exec} Invoke This Skill</h3><p class="pricing-subhead">Pay with any Lightning wallet. Your agent handles the rest.</p></div>
                     <div class="pricing-tiers">
-                        ${buildTierHtml('execution', TIER_SVG.exec, 'Remote Execution', hasExec, isOnline, skill, versionExec, execRating, execRatingCount, execJobs, 'per call', 
-                            'Pay per use. Your agent calls the seller\'s agent and gets results back instantly.',
-                            ['Instant execution', 'No setup required', 'Pay only when used'],
-                            TIER_SVG.exec + ' Invoke Skill', '● Agent Offline')}
-                        ${buildTierHtml('skill_file', TIER_SVG.file, 'Skill File', hasFile, isOnline, skill, versionFile, fileRating, fileRatingCount, fileJobs, 'own forever',
-                            'Get the blueprint. Step-by-step instructions your AI agent can follow to build it.',
-                            ['Own forever', 'Your AI implements it', 'No ongoing costs'],
-                            TIER_SVG.file + ' Invoke Skill', '● Agent Offline')}
-                        ${buildTierHtml('full_package', TIER_SVG.pkg, 'Full Package', hasPkg, isOnline, skill, versionPkg, pkgRating, pkgRatingCount, pkgJobs, 'own forever',
-                            'Everything included. Blueprint + all code, configs, and templates. One-click deploy to your infrastructure.',
-                            ['Own forever', 'Complete source code', 'Deploy on your infra'],
-                            TIER_SVG.pkg + ' Invoke Skill', '● Agent Offline')}
+                        ${[
+                            { key: 'skill_file', svg: TIER_SVG.file, label: 'Skill File', avail: hasFile, ver: versionFile, rat: fileRating, ratC: fileRatingCount, jobs: fileJobs, model: 'own forever',
+                              desc: 'Get the blueprint. Step-by-step instructions your AI agent can follow to build it.', feats: ['Own forever', 'Your AI implements it', 'No ongoing costs'], btn: TIER_SVG.file + ' Invoke Skill' },
+                            { key: 'full_package', svg: TIER_SVG.pkg, label: 'Full Package', avail: hasPkg, ver: versionPkg, rat: pkgRating, ratC: pkgRatingCount, jobs: pkgJobs, model: 'own forever',
+                              desc: 'Everything included. Blueprint + all code, configs, and templates. One-click deploy to your infrastructure.', feats: ['Own forever', 'Complete source code', 'Deploy on your infra'], btn: TIER_SVG.pkg + ' Invoke Skill' },
+                            { key: 'execution', svg: TIER_SVG.exec, label: 'Remote Execution', avail: hasExec, ver: versionExec, rat: execRating, ratC: execRatingCount, jobs: execJobs, model: 'per call',
+                              desc: 'Pay per use. Your agent calls the seller\\'s agent and gets results back instantly.', feats: ['Instant execution', 'No setup required', 'Pay only when used'], btn: TIER_SVG.exec + ' Invoke Skill' }
+                        ].sort((a, b) => (b.avail ? 1 : 0) - (a.avail ? 1 : 0))
+                         .map(t => buildTierHtml(t.key, t.svg, t.label, t.avail, isOnline, skill, t.ver, t.rat, t.ratC, t.jobs, t.model, t.desc, t.feats, t.btn, '● Agent Offline'))
+                         .join('')}
                     </div>
                 </div>
                 <div class="agent-transaction-card">

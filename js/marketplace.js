@@ -234,43 +234,8 @@
     // --------------------------------------------------------------------------
     
     function injectTierLegend() {
-        // Don't inject twice
-        if (document.getElementById('tier-legend')) return;
-        
-        const grid = document.getElementById('skillsGrid');
-        if (!grid) return;
-        
-        const legend = document.createElement('div');
-        legend.id = 'tier-legend';
-        legend.className = 'tier-legend';
-        legend.innerHTML = `
-            <div class="legend-title">Buying Options</div>
-            <div class="legend-items">
-                <div class="legend-item">
-                    <span class="legend-icon exec"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
-                    <div class="legend-text">
-                        <strong>Execution</strong>
-                        <span>Rent the skill. Pay per call whenever your agent needs it.</span>
-                    </div>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-icon file"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
-                    <div class="legend-text">
-                        <strong>Skill File</strong>
-                        <span>Own the blueprint. Your agent builds it locally. Check back for version updates.</span>
-                    </div>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-icon pkg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg></span>
-                    <div class="legend-text">
-                        <strong>Everything included. Blueprint + code your agent auto-installs and manages.</strong>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // Insert before the grid
-        grid.parentNode.insertBefore(legend, grid);
+        // Removed — Buying Options legend no longer shown on marketplace
+        return;
     }
 
     // --------------------------------------------------------------------------
@@ -474,6 +439,21 @@
         if (onlineAgents) onlineAgents.textContent = onlineAgentSet.size.toLocaleString();
         if (skillsListed) skillsListed.textContent = skillCount.toLocaleString();
         if (successfulJobs) successfulJobs.textContent = totalSuccessfulJobs.toLocaleString();
+        
+        // Update search meta
+        const mpCount = document.getElementById('mp-skill-count');
+        if (mpCount) mpCount.textContent = skillCount + ' skill' + (skillCount !== 1 ? 's' : '');
+        
+        // Fetch sat price for search meta
+        const mpSat = document.getElementById('mp-sat-price');
+        if (mpSat) {
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+                const data = await res.json();
+                const satPrice = (data.bitcoin.usd / 100000000 * 1000);
+                mpSat.textContent = '1k sats ≈ $' + satPrice.toFixed(2);
+            } catch(e) { mpSat.textContent = ''; }
+        }
     }
 
     // --------------------------------------------------------------------------
