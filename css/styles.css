@@ -315,10 +315,10 @@ nav .container {
    Hero Section
    -------------------------------------------------------------------------- */
 .hero {
-    min-height: 100vh;
+    min-height: auto;
     display: flex;
     align-items: center;
-    padding: 120px 0 80px;
+    padding: 120px 0 60px;
     position: relative;
     overflow: hidden;
 }
@@ -420,10 +420,10 @@ nav .container {
 }
 
 .hero-subtitle {
-    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    font-size: clamp(1.05rem, 2vw, 1.2rem);
     color: var(--text-muted);
-    max-width: 600px;
-    margin-bottom: 40px;
+    max-width: 560px;
+    margin-bottom: 32px;
     animation: fadeInUp 0.6s ease-out 0.2s both;
 }
 
@@ -441,11 +441,11 @@ nav .container {
 /* Stats Bar */
 .stats-bar {
     display: flex;
-    gap: 48px;
-    margin-top: 80px;
-    padding-top: 40px;
+    gap: 40px;
+    margin-top: 40px;
+    padding-top: 24px;
     border-top: 1px solid var(--gray);
-    animation: fadeInUp 0.6s ease-out 0.4s both;
+    animation: fadeInUp 0.6s ease-out 0.5s both;
 }
 
 .stat-value {
@@ -1580,14 +1580,14 @@ footer .container {
     
     .stats-bar {
         flex-wrap: wrap;
-        gap: 32px;
+        gap: 24px;
     }
     
     .hero-cta {
         flex-direction: column;
     }
     
-    .btn {
+    .hero-cta .btn {
         justify-content: center;
         width: 100%;
     }
@@ -1780,7 +1780,7 @@ footer .container {
     }
     
     .hero {
-        padding: 100px 0 60px;
+        padding: 90px 0 40px;
     }
     
     .how-it-works,
