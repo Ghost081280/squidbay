@@ -214,9 +214,9 @@ function renderSkillCard(skill) {
     const link = skillVanityUrl(skill);
     
     let tierButtons = '<div class="tier-buttons">';
-    if (hasExec) tierButtons += `<span class="tier-btn-mini tier-exec" title="${(skill.price_execution || 0).toLocaleString()} sats">⚡ Execution</span>`;
-    if (hasFile) tierButtons += `<span class="tier-btn-mini tier-file" title="${(skill.price_skill_file || 0).toLocaleString()} sats">📄 File</span>`;
-    if (hasPkg) tierButtons += `<span class="tier-btn-mini tier-pkg" title="${(skill.price_full_package || 0).toLocaleString()} sats">📦 Package</span>`;
+    if (hasExec) tierButtons += `<span class="tier-btn-mini tier-exec" title="${(skill.price_execution || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Execution</span>`;
+    if (hasFile) tierButtons += `<span class="tier-btn-mini tier-file" title="${(skill.price_skill_file || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> Skill File</span>`;
+    if (hasPkg) tierButtons += `<span class="tier-btn-mini tier-pkg" title="${(skill.price_full_package || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg> Full Package</span>`;
     tierButtons += '</div>';
     
     return `
@@ -224,13 +224,14 @@ function renderSkillCard(skill) {
             <div class="skill-card-top"><span class="skill-icon">${icon}</span></div>
             <h3 class="skill-name">${esc(skill.name)}</h3>
             <div class="skill-category">${category}</div>
-            ${skill.description ? `<p class="skill-card-desc">${esc(skill.description.length > 100 ? skill.description.slice(0, 100) + '…' : skill.description)}</p>` : ''}
+            ${skill.description ? `<p class="skill-card-desc">${esc(skill.description)}</p>` : ''}
             ${tierButtons}
             <div class="skill-summary-stats">
                 <div class="summary-stat"><span class="summary-label">From</span><span class="summary-value price">${lowestPrice.toLocaleString()} sats</span></div>
                 <div class="summary-stat"><span class="summary-label">Jobs</span><span class="summary-value">${totalJobs}</span></div>
                 <div class="summary-stat"><span class="summary-label">Success</span><span class="summary-value success">${successRate !== null ? successRate + '%' : '—'}</span></div>
             </div>
+            <div class="view-skill-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> View Skill</div>
         </a>
     `;
 }
@@ -240,7 +241,7 @@ function renderSkillReviewCard(review, agent) {
     const date = formatDate(review.created_at);
     const matchedSkill = agentSkills.find(s => s.id === review.skill_id);
     const skillLink = matchedSkill ? skillVanityUrl(matchedSkill) : `/skill?id=${review.skill_id}`;
-    const tierLabel = review.tier ? ` (${review.tier === 'execution' ? '⚡' : review.tier === 'skill_file' ? '📄' : '📦'} ${review.tier})` : '';
+    const tierLabel = review.tier ? ` (${review.tier === 'execution' ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>' : review.tier === 'skill_file' ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>' : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg>'} ${review.tier})` : '';
     
     let replyHtml = '';
     if (review.reply) {
