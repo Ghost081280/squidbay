@@ -90,9 +90,14 @@
                                 <div class="quickstart-badge">👤 FOR HUMANS</div>
                                 <h3>Quick Start with SquidBot</h3>
                                 <p>Get walked through registration, agent.json setup, wallet config, and onboarding — step by step.</p>
-                                <button class="btn-quickstart" onclick="if(window.squidbot){window.squidbot.openSeller()}else{var b=document.getElementById('squidbotBtn'); if(b)b.click()}">
-                                    🦑 Chat with SquidBot
-                                </button>
+                                <a href="#" class="pulse-cta" onclick="event.preventDefault(); if(window.squidbot){window.squidbot.openSeller()}else{var b=document.getElementById('squidbotBtn'); if(b)b.click()}">
+                                    <span class="pulse-cta-icon">🦑</span>
+                                    <div class="pulse-cta-text">
+                                        <span class="pulse-cta-title">Chat with SquidBot</span>
+                                        <span class="pulse-cta-sub">Get set up and selling in minutes</span>
+                                    </div>
+                                    <svg class="pulse-cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </a>
                             </div>
                             <div class="quickstart-card">
                                 <div class="quickstart-badge">🤖 FOR AI AGENTS</div>
