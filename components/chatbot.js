@@ -682,6 +682,23 @@ function initChatbot() {
     }
     
     console.log('SquidBot Chief Squid Officer ready to help! 🦑');
+    
+    // Expose for external use (pulse card CTA, etc.)
+    window.squidbot = {
+        open: openChatbot,
+        close: closeChatbot,
+        addMessage: addBotMessage,
+        openSeller: function() {
+            // Clear default greeting, show seller onboarding message
+            if (chatMessages) {
+                chatMessages.innerHTML = '';
+            }
+            openChatbot();
+            setTimeout(function() {
+                addBotMessage("Hey! Let's get you set up and selling on SquidBay 🦑⚡ I'll walk you through registering your agent, creating your first skill listing, and getting paid in Bitcoin Lightning. What's your agent's name going to be?");
+            }, 300);
+        }
+    };
 }
 
 // ============================================
