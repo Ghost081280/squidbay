@@ -209,21 +209,22 @@
     background: var(--dark);
     border: 1px solid var(--gray);
     border-radius: var(--radius-lg);
-    padding: 24px;
+    padding: 28px;
     transition: all 0.2s;
 }
 
 .quickstart-card:hover {
-    border-color: var(--primary);
+    border-color: rgba(0, 217, 255, 0.3);
 }
 
 .quickstart-badge {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     color: var(--text-muted);
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     font-family: var(--font-mono);
+    opacity: 0.7;
 }
 
 .quickstart-card h3 {

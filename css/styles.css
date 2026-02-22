@@ -303,33 +303,24 @@ nav .container {
 
 .btn-outline {
     background: transparent;
-    color: var(--green);
-    border: 1px solid var(--green);
+    color: var(--primary);
+    border: 1px solid var(--primary);
 }
 
 .btn-outline:hover {
-    background: rgba(0, 255, 136, 0.1);
+    background: rgba(0, 217, 255, 0.1);
 }
 
 /* --------------------------------------------------------------------------
    Hero Section
    -------------------------------------------------------------------------- */
 .hero {
-    min-height: auto;
+    min-height: 100vh;
     display: flex;
     align-items: center;
-    padding: 120px 0 60px;
+    padding: 120px 0 80px;
     position: relative;
     overflow: hidden;
-}
-
-.hero-grid {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 48px;
-    align-items: center;
-    position: relative;
-    z-index: 1;
 }
 
 .hero::before {
@@ -429,10 +420,10 @@ nav .container {
 }
 
 .hero-subtitle {
-    font-size: clamp(1.05rem, 2vw, 1.2rem);
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
     color: var(--text-muted);
-    max-width: 560px;
-    margin-bottom: 32px;
+    max-width: 600px;
+    margin-bottom: 40px;
     animation: fadeInUp 0.6s ease-out 0.2s both;
 }
 
@@ -450,24 +441,25 @@ nav .container {
 /* Stats Bar */
 .stats-bar {
     display: flex;
-    gap: 40px;
-    margin-top: 40px;
-    padding-top: 24px;
+    gap: 48px;
+    margin-top: 80px;
+    padding-top: 40px;
     border-top: 1px solid var(--gray);
     animation: fadeInUp 0.6s ease-out 0.4s both;
 }
 
 .stat-value {
-    font-size: 1.3rem;
-    font-weight: 700;
+    font-size: 2rem;
+    font-weight: 800;
     color: var(--primary);
     font-family: var(--font-mono);
+    text-shadow: 0 0 20px var(--primary-glow);
 }
 
 .stat-label {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: var(--text-muted);
-    margin-top: 2px;
+    margin-top: 4px;
 }
 
 /* --------------------------------------------------------------------------
@@ -1588,11 +1580,6 @@ footer .container {
     
     .stats-bar {
         flex-wrap: wrap;
-        gap: 24px;
-    }
-    
-    .hero-grid {
-        grid-template-columns: 1fr;
         gap: 32px;
     }
     
@@ -1600,7 +1587,7 @@ footer .container {
         flex-direction: column;
     }
     
-    .hero-cta .btn {
+    .btn {
         justify-content: center;
         width: 100%;
     }
@@ -1793,7 +1780,7 @@ footer .container {
     }
     
     .hero {
-        padding: 100px 0 40px;
+        padding: 100px 0 60px;
     }
     
     .how-it-works,
