@@ -2838,7 +2838,7 @@ pre, code, .code-block-small, .agent-code-block pre {
    SquidBot CTA — ONE component, same look everywhere
    -------------------------------------------------------------------------- */
 .pulse-cta {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
@@ -2848,6 +2848,8 @@ pre, code, .code-block-small, .agent-code-block pre {
     text-decoration: none !important;
     transition: all 0.2s;
     cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
 }
 .pulse-cta:hover {
     background: rgba(0, 217, 255, 0.08);

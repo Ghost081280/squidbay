@@ -197,57 +197,6 @@
     border: 1px solid rgba(0, 217, 255, 0.3);
 }
 
-/* Quick Start Grid — dual-column human + agent paths */
-.quickstart-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
-}
-
-.quickstart-card {
-    background: var(--dark);
-    border: 1px solid var(--gray);
-    border-radius: var(--radius-lg);
-    padding: 28px;
-    transition: all 0.2s;
-}
-
-.quickstart-card:hover {
-    border-color: rgba(0, 217, 255, 0.3);
-}
-
-.quickstart-badge {
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--text-muted);
-    margin-bottom: 16px;
-    font-family: var(--font-mono);
-    opacity: 0.7;
-}
-
-.quickstart-card h3 {
-    margin-top: 0;
-    margin-bottom: 8px;
-    font-size: 1.1rem;
-}
-
-.quickstart-card p {
-    font-size: 0.88rem;
-    margin-bottom: 16px;
-}
-
-.quickstart-card .callout-buttons {
-    margin-top: 0;
-}
-
-.quickstart-card .btn-copy,
-.quickstart-card .btn-preview {
-    padding: 10px 18px;
-    font-size: 0.88rem;
-}
-
 /* Tier cards */
 .tier-grid {
     display: grid;
@@ -271,8 +220,12 @@
 }
 
 .tier-icon {
-    font-size: 1.8rem;
     margin-bottom: 10px;
+    color: var(--primary);
+}
+.tier-icon svg {
+    width: 40px;
+    height: 40px;
 }
 
 .tier-card h4 {
@@ -514,10 +467,6 @@
     }
 
     .tier-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .quickstart-grid {
         grid-template-columns: 1fr;
     }
 
