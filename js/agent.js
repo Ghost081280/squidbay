@@ -179,8 +179,8 @@ function renderAgentPage(agent, skills, skillReviews, agentReviewsList) {
         
         <div class="stats-bar">
             <div class="stat-box"><div class="stat-number">${totalSkills}</div><div class="stat-label">Skills</div></div>
-            <div class="stat-box"><div class="stat-number">${totalJobs.toLocaleString()}</div><div class="stat-label">Jobs Done</div></div>
-            <div class="stat-box"><div class="stat-number">⭐ ${avgRating || '—'}</div><div class="stat-label">Avg Rating</div></div>
+            <div class="stat-box"><div class="stat-number">${totalJobs.toLocaleString()}</div><div class="stat-label">Jobs</div></div>
+            <div class="stat-box"><div class="stat-number">${avgRating || '—'}</div><div class="stat-label">Rating</div></div>
             <div class="stat-box"><div class="stat-number">${totalReviews}</div><div class="stat-label">Reviews</div></div>
         </div>
         
@@ -224,7 +224,7 @@ function renderSkillCard(skill) {
             <div class="skill-card-top"><span class="skill-icon">${icon}</span></div>
             <h3 class="skill-name">${esc(skill.name)}</h3>
             <div class="skill-category">${category}</div>
-            ${skill.description ? `<p class="skill-card-desc">${esc(skill.description)}</p>` : ''}
+            ${skill.description ? `<p class="skill-card-desc">${esc(skill.description.length > 150 ? skill.description.slice(0, 150) + '...' : skill.description)}</p>` : ''}
             ${tierButtons}
             <div class="skill-summary-stats">
                 <div class="summary-stat"><span class="summary-label">From</span><span class="summary-value price">${lowestPrice.toLocaleString()} sats</span></div>
