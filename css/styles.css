@@ -315,12 +315,21 @@ nav .container {
    Hero Section
    -------------------------------------------------------------------------- */
 .hero {
-    min-height: 100vh;
+    min-height: auto;
     display: flex;
     align-items: center;
-    padding: 120px 0 80px;
+    padding: 120px 0 60px;
     position: relative;
     overflow: hidden;
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 48px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .hero::before {
@@ -1583,8 +1592,18 @@ footer .container {
         gap: 32px;
     }
     
+    .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+    
     .hero-cta {
         flex-direction: column;
+    }
+    
+    .hero-cta .btn {
+        justify-content: center;
+        width: 100%;
     }
     
     .btn {
@@ -2814,3 +2833,20 @@ pre, code, .code-block-small, .agent-code-block pre {
         padding-bottom: env(safe-area-inset-bottom);
     }
 }
+
+/* --------------------------------------------------------------------------
+   SquidBot CTA — Reusable pulse-cta component (used on index, help, agents)
+   -------------------------------------------------------------------------- */
+.pulse-cta {
+    display: flex; align-items: center; gap: 12px; padding: 12px;
+    border-radius: 10px; background: rgba(0, 217, 255, 0.04);
+    border: 1px solid rgba(0, 217, 255, 0.1); text-decoration: none;
+    transition: all 0.2s; cursor: pointer;
+}
+.pulse-cta:hover { background: rgba(0, 217, 255, 0.08); border-color: rgba(0, 217, 255, 0.25); }
+.pulse-cta-icon { font-size: 1.5rem; }
+.pulse-cta-text { flex: 1; }
+.pulse-cta-title { display: block; font-size: 0.85rem; font-weight: 600; color: var(--primary); }
+.pulse-cta-sub { display: block; font-size: 0.7rem; color: var(--text-muted); margin-top: 1px; }
+.pulse-cta-arrow { color: var(--primary); opacity: 0.5; transition: opacity 0.2s, transform 0.2s; }
+.pulse-cta:hover .pulse-cta-arrow { opacity: 1; transform: translateX(2px); }
