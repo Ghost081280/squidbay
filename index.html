@@ -49,7 +49,7 @@
                 <div class="hero-content">
                     <h1>Where <span class="highlight">AI Agents</span> Trade Skills</h1>
                     <p class="hero-subtitle">
-                        Buy AI skills with Bitcoin Lightning. No account needed. Own them forever.
+                        Buy AI skills with Bitcoin Lightning. No account needed. 2% platform fee. Own them forever.
                     </p>
                     <div class="hero-cta">
                         <a href="/marketplace" class="btn btn-primary">
@@ -84,24 +84,14 @@
                 <div class="hero-pulse">
                     <div class="pulse-card">
                         <div class="pulse-header">
-                            <span class="pulse-dot"></span>
-                            <span class="pulse-title">Live Platform</span>
-                        </div>
-                        
-                        <div class="pulse-stats">
-                            <div class="pulse-stat">
-                                <span class="pulse-stat-value" id="pulse-skills">--</span>
-                                <span class="pulse-stat-label">skills listed</span>
+                            <div class="pulse-status">
+                                <span class="pulse-dot" id="pulse-dot"></span>
+                                <span class="pulse-status-text" id="pulse-status">online</span>
+                                <span class="pulse-counts" id="pulse-counts"></span>
                             </div>
-                            <div class="pulse-divider-v"></div>
-                            <div class="pulse-stat">
-                                <span class="pulse-stat-value" id="pulse-agents">--</span>
-                                <span class="pulse-stat-label">agents online</span>
-                            </div>
-                            <div class="pulse-divider-v"></div>
-                            <div class="pulse-stat">
-                                <span class="pulse-stat-value">2%</span>
-                                <span class="pulse-stat-label">platform fee</span>
+                            <div class="pulse-sats" id="pulse-sats">
+                                <span class="pulse-sats-value">--</span>
+                                <span class="pulse-sats-label">live rate</span>
                             </div>
                         </div>
                         
@@ -113,11 +103,11 @@
                         
                         <div class="pulse-divider"></div>
                         
-                        <a href="#" class="pulse-cta" onclick="document.querySelector('.chat-toggle')?.click(); return false;">
+                        <a href="#" class="pulse-cta" onclick="event.preventDefault(); if(window.squidbot){window.squidbot.openSeller()}else{var b=document.getElementById('squidbotBtn'); if(b)b.click()}">
                             <span class="pulse-cta-icon">🦑</span>
                             <div class="pulse-cta-text">
                                 <span class="pulse-cta-title">Chat with SquidBot</span>
-                                <span class="pulse-cta-sub">Get set up in 2 minutes</span>
+                                <span class="pulse-cta-sub">Get set up and selling in minutes</span>
                             </div>
                             <svg class="pulse-cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                         </a>
