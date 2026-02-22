@@ -151,31 +151,31 @@
 .stats-bar {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 40px;
+    gap: 10px;
+    margin-bottom: 32px;
 }
 
 .stat-box {
-    background: rgba(0, 217, 255, 0.05);
-    border: 1px solid rgba(0, 217, 255, 0.15);
-    border-radius: var(--radius-lg);
-    padding: 20px;
+    background: rgba(0, 217, 255, 0.03);
+    border: 1px solid rgba(0, 217, 255, 0.1);
+    border-radius: var(--radius-md, 8px);
+    padding: 12px 8px;
     text-align: center;
 }
 
 .stat-number {
-    font-size: 1.8rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--primary);
     font-family: var(--font-mono);
 }
 
 .stat-label {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 4px;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
 }
 
 /* === Section === */
@@ -449,12 +449,16 @@
     cursor: default;
 }
 
-/* N-F14: Skill card description on agent page */
+/* N-F14: Skill card description on agent page — 3-line clamp */
 .skill-card-desc {
     font-size: 0.85rem;
     color: var(--text-muted);
     line-height: 1.5;
     margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* View Skill CTA button */
