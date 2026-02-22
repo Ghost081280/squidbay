@@ -449,17 +449,16 @@ nav .container {
 }
 
 .stat-value {
-    font-size: 2rem;
-    font-weight: 800;
+    font-size: 1.3rem;
+    font-weight: 700;
     color: var(--primary);
     font-family: var(--font-mono);
-    text-shadow: 0 0 20px var(--primary-glow);
 }
 
 .stat-label {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    margin-top: 4px;
+    margin-top: 2px;
 }
 
 /* --------------------------------------------------------------------------
