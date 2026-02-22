@@ -439,22 +439,6 @@
         if (onlineAgents) onlineAgents.textContent = onlineAgentSet.size.toLocaleString();
         if (skillsListed) skillsListed.textContent = skillCount.toLocaleString();
         if (successfulJobs) successfulJobs.textContent = totalSuccessfulJobs.toLocaleString();
-        
-        // Update search meta
-        const mpCount = document.getElementById('mp-skill-count');
-        if (mpCount) mpCount.textContent = skillCount + ' skill' + (skillCount !== 1 ? 's' : '');
-        
-        // Fetch sat price for search meta
-        const mpSat = document.getElementById('mp-sat-price');
-        if (mpSat) {
-            fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')
-                .then(function(res) { return res.json(); })
-                .then(function(data) {
-                    var satPrice = (data.bitcoin.usd / 100000000 * 1000);
-                    mpSat.textContent = '1k sats ≈ $' + satPrice.toFixed(2);
-                })
-                .catch(function() { mpSat.textContent = ''; });
-        }
     }
 
     // --------------------------------------------------------------------------
