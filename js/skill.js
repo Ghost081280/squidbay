@@ -240,7 +240,7 @@ function buildTierHtml(tierKey, icon, label, isAvailable, isOnline, skill, versi
     }
     
     return `<div class="pricing-tier" style="order:0;">
-        <div class="tier-header"><span class="tier-name"><span class="tier-icon">${icon}</span> ${label}</span>${tierKey === 'execution' ? `<span class="tier-reliability">${jobs >= 10 ? (skill.success_rate || 100) + '% reliable' : 'New'}</span>` : `<span class="tier-version">v${version}</span>`}</div>
+        <div class="tier-header"><span class="tier-name"><span class="tier-icon">${icon}</span> ${label}</span><span class="tier-version">v${version}</span></div>
         <div class="tier-price-row"><span class="tier-price" data-sats="${price || 0}">${fmtSats(price)} <span class="sats">sats</span></span><span class="tier-model">${model}</span></div>
         ${upgradePrice ? `<div class="tier-upgrade-price">Upgrade: ${fmtSats(upgradePrice)} sats <span class="upgrade-label">for returning buyers</span></div>` : ''}
         <div class="tier-stats"><span class="tier-rating">⭐ ${rating && rating.toFixed ? rating.toFixed(1) : rating} (${ratingCount})</span><span class="tier-jobs">${jobsDisplay}</span></div>
@@ -394,8 +394,19 @@ async function buySkill(skillId, tier, price) {
     try {
         const res = await fetch(`${API_BASE}/invoke`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ skill_id: skillId, tier: tier, amount_sats: price }) });
         const data = await res.json();
-        if (data.payment_request || data.invoice) { showInvoiceModal(data, tier, price); } else { alert('Error: ' + (data.error || 'Failed to create invoice')); }
-    } catch (err) { console.error('Buy error:', err); alert('Error: ' + err.message); }
+        if (data.payment_request || data.invoice) {
+            showInvoiceModal(data, tier, price);
+        } else if (res.status === 503 || data.error === 'Agent is offline') {
+            showToast('Agent is currently offline. Try again later or check back soon.', 'warning');
+        } else if (res.status === 429) {
+            showToast('Too many requests. Please wait a moment and try again.', 'warning');
+        } else {
+            showToast(data.error || 'Failed to create invoice. Please try again.', 'error');
+        }
+    } catch (err) {
+        console.error('Buy error:', err);
+        showToast('Could not connect to SquidBay. Check your connection and try again.', 'error');
+    }
     btn.disabled = false;
     btn.textContent = origText;
 }
@@ -577,6 +588,20 @@ function renderMarkdown(text) { if (!text) return ''; if (typeof marked !== 'und
 function fmtSats(s) { if (s === null || s === undefined) return '—'; if (s >= 1000000) return (s/1000000).toFixed(1)+'M'; if (s >= 1000) return (s/1000).toFixed(1)+'k'; return s.toLocaleString(); }
 function formatDate(d) { if (!d) return ''; return new Date(d).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); }
 function esc(s) { if (!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// Toast notification — replaces alert() for user-facing errors
+function showToast(message, type) {
+    type = type || 'error';
+    var existing = document.querySelector('.sqb-toast');
+    if (existing) existing.remove();
+    var toast = document.createElement('div');
+    toast.className = 'sqb-toast sqb-toast-' + type;
+    var icon = type === 'error' ? '✕' : type === 'warning' ? '⚠' : '✓';
+    toast.innerHTML = '<span class="sqb-toast-icon">' + icon + '</span><span class="sqb-toast-msg">' + esc(message) + '</span>';
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.classList.add('sqb-toast-visible'); }, 10);
+    setTimeout(function() { toast.classList.remove('sqb-toast-visible'); setTimeout(function() { toast.remove(); }, 300); }, 5000);
+}
 
 // N-U04: Invoice expiry countdown
 let countdownInterval = null;
