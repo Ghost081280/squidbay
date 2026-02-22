@@ -298,7 +298,7 @@
                 counts.textContent = '· ' + skills.length + ' skill' + (skills.length !== 1 ? 's' : '') + ' · ' + agents.length + ' agent' + (agents.length !== 1 ? 's' : '');
             }
             
-            // 5. Fetch live BTC price for sat converter
+            // 5. Fetch live BTC price
             loadSatPrice();
             
             // 6. Build feed from real data
@@ -316,9 +316,12 @@
                 var icon = s.icon || '⚡';
                 var price = s.price_skill_file || s.price_execution || s.price_sats || 0;
                 var priceStr = price >= 1000 ? (price / 1000).toFixed(1) + 'k' : price;
-                var skillUrl = '/skill/' + encodeURIComponent(s.slug || s.id);
+                // URL: /skill/AgentName/skill-slug
+                var agentSlug = encodeURIComponent(s.agent_name || 'unknown');
+                var skillSlug = encodeURIComponent(s.slug || s.id);
+                var skillUrl = '/skill/' + agentSlug + '/' + skillSlug;
                 items.push(
-                    '<a href="' + skillUrl + '" class="pulse-feed-item pulse-feed-link">' +
+                    '<a href="' + skillUrl + '" class="pulse-feed-item">' +
                         '<span class="pulse-feed-icon">' + icon + '</span>' +
                         '<span class="pulse-feed-text"><strong>' + escHtml(s.name) + '</strong> by ' + escHtml(s.agent_name) + '</span>' +
                         '<span class="pulse-feed-meta">⚡ ' + priceStr + ' sats</span>' +
@@ -331,7 +334,7 @@
                 var emoji = a.avatar_emoji || '🤖';
                 var agentUrl = '/agent/' + encodeURIComponent(a.agent_name.toLowerCase());
                 items.push(
-                    '<a href="' + agentUrl + '" class="pulse-feed-item pulse-feed-link">' +
+                    '<a href="' + agentUrl + '" class="pulse-feed-item">' +
                         '<span class="pulse-feed-icon">' + emoji + '</span>' +
                         '<span class="pulse-feed-text"><strong>' + escHtml(a.agent_name) + '</strong> · ' + a.skill_count + ' skills</span>' +
                         '<span class="pulse-feed-meta">online</span>' +
@@ -354,7 +357,7 @@
             var res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
             var data = await res.json();
             var btcPrice = data.bitcoin.usd;
-            var satPrice = btcPrice / 100000000; // 1 sat in USD
+            var satPrice = btcPrice / 100000000;
             var thousandSats = (satPrice * 1000);
             
             var display;
@@ -376,29 +379,6 @@
         return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
-    /**
-     * Check API status and update hero badge to reflect reality
-     */
-    async function checkApiStatus() {
-        const badge = document.querySelector('.badge-live');
-        if (!badge) return;
-        
-        try {
-            const res = await fetch(API_BASE + '/');
-            const data = await res.json();
-            
-            if (data.status === 'online') {
-                badge.innerHTML = '<span class="dot dot-live"></span> ⚡ Live — API Connected ✓';
-            } else {
-                badge.innerHTML = '<span class="dot"></span> ⚠ API Offline';
-                badge.classList.remove('badge-live');
-            }
-        } catch (e) {
-            badge.innerHTML = '<span class="dot"></span> ⚠ API Unreachable';
-            badge.classList.remove('badge-live');
-        }
-    }
-
     // --------------------------------------------------------------------------
     // Initialize
     // --------------------------------------------------------------------------
@@ -407,7 +387,6 @@
         initTentacleParallax();
         initChatDemo();
         loadPulseCard();
-        checkApiStatus();
     }
 
     if (document.readyState === 'loading') {
