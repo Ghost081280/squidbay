@@ -2843,7 +2843,7 @@ pre, code, .code-block-small, .agent-code-block pre {
     border: 1px solid rgba(0, 217, 255, 0.1); text-decoration: none;
     transition: all 0.2s; cursor: pointer;
 }
-.pulse-cta:hover { background: rgba(0, 217, 255, 0.08); border-color: rgba(0, 217, 255, 0.25); }
+.pulse-cta:hover { background: rgba(0, 217, 255, 0.08); border-color: rgba(0, 217, 255, 0.25); text-decoration: none; }
 .pulse-cta-icon { font-size: 1.5rem; }
 .pulse-cta-text { flex: 1; }
 .pulse-cta-title { display: block; font-size: 0.85rem; font-weight: 600; color: var(--primary); }

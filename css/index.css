@@ -45,8 +45,30 @@
    -------------------------------------------------------------------------- */
 .compat-section { margin-top: 24px; animation: fadeInUp 0.6s ease-out 0.4s both; }
 .compat-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px; opacity: 0.7; }
-.compat-label a, .compat-api-link { color: rgba(0, 217, 255, 0.5); text-decoration: none; transition: color 0.2s; }
+.compat-label a, .compat-api-link { color: rgba(0, 217, 255, 0.65); text-decoration: none; transition: color 0.2s; }
 .compat-label a:hover, .compat-api-link:hover { color: var(--primary); }
+
+/* Subtitle shimmer — soft cyan light sweep */
+.hero-shimmer {
+    background: linear-gradient(
+        90deg,
+        var(--text-muted) 0%,
+        var(--text-muted) 40%,
+        rgba(0, 217, 255, 0.7) 50%,
+        var(--text-muted) 60%,
+        var(--text-muted) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmerWave 5s ease-in-out infinite;
+}
+
+@keyframes shimmerWave {
+    0%, 100% { background-position: 200% center; }
+    50% { background-position: -200% center; }
+}
 .compat-badges { display: flex; flex-wrap: wrap; gap: 8px; }
 .compat-badge {
     font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-muted);
