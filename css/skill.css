@@ -700,6 +700,7 @@
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .modal-close {
@@ -759,6 +760,18 @@
     border-radius: var(--radius-md);
     background: var(--white);
     padding: 8px;
+}
+
+/* QR code container — prevent library overflow */
+#qr-code-container {
+    overflow: hidden;
+    max-width: 100%;
+}
+
+#qr-code-container img,
+#qr-code-container canvas {
+    max-width: 100%;
+    height: auto;
 }
 
 .invoice-string {
@@ -1279,6 +1292,7 @@
     padding: 12px;
     background: var(--darker);
     border-radius: var(--radius-md);
+    overflow: hidden;
 }
 
 .details-content.hidden {
@@ -1313,10 +1327,12 @@
 .invoice-string-mini {
     display: flex;
     gap: 8px;
+    min-width: 0;
 }
 
 .invoice-string-mini input {
     flex: 1;
+    min-width: 0;
     background: var(--dark);
     border: 1px solid var(--gray);
     border-radius: var(--radius-sm);
@@ -1324,6 +1340,8 @@
     font-family: var(--font-mono);
     font-size: 0.7rem;
     color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .btn-copy-mini {
