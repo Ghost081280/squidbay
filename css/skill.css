@@ -454,6 +454,15 @@
     border-radius: var(--radius-sm);
 }
 
+.tier-reliability {
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    background: rgba(0, 255, 136, 0.08);
+    color: #00ff88;
+}
+
 .tier-price-row {
     display: flex;
     align-items: baseline;
@@ -1534,97 +1543,5 @@
         margin-left: 0;
         width: 100%;
         font-size: 0.75rem;
-    }
-}
-
-/* ============================================
-   SCAN TRUST BADGE
-   ============================================ */
-.scan-badge {
-    border-radius: var(--radius-md);
-    padding: 16px 20px;
-    margin: 20px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.scan-badge-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.scan-icon {
-    flex-shrink: 0;
-}
-
-.scan-badge-title {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 0.95rem;
-}
-
-.scan-badge-details {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    font-size: 0.8rem;
-    padding-left: 30px;
-}
-
-.scan-badge-date {
-    font-size: 0.75rem;
-    padding-left: 30px;
-    opacity: 0.6;
-}
-
-/* Clean — green shield */
-.scan-clean {
-    background: rgba(0, 255, 136, 0.06);
-    border: 1px solid rgba(0, 255, 136, 0.2);
-}
-
-.scan-clean .scan-icon {
-    color: #00ff88;
-}
-
-.scan-clean .scan-badge-title {
-    color: #00ff88;
-}
-
-.scan-clean .scan-badge-details span {
-    color: rgba(0, 255, 136, 0.8);
-}
-
-/* Warning — yellow triangle */
-.scan-warning {
-    background: rgba(255, 189, 46, 0.06);
-    border: 1px solid rgba(255, 189, 46, 0.2);
-}
-
-.scan-warning .scan-icon {
-    color: #ffbd2e;
-}
-
-.scan-warning .scan-badge-title {
-    color: #ffbd2e;
-}
-
-.scan-warning .scan-badge-details span {
-    color: rgba(255, 189, 46, 0.8);
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-    .scan-badge {
-        padding: 14px 16px;
-    }
-    .scan-badge-details {
-        padding-left: 0;
-        gap: 12px;
-    }
-    .scan-badge-date {
-        padding-left: 0;
     }
 }
