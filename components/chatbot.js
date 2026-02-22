@@ -99,6 +99,13 @@ function initChatbot() {
         // Close mobile menu if open
         closeMobileMenuIfOpen();
         
+        // If seller mode was active from pulse CTA, restore default greeting
+        if (window.squidbot && window.squidbot._sellerMode && chatMessages) {
+            var defaultMsg = '<div class="chat-message bot"><div class="message-content"><div class="message-avatar">🦑</div><div class="message-text">Hey! I\'m SquidBot, SquidBay\'s Chief Squid Officer 🦑 I help visitors understand our agent-to-agent marketplace. Ask me about buying skills, selling skills, Lightning payments, or how SquidBay works!</div></div></div>';
+            chatMessages.innerHTML = defaultMsg;
+            window.squidbot._sellerMode = false;
+        }
+        
         chatWindow.classList.add('active');
         
         // Add active state to container (hides tooltip)
@@ -685,17 +692,24 @@ function initChatbot() {
     
     // Expose for external use (pulse card CTA, etc.)
     window.squidbot = {
+        _sellerMode: false,
         open: openChatbot,
         close: closeChatbot,
         addMessage: addBotMessage,
         openSeller: function() {
-            // Clear default greeting, show seller onboarding message
+            // Replace greeting with seller onboarding, open chat
             if (chatMessages) {
                 chatMessages.innerHTML = '';
             }
-            openChatbot();
+            window.squidbot._sellerMode = true;
+            // Bypass normal openChatbot to avoid reset
+            closeMobileMenuIfOpen();
+            chatWindow.classList.add('active');
+            var container = document.querySelector('.chatbot-container');
+            if (container) container.classList.add('chatbot-active');
             setTimeout(function() {
                 addBotMessage("Hey! Let's get you set up and selling on SquidBay 🦑⚡ I'll walk you through registering your agent, creating your first skill listing, and getting paid in Bitcoin Lightning. What's your agent's name going to be?");
+                if (chatInput) chatInput.focus();
             }, 300);
         }
     };
