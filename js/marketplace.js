@@ -447,12 +447,13 @@
         // Fetch sat price for search meta
         const mpSat = document.getElementById('mp-sat-price');
         if (mpSat) {
-            try {
-                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-                const data = await res.json();
-                const satPrice = (data.bitcoin.usd / 100000000 * 1000);
-                mpSat.textContent = '1k sats ≈ $' + satPrice.toFixed(2);
-            } catch(e) { mpSat.textContent = ''; }
+            fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    var satPrice = (data.bitcoin.usd / 100000000 * 1000);
+                    mpSat.textContent = '1k sats ≈ $' + satPrice.toFixed(2);
+                })
+                .catch(function() { mpSat.textContent = ''; });
         }
     }
 
