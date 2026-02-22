@@ -28,6 +28,11 @@ app.use('/images', express.static(path.join(__dirname, 'images'), imageOptions))
 app.use('/components', express.static(path.join(__dirname, 'components'), staticOptions));
 
 // Vanity URL routes — serve the HTML file, JS reads the URL path directly
+// Security report must come BEFORE skill detail (Express matches top-down)
+app.get('/skill/:agentName/:slug/security', (req, res) => {
+    res.sendFile(path.join(__dirname, 'security.html'));
+});
+
 app.get('/skill/:agentName/:slug', (req, res) => {
     res.sendFile(path.join(__dirname, 'skill.html'));
 });
