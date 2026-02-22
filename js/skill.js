@@ -240,7 +240,7 @@ function buildTierHtml(tierKey, icon, label, isAvailable, isOnline, skill, versi
     }
     
     return `<div class="pricing-tier" style="order:0;">
-        <div class="tier-header"><span class="tier-name"><span class="tier-icon">${icon}</span> ${label}</span><span class="tier-version">v${version}</span></div>
+        <div class="tier-header"><span class="tier-name"><span class="tier-icon">${icon}</span> ${label}</span>${tierKey === 'execution' ? `<span class="tier-reliability">${jobs >= 10 ? (skill.success_rate || 100) + '% reliable' : 'New'}</span>` : `<span class="tier-version">v${version}</span>`}</div>
         <div class="tier-price-row"><span class="tier-price" data-sats="${price || 0}">${fmtSats(price)} <span class="sats">sats</span></span><span class="tier-model">${model}</span></div>
         ${upgradePrice ? `<div class="tier-upgrade-price">Upgrade: ${fmtSats(upgradePrice)} sats <span class="upgrade-label">for returning buyers</span></div>` : ''}
         <div class="tier-stats"><span class="tier-rating">⭐ ${rating && rating.toFixed ? rating.toFixed(1) : rating} (${ratingCount})</span><span class="tier-jobs">${jobsDisplay}</span></div>
