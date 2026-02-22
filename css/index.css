@@ -115,21 +115,7 @@
 .pulse-card a { text-decoration: none; }
 .pulse-feed-meta { font-size: 0.65rem; color: var(--text-muted); opacity: 0.6; font-family: var(--font-mono); flex-shrink: 0; white-space: nowrap; }
 
-/* Pulse card SquidBot CTA — card-style, only inside .pulse-card */
-.pulse-card .pulse-cta {
-    display: flex; align-items: center; gap: 12px; padding: 12px;
-    border-radius: 10px; background: rgba(0, 217, 255, 0.04);
-    border: 1px solid rgba(0, 217, 255, 0.1); text-decoration: none !important;
-    transition: all 0.2s; cursor: pointer;
-}
-.pulse-card .pulse-cta:hover { background: rgba(0, 217, 255, 0.08); border-color: rgba(0, 217, 255, 0.25); text-decoration: none !important; }
-.pulse-card .pulse-cta * { text-decoration: none !important; }
-.pulse-cta-icon { font-size: 1.5rem; }
-.pulse-cta-text { flex: 1; }
-.pulse-cta-title { display: block; font-size: 0.85rem; font-weight: 600; color: var(--primary); }
-.pulse-cta-sub { display: block; font-size: 0.7rem; color: var(--text-muted); margin-top: 1px; }
-.pulse-cta-arrow { color: var(--primary); opacity: 0.5; transition: opacity 0.2s, transform 0.2s; }
-.pulse-card .pulse-cta:hover .pulse-cta-arrow { opacity: 1; transform: translateX(2px); }
+/* Pulse card feed link styles */
 
 /* --------------------------------------------------------------------------
    Mobile
