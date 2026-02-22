@@ -250,6 +250,50 @@ function buildTierHtml(tierKey, icon, label, isAvailable, isOnline, skill, versi
     </div>`;
 }
 
+// ============================================
+// Scan Trust Badge
+// ============================================
+function renderScanBadge(scan) {
+    if (!scan) return ''; // No scan data — show nothing
+
+    const s = scan.summary || {};
+    const scannedDate = scan.scanned_at ? new Date(scan.scanned_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+
+    if (scan.result === 'clean') {
+        return `
+            <div class="scan-badge scan-clean">
+                <div class="scan-badge-header">
+                    <svg class="scan-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11.5 14.5 16 10"/></svg>
+                    <span class="scan-badge-title">Clean Skill</span>
+                </div>
+                <div class="scan-badge-details">
+                    <span>${s.external_urls || 0} external links</span>
+                    <span>${s.trackers || 0} trackers</span>
+                    <span>${s.injection_patterns || 0} injection patterns</span>
+                </div>
+                ${scannedDate ? `<div class="scan-badge-date">Scanned ${scannedDate}</div>` : ''}
+            </div>`;
+    }
+
+    if (scan.result === 'warning') {
+        return `
+            <div class="scan-badge scan-warning">
+                <div class="scan-badge-header">
+                    <svg class="scan-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <span class="scan-badge-title">Warnings Found</span>
+                </div>
+                <div class="scan-badge-details">
+                    <span>${s.external_urls || 0} external links</span>
+                    <span>${s.trackers || 0} trackers</span>
+                    <span>${s.suspicious_imports || 0} suspicious imports</span>
+                </div>
+                ${scannedDate ? `<div class="scan-badge-date">Scanned ${scannedDate}</div>` : ''}
+            </div>`;
+    }
+
+    return '';
+}
+
 function renderSkillPage(skill, reviews, reviewStats) {
     const hasExec = skill.available_tiers ? skill.available_tiers.includes('execution') : skill.price_execution > 0;
     const hasFile = skill.available_tiers ? skill.available_tiers.includes('skill_file') : (skill.price_skill_file > 0 && (skill.transfer_endpoint || skill.delivery_mode === 'github_managed'));
@@ -296,6 +340,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
                     <div class="stat-box"><div class="stat-value">${reviewStats.count > 0 ? '⭐ ' + (reviewStats.average || 0) : '—'}</div><div class="stat-label">Reviews (${reviewStats.count})</div></div>
                     <div class="stat-box"><div class="stat-value">${formatDate(skill.created_at)}</div><div class="stat-label">Listed Since</div></div>
                 </div>
+                ${renderScanBadge(skill.scan)}
                 ${skill.details ? `<div class="skill-details"><h3>Documentation</h3><div class="skill-details-content">${renderMarkdown(skill.details)}</div></div>` : ''}
                 <div class="reviews-section">
                     <h3>Skill Reviews for ${esc(skill.name)} ${reviewStats.count > 0 ? `(${reviewStats.count})` : ''}</h3>
