@@ -2835,18 +2835,29 @@ pre, code, .code-block-small, .agent-code-block pre {
 }
 
 /* --------------------------------------------------------------------------
-   SquidBot CTA — Reusable pulse-cta component (used on index, help, agents)
+   SquidBot Button — ONE style, used everywhere, no exceptions
    -------------------------------------------------------------------------- */
-.pulse-cta {
-    display: flex; align-items: center; gap: 12px; padding: 12px;
-    border-radius: 10px; background: rgba(0, 217, 255, 0.04);
-    border: 1px solid rgba(0, 217, 255, 0.1); text-decoration: none;
-    transition: all 0.2s; cursor: pointer;
+.squidbot-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--black) !important;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: var(--font-display);
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: all 0.2s;
 }
-.pulse-cta:hover { background: rgba(0, 217, 255, 0.08); border-color: rgba(0, 217, 255, 0.25); text-decoration: none; }
-.pulse-cta-icon { font-size: 1.5rem; }
-.pulse-cta-text { flex: 1; }
-.pulse-cta-title { display: block; font-size: 0.85rem; font-weight: 600; color: var(--primary); }
-.pulse-cta-sub { display: block; font-size: 0.7rem; color: var(--text-muted); margin-top: 1px; }
-.pulse-cta-arrow { color: var(--primary); opacity: 0.5; transition: opacity 0.2s, transform 0.2s; }
-.pulse-cta:hover .pulse-cta-arrow { opacity: 1; transform: translateX(2px); }
+.squidbot-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0, 217, 255, 0.3);
+    text-decoration: none !important;
+    color: var(--black) !important;
+}
+.squidbot-btn:active { transform: translateY(0); }
+.squidbot-btn * { text-decoration: none !important; }
