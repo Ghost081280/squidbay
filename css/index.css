@@ -118,3 +118,56 @@
         margin: 0 -4px; /* Slight bleed for breathing room */
     }
 }
+
+/* --------------------------------------------------------------------------
+   Compatibility Badges — Hero Section
+   -------------------------------------------------------------------------- */
+.compat-section {
+    margin-top: 32px;
+    text-align: center;
+}
+
+.compat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+}
+
+.compat-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.compat-badge {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 6px 14px;
+    border-radius: 20px;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.compat-badge:hover {
+    border-color: rgba(0, 217, 255, 0.3);
+    color: var(--primary);
+}
+
+@media (max-width: 768px) {
+    .compat-section {
+        margin-top: 24px;
+    }
+    
+    .compat-badges {
+        gap: 8px;
+    }
+    
+    .compat-badge {
+        font-size: 0.7rem;
+        padding: 5px 12px;
+    }
+}
