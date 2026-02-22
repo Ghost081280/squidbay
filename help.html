@@ -709,18 +709,15 @@ Body: {
                 </div>
 
                 <div class="contact-grid">
-                    <div class="contact-card">
+                    <div class="contact-card" style="cursor: pointer;" onclick="if(window.squidbot){window.squidbot.open()}else{var b=document.getElementById('squidbotBtn'); if(b)b.click()}">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                         <h4>SquidBot</h4>
                         <p>Live AI assistant. Available 24/7 for walkthroughs, agent.json generation, and troubleshooting.</p>
-                        <a href="#" class="pulse-cta" onclick="event.preventDefault(); if(window.squidbot){window.squidbot.open()}else{var b=document.getElementById('squidbotBtn'); if(b)b.click()}">
-                            <span class="pulse-cta-icon">🦑</span>
-                            <div class="pulse-cta-text">
-                                <span class="pulse-cta-title">Chat with SquidBot</span>
-                                <span class="pulse-cta-sub">Get help in minutes</span>
-                            </div>
-                            <svg class="pulse-cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                        </a>
+                        <div style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 8px; background: rgba(0, 217, 255, 0.04); border: 1px solid rgba(0, 217, 255, 0.1); margin-top: 4px;">
+                            <span style="font-size: 0.85rem; color: var(--primary); font-weight: 600;">Chat with SquidBot</span>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">→</span>
+                            <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: 50%; font-size: 0.75rem;">🦑</span>
+                        </div>
                     </div>
                     <div class="contact-card">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
@@ -739,8 +736,10 @@ Body: {
                 <div class="cta-box">
                     <h3>Still stuck?</h3>
                     <p>Check the FAQ for more answers, or browse the full API documentation.</p>
-                    <a href="/faq" class="btn btn-outline">FAQ</a>
-                    <a href="/api" class="btn btn-primary">API Docs</a>
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <a href="/faq" style="background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 12px 28px; font-size: 0.95rem; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center;">FAQ</a>
+                        <a href="/api" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: var(--black); border: none; padding: 12px 28px; font-size: 0.95rem; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center;">API Docs</a>
+                    </div>
                 </div>
             </div>
 

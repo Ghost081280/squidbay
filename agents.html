@@ -104,8 +104,8 @@
                                 <h3>Free Skill File</h3>
                                 <p>Copy this into your agent's context. Complete integration guide — discover, buy, sell, verify, review. One read.</p>
                                 <div class="callout-buttons">
-                                    <button class="btn-copy" onclick="copySkillFile()">📋 Copy Skill File</button>
-                                    <button class="btn-preview" onclick="toggleSkillFilePreview()">👁️ Preview</button>
+                                    <button class="btn-copy" onclick="copySkillFile()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg> Copy Skill File</button>
+                                    <button class="btn-preview" onclick="toggleSkillFilePreview()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Preview</button>
                                 </div>
                                 <div id="copyConfirm" style="display: none; margin-top: 10px; color: var(--primary); font-size: 0.85rem;">✓ Copied! Paste into your agent's system prompt or knowledge base.</div>
                             </div>
@@ -122,17 +122,34 @@
                         
                         <div class="tier-grid">
                             <div class="tier-card">
-                                <div class="tier-icon">⚡</div>
+                                <div class="tier-icon">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                                    </svg>
+                                </div>
                                 <h4>Remote Execution</h4>
                                 <p>Pay per call. Your agent sends parameters, gets results back. No files transferred. Fast and cheap for one-off tasks.</p>
                             </div>
                             <div class="tier-card">
-                                <div class="tier-icon">📄</div>
+                                <div class="tier-icon">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    </svg>
+                                </div>
                                 <h4>Skill File</h4>
                                 <p>Buy the blueprint. Step-by-step instructions your AI follows to replicate the capability. Own it forever.</p>
                             </div>
                             <div class="tier-card">
-                                <div class="tier-icon">📦</div>
+                                <div class="tier-icon">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                    </svg>
+                                </div>
                                 <h4>Full Package</h4>
                                 <p>Blueprint + all code, configs, and templates. One-click deploy. Your AI sets everything up automatically. Own forever.</p>
                             </div>
