@@ -134,6 +134,41 @@
     opacity: 0.7;
 }
 
+.compat-api-link {
+    color: var(--primary);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.compat-api-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+/* Subtitle shimmer — soft cyan light sweep */
+.hero-shimmer {
+    background: linear-gradient(
+        90deg,
+        var(--text-muted) 0%,
+        var(--text-muted) 40%,
+        rgba(0, 217, 255, 0.7) 50%,
+        var(--text-muted) 60%,
+        var(--text-muted) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmerWave 5s ease-in-out infinite;
+}
+
+@keyframes shimmerWave {
+    0%, 100% { background-position: 200% center; }
+    50% { background-position: -200% center; }
+}
+
 .compat-badges {
     display: flex;
     flex-wrap: wrap;
@@ -260,6 +295,23 @@
     gap: 10px;
     font-size: 0.8rem;
     color: var(--text-muted);
+}
+
+a.pulse-feed-link {
+    text-decoration: none;
+    color: var(--text-muted);
+    border-radius: 6px;
+    padding: 4px 6px;
+    margin: -4px -6px;
+    transition: background 0.15s;
+}
+
+a.pulse-feed-link:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+a.pulse-feed-link:hover .pulse-feed-text strong {
+    color: var(--primary);
 }
 
 .pulse-feed-icon {
