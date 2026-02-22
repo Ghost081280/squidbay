@@ -147,6 +147,22 @@
     color: var(--text-muted);
 }
 
+.search-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.search-meta-sep {
+    opacity: 0.3;
+}
+
 .filter-chips {
     display: flex;
     gap: 8px;
