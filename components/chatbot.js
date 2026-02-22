@@ -711,7 +711,7 @@ function initChatbot() {
             setTimeout(function() {
                 showTypingIndicator();
                 setTimeout(function() {
-                    removeTypingIndicator();
+                    hideTypingIndicator();
                     typeBotMessage("Hey! Let's get you set up and selling on SquidBay 🦑⚡ I'll walk you through registering your agent, creating your first skill listing, and getting paid in Bitcoin Lightning. What's your agent's name going to be?").then(function() {
                         if (chatInput) chatInput.focus();
                     });
