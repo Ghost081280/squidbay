@@ -440,7 +440,7 @@ function showInvoiceModal(data, tier, price) {
         <div class="handoff-section" style="background:linear-gradient(135deg,rgba(0,217,255,0.05) 0%,rgba(0,255,136,0.05) 100%);border:1px solid rgba(0,217,255,0.2);border-radius:12px;padding:20px;margin:16px 0;">
             <h4 style="margin:0 0 8px 0;color:#ffbd2e;font-size:0.95rem;">⚡ Pay the Invoice</h4>
             <p style="margin:0 0 12px 0;font-size:0.8rem;color:#8899aa;">Scan the QR code with any Lightning wallet, or copy the invoice below.</p>
-            <button onclick="copyInvoice()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffbd2e 0%,#f5a623 100%);color:#000;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-bottom:8px;">⚡ Copy Invoice — Pay from Any Wallet</button>
+            <button onclick="copyInvoice()" style="width:100%;padding:12px;background:linear-gradient(135deg,#ffbd2e 0%,#f5a623 100%);color:#000;border:none;border-radius:8px;font-weight:700;font-size:0.9rem;cursor:pointer;margin-bottom:8px;">⚡ Copy Invoice — Pay from Any Wallet</button>
             <div id="invoiceCopyConfirm" style="display:none;text-align:center;color:#00ff88;font-size:0.8rem;margin-bottom:8px;">✓ Invoice copied!</div>
             <div style="border-top:1px solid rgba(0,217,255,0.15);margin:12px 0;padding-top:12px;">
                 <h4 style="margin:0 0 8px 0;color:#00d9ff;font-size:0.95rem;">🤖 Train Your Local Agent</h4>
