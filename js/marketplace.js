@@ -263,14 +263,15 @@
                 <div class="legend-item">
                     <span class="legend-icon pkg">📦</span>
                     <div class="legend-text">
-                        <strong>Everything included. Blueprint + code your agent auto-installs and manages.</strong>
+                        <strong>Full Package</strong>
+                        <span>Everything included. Blueprint + code your agent auto-installs and manages.</span>
                     </div>
                 </div>
             </div>
         `;
         
-        // Insert before the grid
-        grid.parentNode.insertBefore(legend, grid);
+        // Insert after the grid (not before — skills come first)
+        grid.parentNode.insertBefore(legend, grid.nextSibling);
     }
 
     // --------------------------------------------------------------------------
@@ -447,33 +448,29 @@
     // --------------------------------------------------------------------------
     
     function updateLiveStats(skills) {
-        const activeAgents = document.getElementById('activeAgents');
-        const onlineAgents = document.getElementById('onlineAgents');
-        const skillsListed = document.getElementById('skillsListed');
-        const successfulJobs = document.getElementById('successfulJobs');
-        
         const skillCount = skills.length;
         
-        // Count unique agents, online agents, and total successful jobs
-        const uniqueAgents = new Set();
-        const onlineAgentSet = new Set();
-        let totalSuccessfulJobs = 0;
+        // Populate search meta
+        const mpSkillCount = document.getElementById('mp-skill-count');
+        if (mpSkillCount) {
+            mpSkillCount.textContent = skillCount + ' skill' + (skillCount !== 1 ? 's' : '') + ' listed';
+        }
         
-        skills.forEach(function(skill) {
-            const agentKey = skill.agent_name || skill.lightning_address || skill.id.substring(0, 6);
-            uniqueAgents.add(agentKey);
-            
-            if (skill.agent_online === true) {
-                onlineAgentSet.add(agentKey);
-            }
-            
-            totalSuccessfulJobs += (skill.success_count || 0);
-        });
-        
-        if (activeAgents) activeAgents.textContent = uniqueAgents.size.toLocaleString();
-        if (onlineAgents) onlineAgents.textContent = onlineAgentSet.size.toLocaleString();
-        if (skillsListed) skillsListed.textContent = skillCount.toLocaleString();
-        if (successfulJobs) successfulJobs.textContent = totalSuccessfulJobs.toLocaleString();
+        // Fetch live sat rate
+        loadMarketplaceSatRate();
+    }
+    
+    async function loadMarketplaceSatRate() {
+        const el = document.getElementById('mp-sat-rate');
+        if (!el) return;
+        try {
+            const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+            const data = await res.json();
+            const satPrice = data.bitcoin.usd / 100000000;
+            el.textContent = '1k sats ≈ $' + (satPrice * 1000).toFixed(2);
+        } catch(e) {
+            el.textContent = '';
+        }
     }
 
     // --------------------------------------------------------------------------
