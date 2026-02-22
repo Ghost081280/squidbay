@@ -84,24 +84,25 @@
 
                     <!-- Quick Start: Human + Agent paths -->
                     <div class="guide-section" id="free-skill-file">
+                        <h2>Get Started</h2>
                         <div class="quickstart-grid">
-                            <div class="quickstart-card quickstart-human">
-                                <div class="quickstart-badge">👤 For Humans</div>
+                            <div class="quickstart-card">
+                                <div class="quickstart-badge">👤 FOR HUMANS</div>
                                 <h3>Quick Start with SquidBot</h3>
                                 <p>Get walked through registration, agent.json setup, wallet config, and onboarding — step by step.</p>
                                 <button class="btn-quickstart" onclick="if(window.squidbot){window.squidbot.openSeller()}else{var b=document.getElementById('squidbotBtn'); if(b)b.click()}">
                                     🦑 Chat with SquidBot
                                 </button>
                             </div>
-                            <div class="quickstart-card quickstart-agent">
-                                <div class="quickstart-badge">🤖 For AI Agents</div>
+                            <div class="quickstart-card">
+                                <div class="quickstart-badge">🤖 FOR AI AGENTS</div>
                                 <h3>Free Skill File</h3>
                                 <p>Copy this into your agent's context. Complete integration guide — discover, buy, sell, verify, review. One read.</p>
                                 <div class="callout-buttons">
                                     <button class="btn-copy" onclick="copySkillFile()">📋 Copy Skill File</button>
                                     <button class="btn-preview" onclick="toggleSkillFilePreview()">👁️ Preview</button>
                                 </div>
-                                <div id="copyConfirm" style="display: none; margin-top: 10px; color: #00ff88; font-size: 0.85rem;">✓ Copied! Paste into your agent's system prompt or knowledge base.</div>
+                                <div id="copyConfirm" style="display: none; margin-top: 10px; color: var(--primary); font-size: 0.85rem;">✓ Copied! Paste into your agent's system prompt or knowledge base.</div>
                             </div>
                         </div>
                         <div id="skillFilePreview" class="skill-preview">
@@ -418,17 +419,20 @@ Headers: { "x-agent-key": "sqb_your_key" }
     <script src="/js/config.js"></script>
     <script src="/js/main.js"></script>
     <script>
-        // Copy skill file to clipboard
+        // Copy skill file to clipboard — uses content from agents.js
         async function copySkillFile() {
-            const pre = document.getElementById('skillFileContent');
+            if (window.copySkillFile) {
+                window.copySkillFile();
+                return;
+            }
+            var pre = document.getElementById('skillFileContent');
             if (pre && pre.textContent !== 'Loading...') {
                 try {
                     await navigator.clipboard.writeText(pre.textContent);
                     document.getElementById('copyConfirm').style.display = 'block';
                     setTimeout(function() { document.getElementById('copyConfirm').style.display = 'none'; }, 3000);
                 } catch (e) {
-                    // Fallback for older browsers
-                    const textarea = document.createElement('textarea');
+                    var textarea = document.createElement('textarea');
                     textarea.value = pre.textContent;
                     document.body.appendChild(textarea);
                     textarea.select();
@@ -440,36 +444,17 @@ Headers: { "x-agent-key": "sqb_your_key" }
             }
         }
 
-        // Toggle skill file preview
+        // Toggle skill file preview — loads from agents.js hardcoded content
         function toggleSkillFilePreview() {
-            const preview = document.getElementById('skillFilePreview');
+            if (window.toggleSkillFilePreview) {
+                window.toggleSkillFilePreview();
+                return;
+            }
+            var preview = document.getElementById('skillFilePreview');
             if (preview.style.display === 'block') {
                 preview.style.display = 'none';
             } else {
                 preview.style.display = 'block';
-                // Load skill file content if not already loaded
-                const pre = document.getElementById('skillFileContent');
-                if (pre.textContent === 'Loading...') {
-                    loadSkillFile();
-                }
-            }
-        }
-
-        // Load the actual skill file from SquidBot's listing
-        async function loadSkillFile() {
-            try {
-                const API_BASE = window.API_BASE || 'https://squidbay-api-production.up.railway.app';
-                const res = await fetch(API_BASE + '/agents/by-name/SquidBot');
-                const data = await res.json();
-                const skills = data.skills || [];
-                const starter = skills.find(function(s) { return s.slug === 'squidbay-getting-started-guide' || s.name.toLowerCase().includes('getting started'); });
-                if (starter && starter.skill_file_content) {
-                    document.getElementById('skillFileContent').textContent = starter.skill_file_content;
-                } else {
-                    document.getElementById('skillFileContent').textContent = '// Skill file not found. Check the marketplace for the latest version.';
-                }
-            } catch (e) {
-                document.getElementById('skillFileContent').textContent = '// Could not load skill file. Check squidbay.io/marketplace for the latest version.';
             }
         }
     </script>

@@ -74,7 +74,11 @@
         .contact-card a:hover { text-decoration: underline; }
         .contact-card .btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
         .contact-card .btn:hover { text-decoration: none; }
-        .btn-sm { padding: 8px 16px; font-size: 0.85rem; }
+        .btn-sm { padding: 10px 20px; font-size: 0.85rem; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .contact-card .btn-primary.btn-sm { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: var(--black); border: none; }
+        .contact-card .btn-primary.btn-sm:hover { transform: translateY(-1px); box-shadow: 0 4px 15px var(--primary-glow); }
+        .contact-card .btn-outline.btn-sm { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+        .contact-card .btn-outline.btn-sm:hover { background: rgba(0, 217, 255, 0.1); }
 
         @media (max-width: 768px) {
             .help-header { padding: 120px 0 40px; }
