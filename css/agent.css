@@ -457,6 +457,26 @@
     margin-bottom: 12px;
 }
 
+/* View Skill CTA button */
+.view-skill-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 10px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--black);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.skill-card:hover .view-skill-btn {
+    box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
+}
+
 /* Section subtitle for review sections */
 .section-subtitle {
     font-size: 0.85rem;
