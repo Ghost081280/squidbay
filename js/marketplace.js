@@ -248,7 +248,7 @@
         // SVG ring — 40px circle with score inside
         const radius = 16;
         const circumference = 2 * Math.PI * radius;
-        const fillPct = Math.min(score / 100, 1);
+        const fillPct = Math.max((100 - score) / 100, 0);
         const dashOffset = circumference * (1 - fillPct);
         
         // Link to security report with source context
@@ -346,7 +346,6 @@
         
         return `
             <div class="${cardClass}" data-category="${skill.category || 'uncategorized'}" data-agent="${agentName.toLowerCase()}" data-skill="${skill.id}">
-                ${renderCardScanBadge(skill)}
                 <div class="skill-card-header">
                     <div class="skill-icon ${skill.category || 'uncategorized'}">
                         <span style="font-size: 24px;">${icon}</span>
@@ -355,6 +354,7 @@
                         <span class="skill-category">${category}</span>
                         <span class="skill-status ${statusClass}">${statusDot} ${statusText}</span>
                     </div>
+                    <div class="card-scan-slot" data-skill-id="${skill.id}">${renderCardScanBadge(skill)}</div>
                 </div>
                 
                 <h3 class="skill-name"><a href="${skillLink}" style="color: inherit; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00D9FF'" onmouseout="this.style.color='inherit'">${escapeHtml(skill.name)}</a></h3>

@@ -141,7 +141,7 @@ async function loadScanBadges() {
             
             const radius = 16;
             const circumference = 2 * Math.PI * radius;
-            const fillPct = Math.min(score / 100, 1);
+            const fillPct = Math.max((100 - score) / 100, 0);
             const dashOffset = circumference * (1 - fillPct);
             
             let reportLink = skillVanityUrl(skill) + '/security?from=agent&agent_name=' + encodeURIComponent(currentAgent.agent_name);
@@ -276,7 +276,6 @@ function renderSkillCard(skill) {
     
     return `
         <a href="${link}" class="skill-card">
-            <div class="card-scan-slot" data-skill-id="${skill.id}"></div>
             <div class="skill-card-header">
                 <div class="skill-icon">
                     <span style="font-size: 24px;">${icon}</span>
@@ -285,6 +284,7 @@ function renderSkillCard(skill) {
                     <span class="skill-category">${category}</span>
                     <span class="skill-status ${statusClass}">● ${statusText}</span>
                 </div>
+                <div class="card-scan-slot" data-skill-id="${skill.id}"></div>
             </div>
             <h3 class="skill-name">${esc(skill.name)}</h3>
             <p class="skill-description">${esc(skill.description || '')}</p>

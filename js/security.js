@@ -233,7 +233,7 @@ function renderVerdictBanner(scan) {
     // Ring math — SVG circle circumference
     const radius = 42;
     const circumference = 2 * Math.PI * radius;
-    const fillPct = Math.min(score / 100, 1);
+    const fillPct = Math.max((100 - score) / 100, 0);
     const dashOffset = circumference * (1 - fillPct);
 
     // Ring color by score
@@ -260,9 +260,6 @@ function renderVerdictBanner(scan) {
     };
     const v = verdictLabels[result] || verdictLabels.clean;
 
-    // For score 0, show a full green ring instead of empty
-    const effectiveDashOffset = score === 0 ? 0 : dashOffset;
-
     return `
         <div class="verdict-banner ${verdictClass}">
             <div class="risk-ring-container">
@@ -271,7 +268,7 @@ function renderVerdictBanner(scan) {
                     <circle class="risk-ring-fill" cx="50" cy="50" r="${radius}"
                         stroke="${ringColor}"
                         stroke-dasharray="${circumference}"
-                        stroke-dashoffset="${effectiveDashOffset}"/>
+                        stroke-dashoffset="${dashOffset}"/>
                 </svg>
                 <div class="risk-ring-label">
                     <div class="risk-ring-score">${score}</div>
