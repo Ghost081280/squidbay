@@ -325,7 +325,7 @@ function renderScanBadge(scan) {
     // Mini ring SVG — trust score fills from full
     const circumference = 2 * Math.PI * 14; // r=14
     const fillPct = Math.max(trustScore / 100, 0);
-    const offset = trustScore >= 95 ? 0 : circumference * (1 - fillPct);
+    const offset = trustScore >= 100 ? 0 : circumference * (1 - fillPct);
     const ringSvg = `<svg class="scan-mini-ring" width="44" height="44" viewBox="0 0 36 36">
         <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(42,55,68,0.6)" stroke-width="3"/>
         <circle cx="18" cy="18" r="14" fill="none" stroke="${ringColor}" stroke-width="3" stroke-linecap="round"
