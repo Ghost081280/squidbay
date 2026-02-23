@@ -284,13 +284,11 @@ function renderSkillCard(skill) {
                 <div class="skill-icon">
                     <span style="font-size: 24px;">${icon}</span>
                 </div>
-                <div class="skill-meta">
-                    <span class="skill-category">${category}</span>
-                    <span class="skill-status ${statusClass}">● ${statusText}</span>
-                </div>
+                <span class="skill-status ${statusClass}">● ${statusText}</span>
                 <div class="card-scan-slot" data-skill-id="${skill.id}"></div>
             </div>
             <h3 class="skill-name"><a href="${link}">${esc(skill.name)}</a></h3>
+            <span class="skill-category">${category}</span>
             <p class="skill-description">${esc(skill.description || '')}</p>
             ${tierButtons}
             <div class="skill-summary-stats">

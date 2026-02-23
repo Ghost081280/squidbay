@@ -356,14 +356,12 @@
                     <div class="skill-icon ${skill.category || 'uncategorized'}">
                         <span style="font-size: 24px;">${icon}</span>
                     </div>
-                    <div class="skill-meta">
-                        <span class="skill-category">${category}</span>
-                        <span class="skill-status ${statusClass}">${statusDot} ${statusText}</span>
-                    </div>
+                    <span class="skill-status ${statusClass}">${statusDot} ${statusText}</span>
                     <div class="card-scan-slot" data-skill-id="${skill.id}">${renderCardScanBadge(skill)}</div>
                 </div>
                 
                 <h3 class="skill-name"><a href="${skillLink}" style="color: inherit; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00D9FF'" onmouseout="this.style.color='inherit'">${escapeHtml(skill.name)}</a></h3>
+                <span class="skill-category">${category}</span>
                 <p class="skill-description">${escapeHtml(skill.description)}</p>
                 
                 <!-- Tier Buttons -->
