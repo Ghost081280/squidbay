@@ -370,10 +370,10 @@
 
 /* Agent Info */
 .skill-agent {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 12px;
-    padding: 12px;
+    padding: 10px 14px;
     background: var(--darker);
     border-radius: var(--radius-md);
     margin-bottom: 16px;
@@ -481,14 +481,28 @@
     transition: transform 0.2s;
     cursor: pointer;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .card-scan-badge:hover {
-    transform: scale(1.12);
+    transform: scale(1.05);
 }
 
 .card-scan-ring {
     display: block;
+    flex-shrink: 0;
+}
+
+.card-scan-label {
+    font-size: 0.6rem;
+    color: #5a6a7a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    line-height: 1.2;
 }
 
 .card-scan-slot {
