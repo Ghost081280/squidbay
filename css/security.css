@@ -494,7 +494,7 @@
 }
 
 .finding-match {
-    color: var(--gray-light);
+    color: #8899aa;
     font-family: var(--font-mono);
     font-size: 0.7rem;
     overflow: hidden;
@@ -574,6 +574,18 @@
     font-family: var(--font-mono);
 }
 
+.perm-not-found {
+    color: #556677 !important;
+    border-color: #2a3540 !important;
+    background: transparent !important;
+    font-style: italic;
+    font-size: 0.7rem;
+}
+
+.perm-desc-muted {
+    color: #556677;
+}
+
 .perm-desc {
     font-size: 0.78rem;
     color: #8899aa;
@@ -605,7 +617,7 @@
 
 .ext-domain-count {
     font-size: 0.7rem;
-    color: var(--gray-light);
+    color: #8899aa;
     font-weight: 400;
 }
 
@@ -632,7 +644,7 @@
 .ext-link-url {
     font-family: var(--font-mono);
     font-size: 0.7rem;
-    color: var(--gray-light);
+    color: #8899aa;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -682,7 +694,7 @@
 .history-result.result-rejected { color: var(--red); }
 
 .history-meta {
-    color: var(--gray-light);
+    color: #8899aa;
     font-size: 0.75rem;
 }
 
@@ -750,7 +762,7 @@
     border-top: 1px solid var(--gray-light);
     text-align: center;
     font-size: 0.78rem;
-    color: var(--gray-light);
+    color: #8899aa;
     line-height: 1.8;
 }
 
