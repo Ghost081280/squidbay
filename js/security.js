@@ -121,6 +121,7 @@ function renderSecurityReport(report, agentName, slug) {
             ${renderBackLink(agentName, slug)}
             ${renderHeader(skill, scan)}
             ${renderVerdictBanner(scan)}
+            ${renderCategoryContext(skill)}
             ${renderSummaryCards(scan)}
             ${renderDetectionCategories(scan)}
             ${renderPermissionsInventory(scan.permissions || [])}
@@ -282,6 +283,35 @@ function renderVerdictBanner(scan) {
                 <p class="verdict-sublabel">Threat Score: ${score}/100 — ${scoreLabel}</p>
                 <p class="verdict-sublabel">${v.sub}</p>
             </div>
+        </div>`;
+}
+
+/* ============================================
+   RENDER — Category Context Note
+   Categories where elevated findings are expected
+   ============================================ */
+
+const CATEGORY_CONTEXT = {
+    'cybersecurity':    { icon: '🛡️', note: 'This skill is categorized as <strong>cybersecurity</strong>. Elevated permissions, shell access, network requests, and detection patterns are expected for security tools. Review findings for anything outside the tool\'s stated purpose.' },
+    'security':         { icon: '🛡️', note: 'This skill is categorized as <strong>security</strong>. Elevated permissions, shell access, network requests, and detection patterns are expected for security tools. Review findings for anything outside the tool\'s stated purpose.' },
+    'infrastructure':   { icon: '🧱', note: 'This skill is categorized as <strong>infrastructure</strong>. Shell commands, environment variable access, and file system operations are standard for deployment and DevOps tools.' },
+    'developer tools':  { icon: '🔧', note: 'This skill is categorized as <strong>developer tools</strong>. Code execution, file system access, and environment variables are typical for dev tooling. Verify the tool only accesses what it needs.' },
+    'automation':       { icon: '🤖', note: 'This skill is categorized as <strong>automation</strong>. Network requests, shell commands, and background workers are common in automation workflows.' },
+    'data':             { icon: '📊', note: 'This skill is categorized as <strong>data processing</strong>. File system access and network requests are standard for data ingestion and ETL tools.' },
+    'iot':              { icon: '📡', note: 'This skill is categorized as <strong>IoT</strong>. Network requests, environment variables, and background workers are expected for device communication.' },
+    'crypto':           { icon: '₿', note: 'This skill is categorized as <strong>crypto</strong>. Cryptography usage, network requests, and environment variables are standard for blockchain tools.' },
+    'blockchain':       { icon: '⛓️', note: 'This skill is categorized as <strong>blockchain</strong>. Cryptography usage, network requests, and environment variables are standard for blockchain tools.' }
+};
+
+function renderCategoryContext(skill) {
+    const cat = (skill.category || '').toLowerCase();
+    const ctx = CATEGORY_CONTEXT[cat];
+    if (!ctx) return '';
+    
+    return `
+        <div class="category-context-note">
+            <span class="category-context-icon">${ctx.icon}</span>
+            <p class="category-context-text">${ctx.note}</p>
         </div>`;
 }
 
