@@ -63,6 +63,27 @@ function fmtSatsWithUsd(sats, btcPrice) {
 }
 
 /**
+ * Update back link based on referrer — agent page or marketplace
+ */
+function updateBackLink() {
+    const backLink = document.querySelector('.back-link');
+    if (!backLink) return;
+    
+    const referrer = document.referrer || '';
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get('from');
+    
+    if (from === 'agent' || referrer.includes('/agent/')) {
+        const agentName = currentSkill?.agent_name;
+        if (agentName) {
+            backLink.href = `/agent/${encodeURIComponent(agentName)}`;
+            backLink.innerHTML = '‹ Back to ' + esc(agentName);
+        }
+    }
+    // Default: stays as "Back to Marketplace" from HTML
+}
+
+/**
  * Initialize on page load
  */
 document.addEventListener('DOMContentLoaded', () => {
@@ -131,6 +152,9 @@ async function loadSkillBySlug(agentName, slug) {
         document.getElementById('page-loader').classList.add('hidden');
         document.getElementById('skill-content').classList.remove('hidden');
         
+        // Update back link based on referrer
+        updateBackLink();
+        
         // Fetch security scan data and inject badge
         fetchAndRenderScanBadge(currentSkill.id);
         
@@ -184,6 +208,9 @@ async function loadSkill(id) {
         renderSkillPage(currentSkill, reviews, reviewStats);
         document.getElementById('page-loader').classList.add('hidden');
         document.getElementById('skill-content').classList.remove('hidden');
+        
+        // Update back link based on referrer
+        updateBackLink();
         
         // Fetch security scan data and inject badge
         fetchAndRenderScanBadge(currentSkill.id);
@@ -271,36 +298,40 @@ function renderScanBadge(scan) {
 
     const s = scan.summary || {};
     const score = scan.risk_score || 0;
+    const trustScore = 100 - score;
     const scannedDate = scan.scanned_at ? new Date(scan.scanned_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
     const filesScanned = s.files_scanned || 0;
     const reportUrl = currentSkill?.slug && currentSkill?.agent_name
         ? `/skill/${encodeURIComponent(currentSkill.agent_name)}/${encodeURIComponent(currentSkill.slug)}/security`
         : '#';
 
-    // Mini risk ring colors
+    // Ring color by trust score
     let ringColor, resultLabel;
     if (scan.result === 'clean') {
-        ringColor = 'var(--green, #00D26A)';
         resultLabel = 'No Threats Detected';
     } else if (scan.result === 'warning') {
-        ringColor = 'var(--yellow, #FFBD2E)';
         resultLabel = 'Warnings Found';
     } else if (scan.result === 'rejected') {
-        ringColor = 'var(--red, #FF5F57)';
         resultLabel = 'Threats Detected';
     } else {
         return '';
     }
 
-    // Mini ring SVG — 36px with score
+    if (trustScore >= 85) ringColor = 'var(--green, #00D26A)';
+    else if (trustScore >= 60) ringColor = 'var(--yellow, #FFBD2E)';
+    else if (trustScore >= 30) ringColor = '#ff8c00';
+    else ringColor = 'var(--red, #FF5F57)';
+
+    // Mini ring SVG — trust score fills from full
     const circumference = 2 * Math.PI * 14; // r=14
-    const offset = circumference - (score / 100) * circumference;
+    const fillPct = Math.max(trustScore / 100, 0);
+    const offset = circumference * (1 - fillPct);
     const ringSvg = `<svg class="scan-mini-ring" width="44" height="44" viewBox="0 0 36 36">
         <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(42,55,68,0.6)" stroke-width="3"/>
         <circle cx="18" cy="18" r="14" fill="none" stroke="${ringColor}" stroke-width="3" stroke-linecap="round"
-            stroke-dasharray="${circumference.toFixed(2)}" stroke-dashoffset="${score === 0 ? '0' : offset.toFixed(2)}"
+            stroke-dasharray="${circumference.toFixed(2)}" stroke-dashoffset="${offset.toFixed(2)}"
             transform="rotate(-90 18 18)" style="transition:stroke-dashoffset 0.6s ease-out"/>
-        <text x="18" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="${ringColor}">${score}</text>
+        <text x="18" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="${ringColor}">${trustScore}</text>
     </svg>`;
 
     return `
@@ -309,7 +340,7 @@ function renderScanBadge(scan) {
                 ${ringSvg}
                 <div class="scan-badge-info">
                     <span class="scan-badge-title">${resultLabel}</span>
-                    <span class="scan-badge-meta">${filesScanned} files scanned · Score ${score}/100 · ${scannedDate}</span>
+                    <span class="scan-badge-meta">${filesScanned} files scanned · Trust Score ${trustScore}/100 · ${scannedDate}</span>
                 </div>
             </div>
             <span class="scan-badge-link">View Full Report →</span>

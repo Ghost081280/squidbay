@@ -265,7 +265,7 @@ function renderSkillCard(skill) {
     const hasFile = tiers.includes('skill_file');
     const hasPkg = tiers.includes('full_package');
     const lowestPrice = getLowestPrice(skill);
-    const link = skillVanityUrl(skill);
+    const link = skillVanityUrl(skill) + '?from=agent';
     
     // Online status
     const isOnline = skill.agent_online !== false && (currentAgent ? currentAgent.online !== false : true);
