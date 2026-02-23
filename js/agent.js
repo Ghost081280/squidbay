@@ -135,29 +135,27 @@ async function loadScanBadges() {
             const result = scan.result || 'clean';
             
             // Colors based on VERDICT, not score — rejected never visible on marketplace
-            let ringColor, label;
-            if (result === 'warning') { ringColor = '#ffbd2e'; label = 'Warnings'; }
-            else { ringColor = '#00ff88'; label = 'Clean'; }
+            let ringColor;
+            if (result === 'warning') { ringColor = '#ffbd2e'; }
+            else { ringColor = '#00ff88'; }
             
-            const radius = 11;
+            const radius = 12;
             const circumference = 2 * Math.PI * radius;
             const fillPct = Math.min(score / 100, 1);
             const dashOffset = circumference * (1 - fillPct);
             
-            let reportLink = skillVanityUrl(skill) + '/security';
+            let reportLink = skillVanityUrl(skill) + '/security?from=agent&agent_name=' + encodeURIComponent(currentAgent.agent_name);
             
             slot.innerHTML = `
-                <a href="${reportLink}" class="card-scan-badge" onclick="event.stopPropagation();" title="Security Score: ${score}/100 — ${label}">
-                    <svg class="card-scan-ring" width="28" height="28" viewBox="0 0 28 28">
-                        <circle cx="14" cy="14" r="${radius}" fill="none" stroke="#1a2530" stroke-width="2.5"/>
-                        <circle cx="14" cy="14" r="${radius}" fill="none" stroke="${ringColor}" stroke-width="2.5"
+                <a href="${reportLink}" class="card-scan-badge" onclick="event.stopPropagation();" title="Security Score: ${score}/100">
+                    <svg class="card-scan-ring" width="32" height="32" viewBox="0 0 32 32">
+                        <circle cx="16" cy="16" r="${radius}" fill="none" stroke="#1a2530" stroke-width="2.5"/>
+                        <circle cx="16" cy="16" r="${radius}" fill="none" stroke="${ringColor}" stroke-width="2.5"
                             stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
-                            stroke-linecap="round" transform="rotate(-90 14 14)"/>
-                        <text x="14" y="14" text-anchor="middle" dominant-baseline="central"
-                            fill="${ringColor}" font-size="8" font-weight="700" font-family="monospace">${score}</text>
+                            stroke-linecap="round" transform="rotate(-90 16 16)"/>
+                        <text x="16" y="16" text-anchor="middle" dominant-baseline="central"
+                            fill="${ringColor}" font-size="9" font-weight="700" font-family="monospace">${score}</text>
                     </svg>
-                    <span class="card-scan-label" style="color: ${ringColor}">${label}</span>
-                    <svg class="card-scan-shield" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${ringColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 </a>
             `;
         } catch (e) {

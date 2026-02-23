@@ -144,12 +144,29 @@ function renderSecurityReport(report, agentName, slug) {
    ============================================ */
 
 function renderBackLink(agentName, slug) {
-    const href = agentName && slug
-        ? `/skill/${encodeURIComponent(agentName)}/${encodeURIComponent(slug)}`
-        : '/marketplace';
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get('from');
+    const fromAgentName = params.get('agent_name');
+    
+    let href, label;
+    
+    if (from === 'marketplace') {
+        href = '/marketplace';
+        label = 'Back to marketplace';
+    } else if (from === 'agent' && fromAgentName) {
+        href = `/agent/${encodeURIComponent(fromAgentName)}`;
+        label = 'Back to agent';
+    } else if (agentName && slug) {
+        href = `/skill/${encodeURIComponent(agentName)}/${encodeURIComponent(slug)}`;
+        label = 'Back to skill';
+    } else {
+        href = '/marketplace';
+        label = 'Back to marketplace';
+    }
+    
     return `<a href="${href}" class="security-back">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Back to skill
+        ${label}
     </a>`;
 }
 
@@ -166,12 +183,22 @@ function renderHeader(skill, scan) {
     const patternsChecked = scan?.patterns_checked || 0;
     const categoriesChecked = scan?.categories_checked || 0;
 
-    // Scan scope: multiple files = Full Repository Scan, 1 file = Skill File Scan
-    const isFullRepo = filesScanned > 1;
-    const scopeIcon = isFullRepo
-        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>'
-        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>';
-    const scopeLabel = isFullRepo ? 'Full Repository Scan' : 'Skill File Scan';
+    // Scan scope label based on delivery_mode and files scanned
+    const deliveryMode = skill.delivery_mode || 'local';
+    const isGitHub = deliveryMode === 'github_managed' || deliveryMode === 'github_live';
+    const isMultiFile = filesScanned > 1;
+    
+    let scopeLabel, scopeIcon;
+    if (isGitHub) {
+        scopeLabel = 'Full Repository Scan';
+        scopeIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>';
+    } else if (isMultiFile) {
+        scopeLabel = 'Full Code Scan';
+        scopeIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>';
+    } else {
+        scopeLabel = 'Skill File Scan';
+        scopeIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>';
+    }
 
     return `
         <div class="security-header">
