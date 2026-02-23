@@ -142,10 +142,10 @@ async function loadScanBadges() {
             else if (trustScore >= 30) ringColor = '#ff8c00';
             else ringColor = '#ff4444';
             
-            const radius = 16;
+            const radius = 19;
             const circumference = 2 * Math.PI * radius;
             const fillPct = Math.max(trustScore / 100, 0);
-            const dashOffset = circumference * (1 - fillPct);
+            const dashOffset = trustScore >= 95 ? 0 : circumference * (1 - fillPct);
             
             let reportLink = skillVanityUrl(skill) + '/security?from=agent&agent_name=' + encodeURIComponent(currentAgent.agent_name);
             
