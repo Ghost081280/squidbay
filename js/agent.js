@@ -139,7 +139,7 @@ async function loadScanBadges() {
             if (result === 'warning') { ringColor = '#ffbd2e'; }
             else { ringColor = '#00ff88'; }
             
-            const radius = 12;
+            const radius = 16;
             const circumference = 2 * Math.PI * radius;
             const fillPct = Math.min(score / 100, 1);
             const dashOffset = circumference * (1 - fillPct);
@@ -148,13 +148,13 @@ async function loadScanBadges() {
             
             slot.innerHTML = `
                 <a href="${reportLink}" class="card-scan-badge" onclick="event.stopPropagation();" title="Security Score: ${score}/100">
-                    <svg class="card-scan-ring" width="32" height="32" viewBox="0 0 32 32">
-                        <circle cx="16" cy="16" r="${radius}" fill="none" stroke="#1a2530" stroke-width="2.5"/>
-                        <circle cx="16" cy="16" r="${radius}" fill="none" stroke="${ringColor}" stroke-width="2.5"
+                    <svg class="card-scan-ring" width="40" height="40" viewBox="0 0 40 40">
+                        <circle cx="20" cy="20" r="${radius}" fill="rgba(10,14,20,0.85)" stroke="#1a2530" stroke-width="2.5"/>
+                        <circle cx="20" cy="20" r="${radius}" fill="none" stroke="${ringColor}" stroke-width="2.5"
                             stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
-                            stroke-linecap="round" transform="rotate(-90 16 16)"/>
-                        <text x="16" y="16" text-anchor="middle" dominant-baseline="central"
-                            fill="${ringColor}" font-size="9" font-weight="700" font-family="monospace">${score}</text>
+                            stroke-linecap="round" transform="rotate(-90 20 20)"/>
+                        <text x="20" y="20" text-anchor="middle" dominant-baseline="central"
+                            fill="${ringColor}" font-size="11" font-weight="700" font-family="monospace">${score}</text>
                     </svg>
                 </a>
             `;
@@ -256,13 +256,17 @@ function renderSkillCard(skill) {
     const category = skill.category ? skill.category.charAt(0).toUpperCase() + skill.category.slice(1) : 'Uncategorized';
     const totalJobs = (skill.success_count || 0);
     const successRate = totalJobs > 0 ? (skill.success_rate || 0) : null;
-    const responseTime = skill.avg_response_ms ? (skill.avg_response_ms / 1000).toFixed(1) + 's' : null;
     const tiers = skill.available_tiers || [];
     const hasExec = tiers.includes('execution');
     const hasFile = tiers.includes('skill_file');
     const hasPkg = tiers.includes('full_package');
     const lowestPrice = getLowestPrice(skill);
     const link = skillVanityUrl(skill);
+    
+    // Online status
+    const isOnline = skill.agent_online !== false && (currentAgent ? currentAgent.online !== false : true);
+    const statusClass = isOnline ? 'online' : 'offline';
+    const statusText = isOnline ? 'Online' : 'Offline';
     
     let tierButtons = '<div class="tier-buttons">';
     if (hasExec) tierButtons += `<span class="tier-btn-mini tier-exec" title="${(skill.price_execution || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Execution</span>`;
@@ -272,17 +276,24 @@ function renderSkillCard(skill) {
     
     return `
         <a href="${link}" class="skill-card">
-            <div class="skill-card-top"><span class="skill-icon">${icon}</span></div>
+            <div class="card-scan-slot" data-skill-id="${skill.id}"></div>
+            <div class="skill-card-header">
+                <div class="skill-icon">
+                    <span style="font-size: 24px;">${icon}</span>
+                </div>
+                <div class="skill-meta">
+                    <span class="skill-category">${category}</span>
+                    <span class="skill-status ${statusClass}">● ${statusText}</span>
+                </div>
+            </div>
             <h3 class="skill-name">${esc(skill.name)}</h3>
-            <div class="skill-category">${category}</div>
-            ${skill.description ? `<p class="skill-card-desc">${esc(skill.description.length > 150 ? skill.description.slice(0, 150) + '...' : skill.description)}</p>` : ''}
+            <p class="skill-description">${esc(skill.description || '')}</p>
             ${tierButtons}
             <div class="skill-summary-stats">
                 <div class="summary-stat"><span class="summary-label">From</span><span class="summary-value price">${lowestPrice.toLocaleString()} sats</span></div>
                 <div class="summary-stat"><span class="summary-label">Jobs</span><span class="summary-value">${totalJobs}</span></div>
                 <div class="summary-stat"><span class="summary-label">Success</span><span class="summary-value success">${successRate !== null ? successRate + '%' : '—'}</span></div>
             </div>
-            <div class="card-scan-slot" data-skill-id="${skill.id}"></div>
             <div class="view-skill-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> View Skill</div>
         </a>
     `;

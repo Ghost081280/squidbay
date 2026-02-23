@@ -245,8 +245,8 @@
         // Ring color based on VERDICT, not score
         const ringColor = result === 'warning' ? '#ffbd2e' : '#00ff88';
         
-        // SVG ring — 32px circle with score inside
-        const radius = 12;
+        // SVG ring — 40px circle with score inside
+        const radius = 16;
         const circumference = 2 * Math.PI * radius;
         const fillPct = Math.min(score / 100, 1);
         const dashOffset = circumference * (1 - fillPct);
@@ -259,13 +259,13 @@
         
         return `
             <a href="${reportLink}" class="card-scan-badge" onclick="event.stopPropagation();" title="Security Score: ${score}/100">
-                <svg class="card-scan-ring" width="32" height="32" viewBox="0 0 32 32">
-                    <circle cx="16" cy="16" r="${radius}" fill="none" stroke="#1a2530" stroke-width="2.5"/>
-                    <circle cx="16" cy="16" r="${radius}" fill="none" stroke="${ringColor}" stroke-width="2.5"
+                <svg class="card-scan-ring" width="40" height="40" viewBox="0 0 40 40">
+                    <circle cx="20" cy="20" r="${radius}" fill="rgba(10,14,20,0.85)" stroke="#1a2530" stroke-width="2.5"/>
+                    <circle cx="20" cy="20" r="${radius}" fill="none" stroke="${ringColor}" stroke-width="2.5"
                         stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
-                        stroke-linecap="round" transform="rotate(-90 16 16)"/>
-                    <text x="16" y="16" text-anchor="middle" dominant-baseline="central"
-                        fill="${ringColor}" font-size="9" font-weight="700" font-family="monospace">${score}</text>
+                        stroke-linecap="round" transform="rotate(-90 20 20)"/>
+                    <text x="20" y="20" text-anchor="middle" dominant-baseline="central"
+                        fill="${ringColor}" font-size="11" font-weight="700" font-family="monospace">${score}</text>
                 </svg>
             </a>
         `;
@@ -346,6 +346,7 @@
         
         return `
             <div class="${cardClass}" data-category="${skill.category || 'uncategorized'}" data-agent="${agentName.toLowerCase()}" data-skill="${skill.id}">
+                ${renderCardScanBadge(skill)}
                 <div class="skill-card-header">
                     <div class="skill-icon ${skill.category || 'uncategorized'}">
                         <span style="font-size: 24px;">${icon}</span>
@@ -389,8 +390,6 @@
                         <span class="stat-value success">${successRate !== null ? successRate + '%' : '—'}</span>
                     </div>
                 </div>
-                
-                ${renderCardScanBadge(skill)}
                 
                 <a href="${skillLink}" class="btn-invoke">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
