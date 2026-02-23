@@ -163,9 +163,15 @@ function renderHeader(skill, scan) {
     const filesScanned = s.files_scanned || 0;
     const totalKB = s.total_bytes ? (s.total_bytes / 1024).toFixed(0) : '0';
     const scanDate = scan?.scanned_at ? formatDate(scan.scanned_at) : '';
-    const scannerVersion = scan?.scanner_version || '';
     const patternsChecked = scan?.patterns_checked || 0;
     const categoriesChecked = scan?.categories_checked || 0;
+
+    // Scan scope: multiple files = Full Repository Scan, 1 file = Skill File Scan
+    const isFullRepo = filesScanned > 1;
+    const scopeIcon = isFullRepo
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>'
+        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>';
+    const scopeLabel = isFullRepo ? 'Full Repository Scan' : 'Skill File Scan';
 
     return `
         <div class="security-header">
@@ -179,7 +185,7 @@ function renderHeader(skill, scan) {
                 <h1>Security Report — <a href="${skillUrl(skill)}" class="skill-name-link">${esc(skill.name)}</a></h1>
                 <div class="security-header-meta">
                     ${skill.version ? `<span class="version-badge">v${esc(skill.version)}</span>` : ''}
-                    ${scannerVersion ? `<span class="scanner-badge">Scanner v${esc(scannerVersion)}</span>` : ''}
+                    <span class="scope-badge">${scopeIcon} ${scopeLabel}</span>
                     ${scanDate ? `<span>Scanned ${scanDate}</span>` : ''}
                     ${filesScanned ? `<span>${filesScanned} files (${totalKB}KB) · ${categoriesChecked} categories · ${patternsChecked} patterns</span>` : ''}
                 </div>
@@ -289,19 +295,19 @@ function renderSummaryCards(scan) {
    ============================================ */
 
 const CATEGORY_META = [
-    { key: 'trackers',              label: 'Trackers & Ad Networks',      severity: 'reject',  summaryKey: 'trackers' },
-    { key: 'injection',             label: 'Prompt Injection',            severity: 'reject',  summaryKey: 'injection_patterns' },
-    { key: 'suspicious_import',     label: 'Suspicious Imports',          severity: 'warning', summaryKey: 'suspicious_imports' },
-    { key: 'obfuscation',          label: 'Code Obfuscation',            severity: 'reject',  summaryKey: 'obfuscation' },
-    { key: 'data_exfiltration',    label: 'Data Exfiltration',           severity: 'reject',  summaryKey: 'data_exfiltration' },
-    { key: 'credential_harvesting', label: 'Credential Harvesting',      severity: 'reject',  summaryKey: 'credential_harvesting' },
-    { key: 'hidden_element',       label: 'Hidden Elements',             severity: 'warning', summaryKey: 'hidden_elements' },
-    { key: 'env_sniffing',         label: 'Environment Variable Access', severity: 'reject',  summaryKey: 'env_sniffing' },
-    { key: 'supply_chain',         label: 'Supply Chain Attacks',        severity: 'reject',  summaryKey: 'supply_chain' },
-    { key: 'file_system_attack',   label: 'File System Attacks',         severity: 'reject',  summaryKey: 'file_system' },
-    { key: 'service_worker',       label: 'Service Worker Abuse',        severity: 'warning', summaryKey: 'service_worker' },
-    { key: 'crypto_mining',        label: 'Crypto Mining',               severity: 'reject',  summaryKey: 'crypto_mining' },
-    { key: 'external_url',         label: 'External URLs',               severity: 'info',    summaryKey: 'external_urls' }
+    { key: 'trackers',              label: 'Trackers & Ad Networks',      severity: 'reject',  summaryKey: 'trackers',              desc: 'Detects ad networks, analytics trackers, and fingerprinting scripts that collect user data without consent.' },
+    { key: 'injection',             label: 'Prompt Injection',            severity: 'reject',  summaryKey: 'injection_patterns',    desc: 'Looks for hidden instructions that could hijack an AI agent\'s behavior when processing this skill.' },
+    { key: 'suspicious_import',     label: 'Suspicious Imports',          severity: 'warning', summaryKey: 'suspicious_imports',     desc: 'Flags imports from unusual or potentially malicious packages not expected in this type of skill.' },
+    { key: 'obfuscation',          label: 'Code Obfuscation',            severity: 'reject',  summaryKey: 'obfuscation',           desc: 'Detects base64 encoding, eval(), and other techniques used to hide malicious code.' },
+    { key: 'data_exfiltration',    label: 'Data Exfiltration',           severity: 'reject',  summaryKey: 'data_exfiltration',     desc: 'Checks for code that sends data to external servers — cookies, localStorage, form data, or clipboard contents.' },
+    { key: 'credential_harvesting', label: 'Credential Harvesting',      severity: 'reject',  summaryKey: 'credential_harvesting', desc: 'Detects fake login forms, password field scraping, and keylogging patterns.' },
+    { key: 'hidden_element',       label: 'Hidden Elements',             severity: 'warning', summaryKey: 'hidden_elements',        desc: 'Finds invisible iframes, hidden forms, or zero-size elements that could operate without the user knowing.' },
+    { key: 'env_sniffing',         label: 'Environment Variable Access', severity: 'reject',  summaryKey: 'env_sniffing',          desc: 'Flags code that reads environment variables — often used to steal API keys, tokens, or secrets.' },
+    { key: 'supply_chain',         label: 'Supply Chain Attacks',        severity: 'reject',  summaryKey: 'supply_chain',          desc: 'Detects dependency confusion, typosquatting package names, and CDN tampering patterns.' },
+    { key: 'file_system_attack',   label: 'File System Attacks',         severity: 'reject',  summaryKey: 'file_system',           desc: 'Looks for path traversal, unauthorized file reads/writes, and attempts to access system files.' },
+    { key: 'service_worker',       label: 'Service Worker Abuse',        severity: 'warning', summaryKey: 'service_worker',         desc: 'Checks for service workers that could intercept requests, cache malicious content, or persist after removal.' },
+    { key: 'crypto_mining',        label: 'Crypto Mining',               severity: 'reject',  summaryKey: 'crypto_mining',         desc: 'Detects cryptocurrency mining scripts that would use the buyer\'s CPU without permission.' },
+    { key: 'external_url',         label: 'External URLs',               severity: 'info',    summaryKey: 'external_urls',         desc: 'Lists all outbound URLs found in the source code. Not inherently dangerous — review to verify they\'re expected.' }
 ];
 
 function renderDetectionCategories(scan) {
@@ -362,6 +368,7 @@ function renderDetectionCategories(scan) {
                 <span class="category-name">${cat.label}</span>
                 <span class="category-finding-count ${sevClass}">${hasFindings ? displayCount + ' found' : 'Clear'}</span>
             </div>
+            <div class="category-desc">${cat.desc}</div>
             ${findingsHtml}`;
     }
 
@@ -386,6 +393,18 @@ function renderDetectionCategories(scan) {
 function renderPermissionsInventory(permissions) {
     if (!permissions || permissions.length === 0) return '';
 
+    const PERM_DESC = {
+        'Makes Network Requests':       'Can send or receive data over the internet. Normal for web skills, but worth reviewing what it connects to.',
+        'Modifies DOM':                 'Can change what you see on screen. Standard for any visual skill — nothing alarming on its own.',
+        'Accesses File System':         'Can read or write files on the host machine. Fine for file-processing skills, risky if unexpected.',
+        'Executes Shell Commands':      'Can run system commands on the host. Powerful and dangerous if not expected — review carefully.',
+        'Accesses Environment Variables':'Can read secrets like API keys and tokens from the host environment. Should only be present if the skill needs external service access.',
+        'Uses Cryptography':            'Uses encryption or hashing functions. Normal for security-related skills, unusual for simple utilities.',
+        'Stores Data Locally':          'Can save data to localStorage, cookies, or IndexedDB in the browser. Check what it stores.',
+        'Registers Workers':            'Can install service workers or web workers that run in the background, even after the page closes.',
+        'Uses WebAssembly':             'Runs compiled binary code in the browser. Legitimate for performance-heavy tasks, but impossible to read — you have to trust the source.'
+    };
+
     const detected = permissions.filter(p => p.detected);
     const notDetected = permissions.filter(p => !p.detected);
     const sorted = [...detected, ...notDetected];
@@ -394,6 +413,7 @@ function renderPermissionsInventory(permissions) {
     for (const p of sorted) {
         const isDetected = p.detected;
         const riskClass = p.risk === 'elevated' ? 'risk-elevated' : 'risk-neutral';
+        const desc = PERM_DESC[p.label] || '';
 
         rows += `
             <div class="perm-row">
@@ -401,6 +421,7 @@ function renderPermissionsInventory(permissions) {
                 <span class="perm-label ${isDetected ? 'detected' : 'not-detected'}">${esc(p.label)}</span>
                 <span class="perm-risk ${riskClass}">${esc(p.risk)}</span>
             </div>
+            ${desc ? `<div class="perm-desc">${desc}</div>` : ''}
             ${isDetected && p.files && p.files.length > 0 ? `<div class="perm-files">${p.files.map(f => esc(f)).join(', ')}</div>` : ''}`;
     }
 
@@ -500,15 +521,21 @@ function renderScanHistory(history) {
    ============================================ */
 
 function renderFooter(agentName, slug) {
-    const skillLink = agentName && slug
-        ? `/skill/${encodeURIComponent(agentName)}/${encodeURIComponent(slug)}`
-        : '/marketplace';
     return `
+        <div class="report-concerns-module">
+            <div class="concerns-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3 class="concerns-title">Something Look Wrong?</h3>
+            <p class="concerns-text">If you believe this report contains errors or if you have security concerns about this skill, let us know.</p>
+            <a href="mailto:contact&#64;squidbay.io" class="concerns-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                Report a Concern
+            </a>
+        </div>
         <div class="security-footer">
-            SquidBay scans every source file in this skill's repository.<br>
-            This report was generated by automated static analysis — not AI summary, not antivirus.<br>
-            Report concerns: <a href="mailto:contact&#64;squidbay.io">contact&#64;squidbay.io</a><br>
-            <a href="${skillLink}">← Back to skill page</a>
+            SquidBay scans every source file submitted with this skill.<br>
+            This report was generated by automated static analysis — not AI summary, not antivirus.
         </div>`;
 }
 
