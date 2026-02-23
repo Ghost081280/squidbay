@@ -240,13 +240,12 @@
     text-decoration: none;
 }
 
-/* Skill card header — matches marketplace layout */
+/* Skill card header — icon + online left, trust badge right */
 .skill-card-header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 12px;
-    gap: 12px;
+    gap: 10px;
 }
 
 .skill-card-header .skill-icon {
@@ -254,25 +253,24 @@
     flex-shrink: 0;
 }
 
-.skill-card-header .skill-meta {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 2px;
-    flex: 1;
+.skill-card-header .skill-status {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+}
+
+.skill-card-header .card-scan-slot {
+    margin-left: auto;
 }
 
 .skill-card .skill-category {
+    display: block;
     font-size: 0.7rem;
     color: var(--primary);
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 600;
-}
-
-.skill-card .skill-status {
-    font-size: 0.75rem;
-    font-weight: 500;
+    margin-bottom: 6px;
 }
 
 .skill-card .skill-status.online {
