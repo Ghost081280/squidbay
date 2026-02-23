@@ -568,7 +568,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
+    gap: 4px;
 }
 
 .card-scan-badge:hover {
@@ -581,10 +581,10 @@
 }
 
 .card-scan-label {
-    font-size: 0.55rem;
-    color: #5a6a7a;
+    font-size: 0.58rem;
+    color: #667788;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
     font-weight: 600;
     white-space: nowrap;
     line-height: 1;
