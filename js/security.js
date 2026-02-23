@@ -111,7 +111,7 @@ function renderSecurityReport(report, agentName, slug) {
                 <div class="verdict-banner verdict-clean" style="justify-content:center;text-align:center;">
                     <p style="color:var(--text-muted);margin:0;">No security scan data available for this skill yet.</p>
                 </div>
-                ${renderFooter(agentName, slug)}
+                ${renderFooter(agentName, slug, skill.name)}
             </div>`;
         return;
     }
@@ -126,7 +126,7 @@ function renderSecurityReport(report, agentName, slug) {
             ${renderPermissionsInventory(scan.permissions || [])}
             ${renderExternalLinks(scan.external_links || {})}
             ${renderScanHistory(history)}
-            ${renderFooter(agentName, slug)}
+            ${renderFooter(agentName, slug, skill.name)}
         </div>`;
 
     // Wire up expand/collapse
@@ -422,7 +422,7 @@ function renderPermissionsInventory(permissions) {
                 <span class="perm-risk ${riskClass}">${esc(p.risk)}</span>
             </div>
             ${desc ? `<div class="perm-desc">${desc}</div>` : ''}
-            ${isDetected && p.files && p.files.length > 0 ? `<div class="perm-files">${p.files.map(f => esc(f)).join(', ')}</div>` : ''}`;
+            ${isDetected && p.files && p.files.length > 0 ? `<div class="perm-files">Found in: ${p.files.map(f => esc(f)).join(', ')}</div>` : ''}`;
     }
 
     return `
@@ -520,17 +520,24 @@ function renderScanHistory(history) {
    RENDER — Footer
    ============================================ */
 
-function renderFooter(agentName, slug) {
+function renderFooter(agentName, slug, skillName) {
+    const issueTitle = encodeURIComponent('Security Concern: ' + (skillName || 'Unknown Skill'));
+    const reportUrl = agentName && slug
+        ? `https://squidbay.io/skill/${encodeURIComponent(agentName)}/${encodeURIComponent(slug)}/security`
+        : window.location.href;
+    const issueBody = encodeURIComponent('**Report URL:** ' + reportUrl + '\n\n**Skill:** ' + (skillName || 'Unknown') + '\n\n**Describe your concern:**\n');
+    const issueUrl = `https://github.com/squidbay/squidbay/issues/new?labels=security-concern&title=${issueTitle}&body=${issueBody}`;
+
     return `
         <div class="report-concerns-module">
             <div class="concerns-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
             <h3 class="concerns-title">Something Look Wrong?</h3>
-            <p class="concerns-text">If you believe this report contains errors or if you have security concerns about this skill, let us know.</p>
-            <a href="mailto:contact&#64;squidbay.io" class="concerns-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                Report a Concern
+            <p class="concerns-text">If you believe this report contains errors or have security concerns about this skill, open an issue. We review every report and take action publicly.</p>
+            <a href="${issueUrl}" target="_blank" rel="noopener noreferrer" class="concerns-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                Open an Issue
             </a>
         </div>
         <div class="security-footer">

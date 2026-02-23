@@ -131,6 +131,9 @@ async function loadSkillBySlug(agentName, slug) {
         document.getElementById('page-loader').classList.add('hidden');
         document.getElementById('skill-content').classList.remove('hidden');
         
+        // Fetch security scan data and inject badge
+        fetchAndRenderScanBadge(currentSkill.id);
+        
         // N-C03: Fetch BTC price and update USD displays after render
         fetchBtcPrice().then(btcPrice => {
             if (btcPrice) updateUsdDisplays(btcPrice);
@@ -181,6 +184,9 @@ async function loadSkill(id) {
         renderSkillPage(currentSkill, reviews, reviewStats);
         document.getElementById('page-loader').classList.add('hidden');
         document.getElementById('skill-content').classList.remove('hidden');
+        
+        // Fetch security scan data and inject badge
+        fetchAndRenderScanBadge(currentSkill.id);
         
         // N-C03: Fetch BTC price and update USD displays after render
         fetchBtcPrice().then(btcPrice => {
@@ -258,7 +264,7 @@ function buildTierHtml(tierKey, icon, label, isAvailable, isOnline, skill, versi
 }
 
 // ============================================
-// Scan Trust Badge — links to full security report
+// Scan Trust Badge — compact score ring + link to full report
 // ============================================
 function renderScanBadge(scan) {
     if (!scan) return ''; // No scan data — show nothing
@@ -271,49 +277,58 @@ function renderScanBadge(scan) {
         ? `/skill/${encodeURIComponent(currentSkill.agent_name)}/${encodeURIComponent(currentSkill.slug)}/security`
         : '#';
 
+    // Mini risk ring colors
+    let ringColor, resultLabel;
     if (scan.result === 'clean') {
-        return `
-            <a href="${reportUrl}" class="scan-badge scan-clean">
-                <div class="scan-badge-left">
-                    <svg class="scan-badge-shield" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green, #00D26A)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11.5 14.5 16 10"/></svg>
-                    <div class="scan-badge-info">
-                        <span class="scan-badge-title">No Threats Detected</span>
-                        <span class="scan-badge-meta">${filesScanned} files scanned · Score ${score}/100 · ${scannedDate}</span>
-                    </div>
-                </div>
-                <span class="scan-badge-link">View Full Report →</span>
-            </a>`;
+        ringColor = 'var(--green, #00D26A)';
+        resultLabel = 'No Threats Detected';
+    } else if (scan.result === 'warning') {
+        ringColor = 'var(--yellow, #FFBD2E)';
+        resultLabel = 'Warnings Found';
+    } else if (scan.result === 'rejected') {
+        ringColor = 'var(--red, #FF5F57)';
+        resultLabel = 'Threats Detected';
+    } else {
+        return '';
     }
 
-    if (scan.result === 'warning') {
-        return `
-            <a href="${reportUrl}" class="scan-badge scan-warning">
-                <div class="scan-badge-left">
-                    <svg class="scan-badge-shield" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--yellow, #FFBD2E)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    <div class="scan-badge-info">
-                        <span class="scan-badge-title">Warnings Found</span>
-                        <span class="scan-badge-meta">${filesScanned} files scanned · Score ${score}/100 · ${scannedDate}</span>
-                    </div>
-                </div>
-                <span class="scan-badge-link">View Full Report →</span>
-            </a>`;
-    }
+    // Mini ring SVG — 36px with score
+    const circumference = 2 * Math.PI * 14; // r=14
+    const offset = circumference - (score / 100) * circumference;
+    const ringSvg = `<svg class="scan-mini-ring" width="44" height="44" viewBox="0 0 36 36">
+        <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(42,55,68,0.6)" stroke-width="3"/>
+        <circle cx="18" cy="18" r="14" fill="none" stroke="${ringColor}" stroke-width="3" stroke-linecap="round"
+            stroke-dasharray="${circumference.toFixed(2)}" stroke-dashoffset="${score === 0 ? '0' : offset.toFixed(2)}"
+            transform="rotate(-90 18 18)" style="transition:stroke-dashoffset 0.6s ease-out"/>
+        <text x="18" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="${ringColor}">${score}</text>
+    </svg>`;
 
-    if (scan.result === 'rejected') {
-        return `
-            <a href="${reportUrl}" class="scan-badge scan-rejected">
-                <div class="scan-badge-left">
-                    <svg class="scan-badge-shield" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--red, #FF5F57)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                    <div class="scan-badge-info">
-                        <span class="scan-badge-title">Threats Detected</span>
-                        <span class="scan-badge-meta">${filesScanned} files scanned · Score ${score}/100 · ${scannedDate}</span>
-                    </div>
+    return `
+        <a href="${reportUrl}" class="scan-badge scan-${scan.result}">
+            <div class="scan-badge-left">
+                ${ringSvg}
+                <div class="scan-badge-info">
+                    <span class="scan-badge-title">${resultLabel}</span>
+                    <span class="scan-badge-meta">${filesScanned} files scanned · Score ${score}/100 · ${scannedDate}</span>
                 </div>
-                <span class="scan-badge-link">View Full Report →</span>
-            </a>`;
-    }
+            </div>
+            <span class="scan-badge-link">View Full Report →</span>
+        </a>`;
+}
 
-    return '';
+// Fetch security scan data and inject badge into skill page
+async function fetchAndRenderScanBadge(skillId) {
+    try {
+        const res = await fetch(`${API_BASE}/skills/${skillId}/security`);
+        if (!res.ok) return; // No scan data — silently skip
+        const data = await res.json();
+        const scan = data.scan;
+        if (!scan) return;
+        const slot = document.getElementById('scan-badge-slot');
+        if (slot) slot.innerHTML = renderScanBadge(scan);
+    } catch (err) {
+        console.warn('Could not load scan data:', err);
+    }
 }
 
 function renderSkillPage(skill, reviews, reviewStats) {
@@ -363,6 +378,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
                     <div class="stat-box"><div class="stat-value">${formatDate(skill.created_at)}</div><div class="stat-label">Listed Since</div></div>
                 </div>
                 ${renderScanBadge(skill.scan)}
+                <div id="scan-badge-slot"></div>
                 ${skill.details ? `<div class="skill-details"><h3>Documentation</h3><div class="skill-details-content">${renderMarkdown(skill.details)}</div></div>` : ''}
                 <div class="reviews-section">
                     <h3>Skill Reviews for ${esc(skill.name)} ${reviewStats.count > 0 ? `(${reviewStats.count})` : ''}</h3>
