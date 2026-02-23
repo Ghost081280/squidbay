@@ -258,44 +258,59 @@ function buildTierHtml(tierKey, icon, label, isAvailable, isOnline, skill, versi
 }
 
 // ============================================
-// Scan Trust Badge
+// Scan Trust Badge — links to full security report
 // ============================================
 function renderScanBadge(scan) {
     if (!scan) return ''; // No scan data — show nothing
 
     const s = scan.summary || {};
+    const score = scan.risk_score || 0;
     const scannedDate = scan.scanned_at ? new Date(scan.scanned_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+    const filesScanned = s.files_scanned || 0;
+    const reportUrl = currentSkill?.slug && currentSkill?.agent_name
+        ? `/skill/${encodeURIComponent(currentSkill.agent_name)}/${encodeURIComponent(currentSkill.slug)}/security`
+        : '#';
 
     if (scan.result === 'clean') {
         return `
-            <div class="scan-badge scan-clean">
-                <div class="scan-badge-header">
-                    <svg class="scan-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11.5 14.5 16 10"/></svg>
-                    <span class="scan-badge-title">Clean Skill</span>
+            <a href="${reportUrl}" class="scan-badge scan-clean">
+                <div class="scan-badge-left">
+                    <svg class="scan-badge-shield" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green, #00D26A)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11.5 14.5 16 10"/></svg>
+                    <div class="scan-badge-info">
+                        <span class="scan-badge-title">No Threats Detected</span>
+                        <span class="scan-badge-meta">${filesScanned} files scanned · Score ${score}/100 · ${scannedDate}</span>
+                    </div>
                 </div>
-                <div class="scan-badge-details">
-                    <span>${s.external_urls || 0} external links</span>
-                    <span>${s.trackers || 0} trackers</span>
-                    <span>${s.injection_patterns || 0} injection patterns</span>
-                </div>
-                ${scannedDate ? `<div class="scan-badge-date">Scanned ${scannedDate}</div>` : ''}
-            </div>`;
+                <span class="scan-badge-link">View Full Report →</span>
+            </a>`;
     }
 
     if (scan.result === 'warning') {
         return `
-            <div class="scan-badge scan-warning">
-                <div class="scan-badge-header">
-                    <svg class="scan-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    <span class="scan-badge-title">Warnings Found</span>
+            <a href="${reportUrl}" class="scan-badge scan-warning">
+                <div class="scan-badge-left">
+                    <svg class="scan-badge-shield" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--yellow, #FFBD2E)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <div class="scan-badge-info">
+                        <span class="scan-badge-title">Warnings Found</span>
+                        <span class="scan-badge-meta">${filesScanned} files scanned · Score ${score}/100 · ${scannedDate}</span>
+                    </div>
                 </div>
-                <div class="scan-badge-details">
-                    <span>${s.external_urls || 0} external links</span>
-                    <span>${s.trackers || 0} trackers</span>
-                    <span>${s.suspicious_imports || 0} suspicious imports</span>
+                <span class="scan-badge-link">View Full Report →</span>
+            </a>`;
+    }
+
+    if (scan.result === 'rejected') {
+        return `
+            <a href="${reportUrl}" class="scan-badge scan-rejected">
+                <div class="scan-badge-left">
+                    <svg class="scan-badge-shield" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--red, #FF5F57)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    <div class="scan-badge-info">
+                        <span class="scan-badge-title">Threats Detected</span>
+                        <span class="scan-badge-meta">${filesScanned} files scanned · Score ${score}/100 · ${scannedDate}</span>
+                    </div>
                 </div>
-                ${scannedDate ? `<div class="scan-badge-date">Scanned ${scannedDate}</div>` : ''}
-            </div>`;
+                <span class="scan-badge-link">View Full Report →</span>
+            </a>`;
     }
 
     return '';
