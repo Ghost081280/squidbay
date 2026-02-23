@@ -281,6 +281,115 @@
     margin-bottom: 8px;
 }
 
+/* === Scan Trust Badge === */
+.scan-badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: var(--radius-lg);
+    border: 1px solid;
+    margin-bottom: 24px;
+    text-decoration: none;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+    cursor: pointer;
+}
+
+.scan-badge:hover {
+    text-decoration: none;
+}
+
+.scan-badge.scan-clean {
+    background: rgba(0, 210, 106, 0.04);
+    border-color: rgba(0, 210, 106, 0.2);
+}
+
+.scan-badge.scan-clean:hover {
+    background: rgba(0, 210, 106, 0.08);
+    border-color: rgba(0, 210, 106, 0.35);
+}
+
+.scan-badge.scan-warning {
+    background: rgba(255, 189, 46, 0.04);
+    border-color: rgba(255, 189, 46, 0.2);
+}
+
+.scan-badge.scan-warning:hover {
+    background: rgba(255, 189, 46, 0.08);
+    border-color: rgba(255, 189, 46, 0.35);
+}
+
+.scan-badge.scan-rejected {
+    background: rgba(255, 95, 87, 0.04);
+    border-color: rgba(255, 95, 87, 0.2);
+}
+
+.scan-badge.scan-rejected:hover {
+    background: rgba(255, 95, 87, 0.08);
+    border-color: rgba(255, 95, 87, 0.35);
+}
+
+.scan-badge-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.scan-badge-shield {
+    flex-shrink: 0;
+}
+
+.scan-badge-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.scan-badge-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.scan-clean .scan-badge-title {
+    color: var(--green);
+}
+
+.scan-warning .scan-badge-title {
+    color: var(--yellow);
+}
+
+.scan-rejected .scan-badge-title {
+    color: var(--red);
+}
+
+.scan-badge-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.scan-badge-link {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary);
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .scan-badge {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .scan-badge-link {
+        align-self: flex-end;
+    }
+}
+
 /* === Reviews Section === */
 .reviews-section {
     margin-top: 40px;
