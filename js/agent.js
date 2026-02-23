@@ -145,7 +145,7 @@ async function loadScanBadges() {
             const radius = 19;
             const circumference = 2 * Math.PI * radius;
             const fillPct = Math.max(trustScore / 100, 0);
-            const dashOffset = trustScore >= 100 ? 0 : Math.max(circumference * (1 - fillPct), circumference * 0.02);
+            const dashOffset = trustScore >= 100 ? 0 : Math.max(circumference * (1 - fillPct), circumference * 0.03);
             
             let reportLink = skillVanityUrl(skill) + '/security?from=agent&agent_name=' + encodeURIComponent(currentAgent.agent_name);
             
