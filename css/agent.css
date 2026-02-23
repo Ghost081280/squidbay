@@ -559,35 +559,21 @@
     box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
 }
 
-/* === Card Scan Badge (trust score — far right of header) === */
+/* === Card Trust Badge (score ring — far right of header) === */
 .card-scan-badge {
     text-decoration: none;
     transition: transform 0.2s;
     cursor: pointer;
     flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
 }
 
 .card-scan-badge:hover {
-    transform: scale(1.05);
+    transform: scale(1.08);
 }
 
 .card-scan-ring {
     display: block;
-    flex-shrink: 0;
-}
-
-.card-scan-label {
-    font-size: 0.58rem;
-    color: #667788;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-weight: 600;
-    white-space: nowrap;
-    line-height: 1;
+    filter: drop-shadow(0 1px 4px rgba(0, 255, 136, 0.15));
 }
 
 .card-scan-slot {
