@@ -168,6 +168,15 @@
     font-weight: 600;
 }
 
+.security-header-meta .scope-badge {
+    background: rgba(0, 217, 255, 0.08);
+    color: var(--primary);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
 /* ============================================
    VERDICT BANNER
    ============================================ */
@@ -241,7 +250,7 @@
 
 .risk-ring-max {
     font-size: 0.7rem;
-    color: var(--gray-light);
+    color: var(--text-muted);
     margin-top: 2px;
 }
 
@@ -422,6 +431,13 @@
     color: var(--white);
 }
 
+.category-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    padding: 0 0 6px 36px;
+    line-height: 1.4;
+}
+
 .category-finding-count {
     font-size: 0.75rem;
     font-weight: 600;
@@ -515,7 +531,7 @@
 }
 
 .perm-check.not-detected {
-    color: var(--gray-light);
+    color: var(--text-muted);
 }
 
 .perm-label {
@@ -528,7 +544,7 @@
 }
 
 .perm-label.not-detected {
-    color: var(--gray-light);
+    color: var(--text-muted);
 }
 
 .perm-risk {
@@ -542,7 +558,7 @@
 
 .perm-risk.risk-neutral {
     background: rgba(0, 217, 255, 0.08);
-    color: var(--gray-light);
+    color: var(--text-muted);
 }
 
 .perm-risk.risk-elevated {
@@ -556,6 +572,13 @@
     padding-left: 32px;
     padding-bottom: 4px;
     font-family: var(--font-mono);
+}
+
+.perm-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    padding: 0 0 6px 32px;
+    line-height: 1.4;
 }
 
 /* ============================================
@@ -661,6 +684,60 @@
 .history-meta {
     color: var(--gray-light);
     font-size: 0.75rem;
+}
+
+/* ============================================
+   REPORT CONCERNS MODULE
+   ============================================ */
+
+.report-concerns-module {
+    background: var(--gray);
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+    text-align: center;
+    margin-top: 24px;
+}
+
+.concerns-icon {
+    margin-bottom: 12px;
+}
+
+.concerns-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--white);
+    margin: 0 0 8px;
+}
+
+.concerns-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0 0 20px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+}
+
+.concerns-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-md);
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background var(--transition-base), color var(--transition-base);
+}
+
+.concerns-btn:hover {
+    background: rgba(0, 217, 255, 0.1);
+    color: var(--primary);
+    text-decoration: none;
 }
 
 /* ============================================
