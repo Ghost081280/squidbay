@@ -111,6 +111,59 @@ function renderPage() {
     
     document.getElementById('page-loader').classList.add('hidden');
     document.getElementById('agent-content').classList.remove('hidden');
+    
+    // Post-render: fetch scan data for each skill and inject badges
+    loadScanBadges();
+}
+
+/**
+ * Fetch scan data for all skills and inject mini badges into card slots
+ */
+async function loadScanBadges() {
+    for (const skill of agentSkills) {
+        try {
+            const res = await fetch(`${API_BASE}/skills/${skill.id}/security`);
+            if (!res.ok) continue;
+            const data = await res.json();
+            if (!data.scan) continue;
+            
+            const slot = document.querySelector(`.card-scan-slot[data-skill-id="${skill.id}"]`);
+            if (!slot) continue;
+            
+            const scan = data.scan;
+            const score = scan.risk_score || 0;
+            const result = scan.result || 'clean';
+            
+            // Colors based on VERDICT, not score — rejected never visible on marketplace
+            let ringColor, label;
+            if (result === 'warning') { ringColor = '#ffbd2e'; label = 'Warnings'; }
+            else { ringColor = '#00ff88'; label = 'Clean'; }
+            
+            const radius = 11;
+            const circumference = 2 * Math.PI * radius;
+            const fillPct = Math.min(score / 100, 1);
+            const dashOffset = circumference * (1 - fillPct);
+            
+            let reportLink = skillVanityUrl(skill) + '/security';
+            
+            slot.innerHTML = `
+                <a href="${reportLink}" class="card-scan-badge" onclick="event.stopPropagation();" title="Security Score: ${score}/100 — ${label}">
+                    <svg class="card-scan-ring" width="28" height="28" viewBox="0 0 28 28">
+                        <circle cx="14" cy="14" r="${radius}" fill="none" stroke="#1a2530" stroke-width="2.5"/>
+                        <circle cx="14" cy="14" r="${radius}" fill="none" stroke="${ringColor}" stroke-width="2.5"
+                            stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
+                            stroke-linecap="round" transform="rotate(-90 14 14)"/>
+                        <text x="14" y="14" text-anchor="middle" dominant-baseline="central"
+                            fill="${ringColor}" font-size="8" font-weight="700" font-family="monospace">${score}</text>
+                    </svg>
+                    <span class="card-scan-label" style="color: ${ringColor}">${label}</span>
+                    <svg class="card-scan-shield" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${ringColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </a>
+            `;
+        } catch (e) {
+            // Silent fail — badge just doesn't appear
+        }
+    }
 }
 
 function updateMeta(property, content) {
@@ -231,6 +284,7 @@ function renderSkillCard(skill) {
                 <div class="summary-stat"><span class="summary-label">Jobs</span><span class="summary-value">${totalJobs}</span></div>
                 <div class="summary-stat"><span class="summary-label">Success</span><span class="summary-value success">${successRate !== null ? successRate + '%' : '—'}</span></div>
             </div>
+            <div class="card-scan-slot" data-skill-id="${skill.id}"></div>
             <div class="view-skill-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> View Skill</div>
         </a>
     `;
