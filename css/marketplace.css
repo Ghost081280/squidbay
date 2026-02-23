@@ -297,10 +297,6 @@
     white-space: nowrap;
 }
 
-.skill-card-header .card-scan-slot {
-    margin-left: auto;
-}
-
 .skill-category {
     display: block;
     font-size: 0.7rem;
@@ -479,15 +475,16 @@
     box-shadow: 0 4px 20px rgba(0, 217, 255, 0.3);
 }
 
-/* === Card Scan Badge (security score circle in card header) === */
+/* === Card Scan Badge (trust score — far right of header) === */
 .card-scan-badge {
     text-decoration: none;
     transition: transform 0.2s;
     cursor: pointer;
     flex-shrink: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 2px;
 }
 
 .card-scan-badge:hover {
@@ -500,17 +497,18 @@
 }
 
 .card-scan-label {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     color: #5a6a7a;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 600;
     white-space: nowrap;
-    line-height: 1.2;
+    line-height: 1;
 }
 
 .card-scan-slot {
     flex-shrink: 0;
+    margin-left: auto;
 }
 
 .card-scan-slot:empty {
