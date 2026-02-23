@@ -433,7 +433,7 @@
 
 .category-desc {
     font-size: 0.78rem;
-    color: var(--text-muted);
+    color: #8899aa;
     padding: 0 0 6px 36px;
     line-height: 1.4;
 }
@@ -567,16 +567,16 @@
 }
 
 .perm-files {
-    font-size: 0.72rem;
-    color: var(--gray-light);
+    font-size: 0.75rem;
+    color: #8899aa;
     padding-left: 32px;
-    padding-bottom: 4px;
+    padding-bottom: 6px;
     font-family: var(--font-mono);
 }
 
 .perm-desc {
     font-size: 0.78rem;
-    color: var(--text-muted);
+    color: #8899aa;
     padding: 0 0 6px 32px;
     line-height: 1.4;
 }
