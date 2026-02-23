@@ -206,13 +206,66 @@
     padding: 20px;
     text-decoration: none;
     transition: all var(--transition-base);
-    display: block;
+    display: flex;
+    flex-direction: column;
+    position: relative;
 }
 
 .skill-card:hover {
     border-color: var(--primary);
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 217, 255, 0.1);
+}
+
+/* Skill card header — matches marketplace layout */
+.skill-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.skill-card-header .skill-icon {
+    font-size: 2rem;
+}
+
+.skill-card-header .skill-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.skill-card .skill-category {
+    font-size: 0.7rem;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.skill-card .skill-status {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.skill-card .skill-status.online {
+    color: var(--green);
+}
+
+.skill-card .skill-status.offline {
+    color: #ff6464;
+}
+
+.skill-card .skill-description {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .skill-card-top {
@@ -481,29 +534,32 @@
     box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
 }
 
-/* === Card Scan Badge (mini security score circle on skill cards) === */
+/* === Card Scan Badge (security score circle — top-right corner) === */
 .card-scan-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 8px;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
     text-decoration: none;
     transition: all 0.2s;
     cursor: pointer;
-    opacity: 0.85;
+    opacity: 0.9;
 }
 
 .card-scan-badge:hover {
     opacity: 1;
-    transform: scale(1.1);
+    transform: scale(1.15);
 }
 
 .card-scan-ring {
-    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 .card-scan-slot {
     min-height: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 .card-scan-slot:empty {

@@ -271,6 +271,7 @@
     transition: all var(--transition-slow);
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .skill-card.hidden {
@@ -472,25 +473,25 @@
     box-shadow: 0 4px 20px rgba(0, 217, 255, 0.3);
 }
 
-/* === Card Scan Badge (mini security score circle on skill cards) === */
+/* === Card Scan Badge (security score circle — top-right corner) === */
 .card-scan-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 8px;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
     text-decoration: none;
     transition: all 0.2s;
     cursor: pointer;
-    opacity: 0.85;
+    opacity: 0.9;
 }
 
 .card-scan-badge:hover {
     opacity: 1;
-    transform: scale(1.1);
+    transform: scale(1.15);
 }
 
 .card-scan-ring {
-    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 .card-scan-slot {
