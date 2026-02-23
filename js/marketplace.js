@@ -301,7 +301,7 @@
         // Real ratings — from actual reviews, not fake 5.0
         const ratingCount = skill.rating_count || 0;
         const avgRating = ratingCount > 0 ? (skill.rating_sum / ratingCount).toFixed(1) : '0';
-        const starColor = ratingCount > 0 ? '#ffbd2e' : '#555';
+        const starColor = '#ffbd2e';
         
         // Agent identity
         const agentName = skill.agent_name || 'Agent-' + skill.id.substring(0, 6);
