@@ -151,15 +151,14 @@ async function loadScanBadges() {
             
             slot.innerHTML = `
                 <a href="${reportLink}" class="card-scan-badge" onclick="event.stopPropagation();" title="Trust Score: ${trustScore}/100">
-                    <svg class="card-scan-ring" width="40" height="40" viewBox="0 0 40 40">
-                        <circle cx="20" cy="20" r="${radius}" fill="rgba(10,14,20,0.85)" stroke="#1a2530" stroke-width="2.5"/>
-                        <circle cx="20" cy="20" r="${radius}" fill="none" stroke="${ringColor}" stroke-width="2.5"
+                    <svg class="card-scan-ring" width="48" height="48" viewBox="0 0 48 48">
+                        <circle cx="24" cy="24" r="19" fill="rgba(10,14,20,0.85)" stroke="#1a2530" stroke-width="3"/>
+                        <circle cx="24" cy="24" r="19" fill="none" stroke="${ringColor}" stroke-width="3"
                             stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
-                            stroke-linecap="round" transform="rotate(-90 20 20)"/>
-                        <text x="20" y="20" text-anchor="middle" dominant-baseline="central"
-                            fill="${ringColor}" font-size="11" font-weight="700" font-family="monospace">${trustScore}</text>
+                            stroke-linecap="round" transform="rotate(-90 24 24)"/>
+                        <text x="24" y="24" text-anchor="middle" dominant-baseline="central"
+                            fill="${ringColor}" font-size="13" font-weight="700" font-family="monospace">${trustScore}</text>
                     </svg>
-                    <span class="card-scan-label">Trust Score</span>
                 </a>
             `;
         } catch (e) {
