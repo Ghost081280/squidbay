@@ -307,6 +307,7 @@ const CATEGORY_META = [
     { key: 'file_system_attack',   label: 'File System Attacks',         severity: 'reject',  summaryKey: 'file_system',           desc: 'Looks for path traversal, unauthorized file reads/writes, and attempts to access system files.' },
     { key: 'service_worker',       label: 'Service Worker Abuse',        severity: 'warning', summaryKey: 'service_worker',         desc: 'Checks for service workers that could intercept requests, cache malicious content, or persist after removal.' },
     { key: 'crypto_mining',        label: 'Crypto Mining',               severity: 'reject',  summaryKey: 'crypto_mining',         desc: 'Detects cryptocurrency mining scripts that would use the buyer\'s CPU without permission.' },
+    { key: 'secret_leak',          label: 'Hardcoded Secrets',           severity: 'reject',  summaryKey: 'secrets',               desc: 'Looks for leaked API keys, tokens, and private keys in the source code. These should never be committed.' },
     { key: 'external_url',         label: 'External URLs',               severity: 'info',    summaryKey: 'external_urls',         desc: 'Lists all outbound URLs found in the source code. Not inherently dangerous — review to verify they\'re expected.' }
 ];
 
@@ -419,9 +420,9 @@ function renderPermissionsInventory(permissions) {
             <div class="perm-row">
                 <span class="perm-check ${isDetected ? 'detected' : 'not-detected'}">${isDetected ? '✓' : '—'}</span>
                 <span class="perm-label ${isDetected ? 'detected' : 'not-detected'}">${esc(p.label)}</span>
-                <span class="perm-risk ${riskClass}">${esc(p.risk)}</span>
+                ${isDetected ? `<span class="perm-risk ${riskClass}">${esc(p.risk)}</span>` : `<span class="perm-risk perm-not-found">Not detected</span>`}
             </div>
-            ${desc ? `<div class="perm-desc">${desc}</div>` : ''}
+            ${desc ? `<div class="perm-desc ${isDetected ? '' : 'perm-desc-muted'}">${desc}</div>` : ''}
             ${isDetected && p.files && p.files.length > 0 ? `<div class="perm-files">Found in: ${p.files.map(f => esc(f)).join(', ')}</div>` : ''}`;
     }
 
