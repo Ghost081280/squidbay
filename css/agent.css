@@ -197,6 +197,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 16px;
+    overflow: visible;
+    padding-top: 8px;
 }
 
 .skill-card {
@@ -209,6 +211,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow: visible;
 }
 
 .skill-card:hover {
@@ -537,13 +540,13 @@
 /* === Card Scan Badge (security score circle — top-right corner) === */
 .card-scan-badge {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: -6px;
+    right: -6px;
     z-index: 2;
     text-decoration: none;
     transition: all 0.2s;
     cursor: pointer;
-    opacity: 0.9;
+    opacity: 0.95;
 }
 
 .card-scan-badge:hover {
@@ -552,14 +555,15 @@
 }
 
 .card-scan-ring {
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
 }
 
 .card-scan-slot {
     min-height: 0;
     position: absolute;
-    top: 0;
-    right: 0;
+    top: -6px;
+    right: -6px;
+    z-index: 2;
 }
 
 .card-scan-slot:empty {
