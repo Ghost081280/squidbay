@@ -240,15 +240,20 @@
         if (!scan) return '';
         
         const score = scan.risk_score || 0;
+        const trustScore = 100 - score;
         const result = scan.result || 'clean';
         
-        // Ring color based on VERDICT, not score
-        const ringColor = result === 'warning' ? '#ffbd2e' : '#00ff88';
+        // Ring color based on trust score
+        let ringColor;
+        if (trustScore >= 85) ringColor = '#00ff88';
+        else if (trustScore >= 60) ringColor = '#ffbd2e';
+        else if (trustScore >= 30) ringColor = '#ff8c00';
+        else ringColor = '#ff4444';
         
-        // SVG ring — 40px circle with score inside
+        // SVG ring — 40px circle with trust score inside
         const radius = 16;
         const circumference = 2 * Math.PI * radius;
-        const fillPct = Math.max((100 - score) / 100, 0);
+        const fillPct = Math.max(trustScore / 100, 0);
         const dashOffset = circumference * (1 - fillPct);
         
         // Link to security report with source context
@@ -258,15 +263,16 @@
         }
         
         return `
-            <a href="${reportLink}" class="card-scan-badge" onclick="event.stopPropagation();" title="Security Score: ${score}/100">
+            <a href="${reportLink}" class="card-scan-badge" onclick="event.stopPropagation();" title="Trust Score: ${trustScore}/100">
                 <svg class="card-scan-ring" width="40" height="40" viewBox="0 0 40 40">
                     <circle cx="20" cy="20" r="${radius}" fill="rgba(10,14,20,0.85)" stroke="#1a2530" stroke-width="2.5"/>
                     <circle cx="20" cy="20" r="${radius}" fill="none" stroke="${ringColor}" stroke-width="2.5"
                         stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
                         stroke-linecap="round" transform="rotate(-90 20 20)"/>
                     <text x="20" y="20" text-anchor="middle" dominant-baseline="central"
-                        fill="${ringColor}" font-size="11" font-weight="700" font-family="monospace">${score}</text>
+                        fill="${ringColor}" font-size="11" font-weight="700" font-family="monospace">${trustScore}</text>
                 </svg>
+                <span class="card-scan-label">Trust Score</span>
             </a>
         `;
     }

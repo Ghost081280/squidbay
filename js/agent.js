@@ -132,30 +132,34 @@ async function loadScanBadges() {
             
             const scan = data.scan;
             const score = scan.risk_score || 0;
+            const trustScore = 100 - score;
             const result = scan.result || 'clean';
             
-            // Colors based on VERDICT, not score — rejected never visible on marketplace
+            // Ring color based on trust score
             let ringColor;
-            if (result === 'warning') { ringColor = '#ffbd2e'; }
-            else { ringColor = '#00ff88'; }
+            if (trustScore >= 85) ringColor = '#00ff88';
+            else if (trustScore >= 60) ringColor = '#ffbd2e';
+            else if (trustScore >= 30) ringColor = '#ff8c00';
+            else ringColor = '#ff4444';
             
             const radius = 16;
             const circumference = 2 * Math.PI * radius;
-            const fillPct = Math.max((100 - score) / 100, 0);
+            const fillPct = Math.max(trustScore / 100, 0);
             const dashOffset = circumference * (1 - fillPct);
             
             let reportLink = skillVanityUrl(skill) + '/security?from=agent&agent_name=' + encodeURIComponent(currentAgent.agent_name);
             
             slot.innerHTML = `
-                <a href="${reportLink}" class="card-scan-badge" onclick="event.stopPropagation();" title="Security Score: ${score}/100">
+                <a href="${reportLink}" class="card-scan-badge" onclick="event.stopPropagation();" title="Trust Score: ${trustScore}/100">
                     <svg class="card-scan-ring" width="40" height="40" viewBox="0 0 40 40">
                         <circle cx="20" cy="20" r="${radius}" fill="rgba(10,14,20,0.85)" stroke="#1a2530" stroke-width="2.5"/>
                         <circle cx="20" cy="20" r="${radius}" fill="none" stroke="${ringColor}" stroke-width="2.5"
                             stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
                             stroke-linecap="round" transform="rotate(-90 20 20)"/>
                         <text x="20" y="20" text-anchor="middle" dominant-baseline="central"
-                            fill="${ringColor}" font-size="11" font-weight="700" font-family="monospace">${score}</text>
+                            fill="${ringColor}" font-size="11" font-weight="700" font-family="monospace">${trustScore}</text>
                     </svg>
+                    <span class="card-scan-label">Trust Score</span>
                 </a>
             `;
         } catch (e) {
@@ -269,13 +273,13 @@ function renderSkillCard(skill) {
     const statusText = isOnline ? 'Online' : 'Offline';
     
     let tierButtons = '<div class="tier-buttons">';
-    if (hasExec) tierButtons += `<span class="tier-btn-mini tier-exec" title="${(skill.price_execution || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Execution</span>`;
-    if (hasFile) tierButtons += `<span class="tier-btn-mini tier-file" title="${(skill.price_skill_file || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> Skill File</span>`;
-    if (hasPkg) tierButtons += `<span class="tier-btn-mini tier-pkg" title="${(skill.price_full_package || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg> Full Package</span>`;
+    if (hasExec) tierButtons += `<a href="${link}" class="tier-btn-mini tier-exec" title="${(skill.price_execution || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Execution</a>`;
+    if (hasFile) tierButtons += `<a href="${link}" class="tier-btn-mini tier-file" title="${(skill.price_skill_file || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> Skill File</a>`;
+    if (hasPkg) tierButtons += `<a href="${link}" class="tier-btn-mini tier-pkg" title="${(skill.price_full_package || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg> Full Package</a>`;
     tierButtons += '</div>';
     
     return `
-        <a href="${link}" class="skill-card">
+        <div class="skill-card">
             <div class="skill-card-header">
                 <div class="skill-icon">
                     <span style="font-size: 24px;">${icon}</span>
@@ -286,7 +290,7 @@ function renderSkillCard(skill) {
                 </div>
                 <div class="card-scan-slot" data-skill-id="${skill.id}"></div>
             </div>
-            <h3 class="skill-name">${esc(skill.name)}</h3>
+            <h3 class="skill-name"><a href="${link}">${esc(skill.name)}</a></h3>
             <p class="skill-description">${esc(skill.description || '')}</p>
             ${tierButtons}
             <div class="skill-summary-stats">
@@ -294,8 +298,8 @@ function renderSkillCard(skill) {
                 <div class="summary-stat"><span class="summary-label">Jobs</span><span class="summary-value">${totalJobs}</span></div>
                 <div class="summary-stat"><span class="summary-label">Success</span><span class="summary-value success">${successRate !== null ? successRate + '%' : '—'}</span></div>
             </div>
-            <div class="view-skill-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> View Skill</div>
-        </a>
+            <a href="${link}" class="view-skill-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> View Skill</a>
+        </div>
     `;
 }
 

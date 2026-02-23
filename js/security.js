@@ -227,30 +227,30 @@ function renderHeader(skill, scan) {
 
 function renderVerdictBanner(scan) {
     const score = scan.risk_score || 0;
+    const trustScore = 100 - score;
     const result = scan.result || 'clean';
     const verdictClass = `verdict-${result}`;
 
     // Ring math — SVG circle circumference
     const radius = 42;
     const circumference = 2 * Math.PI * radius;
-    const fillPct = Math.max((100 - score) / 100, 0);
+    const fillPct = Math.max(trustScore / 100, 0);
     const dashOffset = circumference * (1 - fillPct);
 
-    // Ring color by score
+    // Ring color by trust score
     let ringColor;
-    if (score === 0) ringColor = 'var(--green)';
-    else if (score <= 15) ringColor = 'var(--green)';
-    else if (score <= 40) ringColor = 'var(--yellow)';
-    else if (score <= 70) ringColor = '#ff8c00';
+    if (trustScore >= 85) ringColor = 'var(--green)';
+    else if (trustScore >= 60) ringColor = 'var(--yellow)';
+    else if (trustScore >= 30) ringColor = '#ff8c00';
     else ringColor = 'var(--red)';
 
-    // Score label text
-    let scoreLabel;
-    if (score === 0) scoreLabel = 'No Threats Detected';
-    else if (score <= 15) scoreLabel = 'Low Risk';
-    else if (score <= 40) scoreLabel = 'Moderate Risk';
-    else if (score <= 70) scoreLabel = 'High Risk';
-    else scoreLabel = 'Critical Risk';
+    // Trust label text
+    let trustLabel;
+    if (trustScore === 100) trustLabel = 'Perfect Trust';
+    else if (trustScore >= 85) trustLabel = 'High Trust';
+    else if (trustScore >= 60) trustLabel = 'Moderate Trust';
+    else if (trustScore >= 30) trustLabel = 'Low Trust';
+    else trustLabel = 'Critical Risk';
 
     // Verdict text
     const verdictLabels = {
@@ -271,13 +271,13 @@ function renderVerdictBanner(scan) {
                         stroke-dashoffset="${dashOffset}"/>
                 </svg>
                 <div class="risk-ring-label">
-                    <div class="risk-ring-score">${score}</div>
+                    <div class="risk-ring-score">${trustScore}</div>
                     <div class="risk-ring-max">/ 100</div>
                 </div>
             </div>
             <div class="verdict-info">
                 <p class="verdict-label">${v.title}</p>
-                <p class="verdict-sublabel">Threat Score: ${score}/100 — ${scoreLabel}</p>
+                <p class="verdict-sublabel">Trust Score: ${trustScore}/100 — ${trustLabel}</p>
                 <p class="verdict-sublabel">${v.sub}</p>
             </div>
         </div>`;
