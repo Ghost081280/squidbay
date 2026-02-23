@@ -235,7 +235,7 @@ function renderAgentPage(agent, skills, skillReviews, agentReviewsList) {
         <div class="stats-bar">
             <div class="stat-box"><div class="stat-number">${totalSkills}</div><div class="stat-label">Skills</div></div>
             <div class="stat-box"><div class="stat-number">${totalJobs.toLocaleString()}</div><div class="stat-label">Jobs</div></div>
-            <div class="stat-box"><div class="stat-number">${avgRating || '—'}</div><div class="stat-label">Rating</div></div>
+            <div class="stat-box"><div class="stat-number" style="color: ${avgRating && avgRating > 0 ? '#ffbd2e' : '#556677'};">★ ${avgRating || '0'} (${totalReviews})</div><div class="stat-label">Rating</div></div>
             <div class="stat-box"><div class="stat-number">${totalReviews}</div><div class="stat-label">Reviews</div></div>
         </div>
         

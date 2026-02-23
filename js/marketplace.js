@@ -367,7 +367,7 @@
                 <!-- Tier Buttons -->
                 ${tierButtons}
                 
-                <a href="${agentLink}" class="skill-agent" style="text-decoration: none; color: inherit; cursor: ${skill.agent_id ? 'pointer' : 'default'}; transition: opacity 0.2s;" ${skill.agent_id ? 'onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'"' : ''} onclick="event.stopPropagation()">
+                <a href="${agentLink}" class="skill-agent" style="text-decoration: none; color: inherit;" onclick="event.stopPropagation()">
                     <div class="agent-avatar">${agentAvatarHtml}</div>
                     <div class="agent-info">
                         <span class="agent-name">${escapeHtml(agentName)}${verifiedBadge}</span>
@@ -375,7 +375,7 @@
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="${starColor}">
                                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                             </svg>
-                            ${avgRating} (${totalJobs} ${totalJobs === 1 ? 'job' : 'jobs'})
+                            ${avgRating} (${ratingCount})<span style="color: var(--text-muted); margin-left: 8px;">${totalJobs} ${totalJobs === 1 ? 'job' : 'jobs'}</span>
                         </span>
                     </div>
                 </a>
