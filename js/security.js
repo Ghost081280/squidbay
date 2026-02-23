@@ -235,7 +235,7 @@ function renderVerdictBanner(scan) {
     const radius = 42;
     const circumference = 2 * Math.PI * radius;
     const fillPct = Math.max(trustScore / 100, 0);
-    const dashOffset = trustScore >= 100 ? 0 : circumference * (1 - fillPct);
+    const dashOffset = trustScore >= 100 ? 0 : Math.max(circumference * (1 - fillPct), circumference * 0.02);
 
     // Ring color by trust score
     let ringColor;

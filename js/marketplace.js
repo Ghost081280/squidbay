@@ -253,7 +253,7 @@
         const radius = 19;
         const circumference = 2 * Math.PI * radius;
         const fillPct = Math.max(trustScore / 100, 0);
-        const dashOffset = trustScore >= 100 ? 0 : circumference * (1 - fillPct);
+        const dashOffset = trustScore >= 100 ? 0 : Math.max(circumference * (1 - fillPct), circumference * 0.02);
         
         let reportLink = '#';
         if (skill.slug && skill.agent_name) {
