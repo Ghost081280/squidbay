@@ -472,6 +472,50 @@
     box-shadow: 0 4px 20px rgba(0, 217, 255, 0.3);
 }
 
+/* === Card Scan Badge (mini security ring on skill cards) === */
+.card-scan-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    margin-top: 8px;
+    border-radius: 6px;
+    background: rgba(0, 255, 136, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.card-scan-badge:hover {
+    background: rgba(0, 255, 136, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.card-scan-ring {
+    flex-shrink: 0;
+}
+
+.card-scan-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    flex: 1;
+}
+
+.card-scan-shield {
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+.card-scan-slot {
+    min-height: 0;
+}
+
+.card-scan-slot:empty {
+    display: none;
+}
+
 /* --------------------------------------------------------------------------
    Skill Card Footer with Tiers
    -------------------------------------------------------------------------- */
