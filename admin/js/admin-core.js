@@ -326,9 +326,7 @@ const AdminCore = (() => {
         script.src = src;
         script.onload = () => {
             loadedModules.add(tab);
-            // Microtask delay: script.onload fires after download but IIFE
-            // may not have registered on window yet in some browsers
-            requestAnimationFrame(() => triggerTabLoad(tab));
+            triggerTabLoad(tab);
         };
         script.onerror = () => {
             const body = document.getElementById(`${tab}Body`);
@@ -358,9 +356,26 @@ const AdminCore = (() => {
 
     function triggerTabLoad(tab) {
         const moduleName = getModuleMap()[tab];
-        if (moduleName && window[moduleName] && typeof window[moduleName].load === 'function') {
+        if (!moduleName) return;
+
+        // If module is ready, call it immediately
+        if (window[moduleName] && typeof window[moduleName].load === 'function') {
             window[moduleName].load();
+            return;
         }
+
+        // Module not on window yet — poll with backoff (handles script eval race)
+        let attempts = 0;
+        const maxAttempts = 10;
+        const poll = () => {
+            attempts++;
+            if (window[moduleName] && typeof window[moduleName].load === 'function') {
+                window[moduleName].load();
+            } else if (attempts < maxAttempts) {
+                setTimeout(poll, attempts * 50);
+            }
+        };
+        setTimeout(poll, 10);
     }
 
     // ==================== API HELPERS ====================
