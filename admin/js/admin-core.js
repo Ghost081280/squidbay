@@ -66,6 +66,7 @@ const AdminCore = (() => {
             }
             document.getElementById('adminKeyInput').value = '';
             document.getElementById('adminKeyInput').focus();
+            throw e; // Re-throw so callers (auto-login) can catch
         }
     }
 
@@ -312,6 +313,15 @@ const AdminCore = (() => {
             return;
         }
 
+        // Check if module global already exists (script loaded but not tracked)
+        const moduleMap = getModuleMap();
+        const moduleName = moduleMap[tab];
+        if (moduleName && window[moduleName] && typeof window[moduleName].load === 'function') {
+            loadedModules.add(tab);
+            triggerTabLoad(tab);
+            return;
+        }
+
         const script = document.createElement('script');
         script.src = src;
         script.onload = () => {
@@ -325,9 +335,8 @@ const AdminCore = (() => {
         document.body.appendChild(script);
     }
 
-    function triggerTabLoad(tab) {
-        // Convention: each module exposes Admin{PascalCase}.load()
-        const moduleMap = {
+    function getModuleMap() {
+        return {
             dashboard: 'AdminDashboard',
             analytics: 'AdminAnalytics',
             skills: 'AdminSkills',
@@ -343,8 +352,10 @@ const AdminCore = (() => {
             reports: 'AdminReports',
             settings: 'AdminSettings'
         };
+    }
 
-        const moduleName = moduleMap[tab];
+    function triggerTabLoad(tab) {
+        const moduleName = getModuleMap()[tab];
         if (moduleName && window[moduleName] && typeof window[moduleName].load === 'function') {
             window[moduleName].load();
         }
@@ -460,8 +471,15 @@ const AdminCore = (() => {
     (function init() {
         const saved = sessionStorage.getItem('squidbay_ops_key');
         if (saved) {
+            // Hide login immediately to prevent flash on refresh
+            document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('adminKeyInput').value = saved;
-            authenticate();
+            authenticate().catch(() => {
+                // If re-auth fails, show login again
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('adminKeyInput').value = '';
+                document.getElementById('adminKeyInput').focus();
+            });
         }
 
         // Enter key on login
