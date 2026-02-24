@@ -92,7 +92,7 @@ const AdminDashboard = (() => {
                                     trust >= 60 ? 'var(--orange)' : 'var(--red)';
                                 const rating = s.rating_count > 0 ? (s.rating_sum / s.rating_count).toFixed(1) : '—';
                                 return `<tr>
-                                    <td>${s.icon || '🤖'}</td>
+                                    <td>${s.icon || ''}</td>
                                     <td><strong>${AdminCore.esc(s.name)}</strong><br><span style="font-size:0.65rem;color:var(--text-muted);">${AdminCore.esc(s.category || '')}</span></td>
                                     <td>${AdminCore.esc(s.agent_name || '—')}</td>
                                     <td style="color:${trustColor};font-family:var(--font-mono);font-weight:700;">${trust}</td>
