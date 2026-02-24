@@ -1,11 +1,12 @@
 // ==================== ADMIN CORE ====================
 // Auth, 2FA, navigation, session management, API helpers
+// All modules loaded via static <script defer> tags in index.html
 
 const AdminCore = (() => {
+
     // ==================== CONFIG ====================
-    const API = window.location.origin.includes('railway.app')
-        ? window.location.origin
-        : 'https://squidbay-api-production.up.railway.app';
+
+    const API = 'https://squidbay-api-production.up.railway.app';
 
     let adminKey = '';
     let sessionStart = null;
@@ -14,15 +15,31 @@ const AdminCore = (() => {
     let failedAttempts = 0;
     let lockoutUntil = 0;
     const MAX_ATTEMPTS = 5;
-    const LOCKOUT_SECONDS = 900; // 15 minutes
-    const SESSION_TIMEOUT = 4 * 60 * 60 * 1000; // 4 hours
-    const IDLE_TIMEOUT = 30 * 60 * 1000; // 30 min idle
-    const loadedModules = new Set();
+    const LOCKOUT_SECONDS = 900;
+    const SESSION_TIMEOUT = 4 * 60 * 60 * 1000;
+    const IDLE_TIMEOUT = 30 * 60 * 1000;
+
+    // Tab → module global name mapping
+    const MODULES = {
+        dashboard: 'AdminDashboard',
+        analytics: 'AdminAnalytics',
+        skills: 'AdminSkills',
+        agents: 'AdminAgents',
+        reviews: 'AdminReviews',
+        transactions: 'AdminTransactions',
+        security: 'AdminSecurity',
+        squidbot: 'AdminSquidBot',
+        chat: 'AdminChat',
+        github: 'AdminGitHub',
+        keys: 'AdminKeys',
+        infra: 'AdminInfra',
+        reports: 'AdminReports',
+        settings: 'AdminSettings'
+    };
 
     // ==================== AUTH ====================
 
     async function authenticate() {
-        // Check lockout
         if (Date.now() < lockoutUntil) {
             showLockout();
             return;
@@ -39,19 +56,14 @@ const AdminCore = (() => {
             if (!res.ok) throw new Error('bad key');
 
             const data = await res.json();
-
-            // Key verified — store temporarily
             adminKey = key;
 
-            // Check if 2FA is enabled
             if (data.totp_enabled) {
-                // Show 2FA step
                 document.getElementById('loginStep1').style.display = 'none';
                 document.getElementById('loginStep2').style.display = 'block';
                 document.getElementById('totpInput').focus();
                 hideError();
             } else {
-                // No 2FA — go straight in (will prompt to set up in settings)
                 completeLogin();
             }
 
@@ -66,7 +78,7 @@ const AdminCore = (() => {
             }
             document.getElementById('adminKeyInput').value = '';
             document.getElementById('adminKeyInput').focus();
-            throw e; // Re-throw so callers (auto-login) can catch
+            throw e;
         }
     }
 
@@ -85,7 +97,6 @@ const AdminCore = (() => {
             });
 
             if (!res.ok) throw new Error('invalid code');
-
             completeLogin();
         } catch (e) {
             failedAttempts++;
@@ -115,7 +126,6 @@ const AdminCore = (() => {
             });
 
             if (!res.ok) throw new Error('invalid backup code');
-
             completeLogin();
         } catch (e) {
             showError('Invalid backup code');
@@ -124,27 +134,20 @@ const AdminCore = (() => {
     }
 
     function completeLogin() {
-        // Store session
         sessionStorage.setItem('squidbay_ops_key', adminKey);
         sessionStart = Date.now();
 
-        // Show app
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('app').classList.add('active');
 
-        // Start timers
         startSessionTimer();
         resetIdleTimer();
 
-        // Listen for activity
         document.addEventListener('mousemove', resetIdleTimer);
         document.addEventListener('keypress', resetIdleTimer);
         document.addEventListener('click', resetIdleTimer);
 
-        // Load dashboard
         switchTab('dashboard');
-
-        // Log audit event
         logAudit('login', 'Admin logged in');
     }
 
@@ -155,16 +158,13 @@ const AdminCore = (() => {
         sessionStart = null;
         sessionStorage.removeItem('squidbay_ops_key');
 
-        // Clear timers
         if (sessionTimer) clearInterval(sessionTimer);
         if (idleTimer) clearTimeout(idleTimer);
 
-        // Remove listeners
         document.removeEventListener('mousemove', resetIdleTimer);
         document.removeEventListener('keypress', resetIdleTimer);
         document.removeEventListener('click', resetIdleTimer);
 
-        // Reset UI
         document.getElementById('app').classList.remove('active');
         document.getElementById('loginScreen').style.display = 'flex';
         document.getElementById('loginStep1').style.display = 'block';
@@ -194,11 +194,10 @@ const AdminCore = (() => {
             const mins = Math.floor((remaining % 3600000) / 60000);
             timerEl.textContent = `Session: ${hours}h ${mins}m`;
 
-            // Warn at 15 min
             if (remaining < 900000) {
                 timerEl.style.color = 'var(--orange)';
             }
-        }, 30000); // Update every 30s
+        }, 30000);
     }
 
     function resetIdleTimer() {
@@ -243,8 +242,8 @@ const AdminCore = (() => {
     }
 
     function showTOTPInput() {
-        document.getElementById('loginStepBackup').style.display = 'none';
         document.getElementById('loginStep2').style.display = 'block';
+        document.getElementById('loginStepBackup').style.display = 'none';
         document.getElementById('totpInput').focus();
     }
 
@@ -257,125 +256,31 @@ const AdminCore = (() => {
     // ==================== NAVIGATION ====================
 
     function switchTab(tab) {
-        // Update nav
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         const navItem = document.querySelector(`[data-tab="${tab}"]`);
         if (navItem) navItem.classList.add('active');
 
-        // Update panels
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         const panel = document.getElementById(`panel-${tab}`);
         if (panel) panel.classList.add('active');
 
-        // Close mobile sidebar
         closeSidebar();
 
-        // Load module if not yet loaded
-        loadModule(tab);
+        // Call module load directly — all scripts loaded via static defer tags
+        const moduleName = MODULES[tab];
+        if (moduleName && window[moduleName] && typeof window[moduleName].load === 'function') {
+            window[moduleName].load();
+        }
     }
 
     function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('visible');
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebarOverlay').classList.toggle('visible');
     }
 
     function closeSidebar() {
         document.getElementById('sidebar').classList.remove('open');
         document.getElementById('sidebarOverlay').classList.remove('visible');
-    }
-
-    // ==================== MODULE LOADER ====================
-
-    const TAB_MODULES = {
-        dashboard: 'js/admin-dashboard.js',
-        analytics: 'js/admin-analytics.js',
-        skills: 'js/admin-skills.js',
-        agents: 'js/admin-agents.js',
-        reviews: 'js/admin-reviews.js',
-        transactions: 'js/admin-transactions.js',
-        security: 'js/admin-security.js',
-        squidbot: 'js/admin-squidbot.js',
-        chat: 'js/admin-chat.js',
-        github: 'js/admin-github.js',
-        keys: 'js/admin-keys.js',
-        infra: 'js/admin-infra.js',
-        reports: 'js/admin-reports.js',
-        settings: 'js/admin-settings.js'
-    };
-
-    function loadModule(tab) {
-        const src = TAB_MODULES[tab];
-        if (!src || loadedModules.has(tab)) {
-            // Module already loaded — just call its load function
-            triggerTabLoad(tab);
-            return;
-        }
-
-        // Check if module global already exists (script loaded but not tracked)
-        const moduleMap = getModuleMap();
-        const moduleName = moduleMap[tab];
-        if (moduleName && window[moduleName] && typeof window[moduleName].load === 'function') {
-            loadedModules.add(tab);
-            triggerTabLoad(tab);
-            return;
-        }
-
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = () => {
-            loadedModules.add(tab);
-            triggerTabLoad(tab);
-        };
-        script.onerror = () => {
-            const body = document.getElementById(`${tab}Body`);
-            if (body) body.innerHTML = `<p class="loading-msg" style="color:var(--orange)">Module not yet implemented: ${tab}</p>`;
-        };
-        document.body.appendChild(script);
-    }
-
-    function getModuleMap() {
-        return {
-            dashboard: 'AdminDashboard',
-            analytics: 'AdminAnalytics',
-            skills: 'AdminSkills',
-            agents: 'AdminAgents',
-            reviews: 'AdminReviews',
-            transactions: 'AdminTransactions',
-            security: 'AdminSecurity',
-            squidbot: 'AdminSquidBot',
-            chat: 'AdminChat',
-            github: 'AdminGitHub',
-            keys: 'AdminKeys',
-            infra: 'AdminInfra',
-            reports: 'AdminReports',
-            settings: 'AdminSettings'
-        };
-    }
-
-    function triggerTabLoad(tab) {
-        const moduleName = getModuleMap()[tab];
-        if (!moduleName) return;
-
-        // If module is ready, call it immediately
-        if (window[moduleName] && typeof window[moduleName].load === 'function') {
-            window[moduleName].load();
-            return;
-        }
-
-        // Module not on window yet — poll with backoff (handles script eval race)
-        let attempts = 0;
-        const maxAttempts = 10;
-        const poll = () => {
-            attempts++;
-            if (window[moduleName] && typeof window[moduleName].load === 'function') {
-                window[moduleName].load();
-            } else if (attempts < maxAttempts) {
-                setTimeout(poll, attempts * 50);
-            }
-        };
-        setTimeout(poll, 10);
     }
 
     // ==================== API HELPERS ====================
@@ -424,7 +329,6 @@ const AdminCore = (() => {
         return res.json();
     }
 
-    // Public API endpoint (no auth needed)
     function publicGet(path) {
         return fetch(`${API}${path}`).then(r => r.json());
     }
@@ -458,48 +362,37 @@ const AdminCore = (() => {
     }
 
     function logAudit(action, detail) {
-        // Fire and forget — best effort audit logging
         try {
             apiPost('/admin/audit-log', { action, detail }).catch(() => {});
-        } catch (e) { /* ignore */ }
+        } catch (e) {}
     }
 
     // ==================== KEYBOARD SHORTCUTS ====================
 
     document.addEventListener('keydown', (e) => {
-        if (!adminKey) return; // Not logged in
+        if (!adminKey) return;
 
-        // Escape — close modals
         if (e.key === 'Escape') {
             const modal = document.querySelector('.modal-overlay');
             if (modal) modal.remove();
             closeSidebar();
         }
-
-        // Cmd/Ctrl + K — focus search (future)
-        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-            e.preventDefault();
-            // TODO: global search
-        }
     });
 
-    // ==================== AUTO-LOGIN ====================
+    // ==================== INIT ====================
 
     (function init() {
         const saved = sessionStorage.getItem('squidbay_ops_key');
         if (saved) {
-            // Hide login immediately to prevent flash on refresh
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('adminKeyInput').value = saved;
             authenticate().catch(() => {
-                // If re-auth fails, show login again
                 document.getElementById('loginScreen').style.display = 'flex';
                 document.getElementById('adminKeyInput').value = '';
                 document.getElementById('adminKeyInput').focus();
             });
         }
 
-        // Enter key on login
         document.getElementById('adminKeyInput').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') authenticate();
         });
@@ -514,6 +407,7 @@ const AdminCore = (() => {
     })();
 
     // ==================== PUBLIC API ====================
+
     return {
         API,
         authenticate,
