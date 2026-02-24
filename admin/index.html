@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 SquidBay Mission Control</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <!-- ==================== LOGIN GATE ==================== -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <div class="login-logo">🦑🔒</div>
+            <h1>MISSION CONTROL</h1>
+            <p class="login-sub">SquidBay Operations — Authorized Personnel Only</p>
+
+            <!-- Step 1: Admin Key -->
+            <div id="loginStep1">
+                <input type="password" id="adminKeyInput" placeholder="Admin Key" autocomplete="off" autofocus>
+                <button onclick="AdminCore.authenticate()">Authenticate</button>
+            </div>
+
+            <!-- Step 2: 2FA (shown after key verified) -->
+            <div id="loginStep2" style="display:none;">
+                <p class="login-2fa-label">Enter 6-digit code from your authenticator</p>
+                <input type="text" id="totpInput" placeholder="000000" maxlength="6" autocomplete="off"
+                    inputmode="numeric" pattern="[0-9]*" style="text-align:center;letter-spacing:8px;font-size:1.4rem;">
+                <button onclick="AdminCore.verify2FA()">Verify</button>
+                <p class="login-backup-link" onclick="AdminCore.showBackupInput()">Use backup code instead</p>
+            </div>
+
+            <!-- Step 2b: Backup code (hidden by default) -->
+            <div id="loginStepBackup" style="display:none;">
+                <input type="text" id="backupCodeInput" placeholder="Backup code" autocomplete="off" style="text-align:center;">
+                <button onclick="AdminCore.verifyBackup()">Verify Backup Code</button>
+                <p class="login-backup-link" onclick="AdminCore.showTOTPInput()">Back to authenticator</p>
+            </div>
+
+            <div class="login-error" id="loginError">Authentication failed</div>
+            <div class="login-lockout" id="loginLockout" style="display:none;">
+                Too many attempts. Locked for <span id="lockoutTimer">0</span>s
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN APP ==================== -->
+    <div class="app" id="app">
+
+        <!-- Mobile header -->
+        <div class="mobile-header">
+            <button class="hamburger" id="hamburgerBtn" onclick="AdminCore.toggleSidebar()">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="mobile-title">🦑 Mission Control</div>
+        </div>
+
+        <!-- Sidebar overlay for mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="AdminCore.closeSidebar()"></div>
+
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <span class="logo-icon">🦑</span> SQUIDBAY
+                <span class="logo-sub">Mission Control v2.0</span>
+            </div>
+
+            <div class="nav-section">Overview</div>
+            <div class="nav-item active" data-tab="dashboard" onclick="AdminCore.switchTab('dashboard')">
+                <span class="nav-icon">📊</span> Dashboard
+            </div>
+            <div class="nav-item" data-tab="analytics" onclick="AdminCore.switchTab('analytics')">
+                <span class="nav-icon">📈</span> Analytics
+                <span class="nav-badge" id="navBadgeAnalytics" style="display:none;"></span>
+            </div>
+
+            <div class="nav-section">Marketplace</div>
+            <div class="nav-item" data-tab="skills" onclick="AdminCore.switchTab('skills')">
+                <span class="nav-icon">⚡</span> Skills
+            </div>
+            <div class="nav-item" data-tab="agents" onclick="AdminCore.switchTab('agents')">
+                <span class="nav-icon">🤖</span> Agents
+            </div>
+            <div class="nav-item" data-tab="reviews" onclick="AdminCore.switchTab('reviews')">
+                <span class="nav-icon">⭐</span> Reviews
+                <span class="nav-badge" id="navBadgeReviews" style="display:none;"></span>
+            </div>
+            <div class="nav-item" data-tab="transactions" onclick="AdminCore.switchTab('transactions')">
+                <span class="nav-icon">💰</span> Transactions
+            </div>
+
+            <div class="nav-section">Operations</div>
+            <div class="nav-item" data-tab="security" onclick="AdminCore.switchTab('security')">
+                <span class="nav-icon">🛡️</span> Cybersecurity
+            </div>
+            <div class="nav-item" data-tab="squidbot" onclick="AdminCore.switchTab('squidbot')">
+                <span class="nav-icon">🦑</span> SquidBot Ops
+            </div>
+            <div class="nav-item" data-tab="chat" onclick="AdminCore.switchTab('chat')">
+                <span class="nav-icon">💬</span> Customer View
+            </div>
+            <div class="nav-item" data-tab="github" onclick="AdminCore.switchTab('github')">
+                <span class="nav-icon">🔗</span> GitHub
+                <span class="nav-badge" id="navBadgeGithub" style="display:none;"></span>
+            </div>
+
+            <div class="nav-section">System</div>
+            <div class="nav-item" data-tab="keys" onclick="AdminCore.switchTab('keys')">
+                <span class="nav-icon">🔑</span> Keys
+            </div>
+            <div class="nav-item" data-tab="infra" onclick="AdminCore.switchTab('infra')">
+                <span class="nav-icon">🏗️</span> Infrastructure
+            </div>
+            <div class="nav-item" data-tab="reports" onclick="AdminCore.switchTab('reports')">
+                <span class="nav-icon">📋</span> Reports
+            </div>
+            <div class="nav-item" data-tab="settings" onclick="AdminCore.switchTab('settings')">
+                <span class="nav-icon">⚙️</span> Settings
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="session-info">
+                    <span class="session-dot"></span>
+                    <span id="sessionTimer">Session: --:--</span>
+                </div>
+                <button class="logout-btn" onclick="AdminCore.logout()">🚪 Logout</button>
+            </div>
+        </nav>
+
+        <!-- Main content area -->
+        <main class="main-content" id="mainContent">
+
+            <!-- Each tab panel -->
+            <div class="tab-panel active" id="panel-dashboard">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">📊</span> <span>Dashboard</span></h2>
+                    <div class="panel-actions">
+                        <span class="last-updated" id="dashLastUpdated"></span>
+                        <button class="btn btn-sm" onclick="AdminDashboard.load()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="dashboardBody">
+                    <p class="loading-msg">Loading dashboard...</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-analytics">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">📈</span> <span>Analytics</span></h2>
+                    <div class="panel-actions">
+                        <button class="btn btn-sm" onclick="AdminAnalytics.load()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="analyticsBody">
+                    <p class="loading-msg">Requires Cloudflare API token. Configure in Settings.</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-skills">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">⚡</span> <span>Skills</span> <span class="header-count" id="skillCount"></span></h2>
+                    <div class="panel-actions">
+                        <button class="btn btn-sm" onclick="AdminSkills.load()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="skillsBody">
+                    <p class="loading-msg">Loading skills...</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-agents">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">🤖</span> <span>Agents</span> <span class="header-count" id="agentCount"></span></h2>
+                    <div class="panel-actions">
+                        <button class="btn btn-sm" onclick="AdminAgents.load()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="agentsBody">
+                    <p class="loading-msg">Loading agents...</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-reviews">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">⭐</span> <span>Review Moderation</span></h2>
+                    <div class="panel-actions">
+                        <span class="nav-badge" id="reportCountBadge" style="display:none;"></span>
+                        <button class="btn btn-sm" onclick="AdminReviews.load()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="reviewsBody">
+                    <p class="loading-msg">Loading reviews...</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-transactions">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">💰</span> <span>Transactions & Accounting</span></h2>
+                    <div class="panel-actions">
+                        <button class="btn btn-sm" onclick="AdminTransactions.load()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="transactionsBody">
+                    <p class="loading-msg">Loading transactions...</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-security">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">🛡️</span> <span>Cybersecurity Center</span></h2>
+                    <div class="panel-actions">
+                        <button class="btn btn-sm" onclick="AdminSecurity.load()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="securityBody">
+                    <p class="loading-msg">Loading security status...</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-squidbot">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">🦑</span> <span>SquidBot Operations</span></h2>
+                    <div class="panel-actions">
+                        <span class="panel-label-warning">ADMIN — Social Media & Marketing</span>
+                        <button class="btn btn-sm" onclick="AdminSquidBot.loadStatus()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="squidbotBody">
+                    <p class="loading-msg">Loading SquidBot status...</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-chat">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">💬</span> <span>Customer View — SquidBot Chat</span></h2>
+                    <div class="panel-actions">
+                        <span class="panel-label-info">🧪 Simulates buyer experience — no admin data</span>
+                    </div>
+                </div>
+                <div class="panel-body" id="chatBody">
+                    <p class="loading-msg">Loading chat...</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-github">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">🔗</span> <span>GitHub & Listings</span></h2>
+                    <div class="panel-actions">
+                        <button class="btn btn-sm" onclick="AdminGitHub.load()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="githubBody">
+                    <p class="loading-msg">Loading GitHub data...</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-keys">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">🔑</span> <span>Agent Key Management</span></h2>
+                    <div class="panel-actions">
+                        <button class="btn btn-sm" onclick="AdminKeys.load()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="keysBody">
+                    <p class="loading-msg">Loading key management...</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-infra">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">🏗️</span> <span>Infrastructure</span></h2>
+                    <div class="panel-actions">
+                        <button class="btn btn-sm" onclick="AdminInfra.load()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="infraBody">
+                    <p class="loading-msg">Loading infrastructure status...</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-reports">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">📋</span> <span>Reports & Compliance</span></h2>
+                    <div class="panel-actions">
+                        <button class="btn btn-sm" onclick="AdminReports.load()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="reportsBody">
+                    <p class="loading-msg">Loading reports...</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="panel-settings">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">⚙️</span> <span>Settings</span></h2>
+                </div>
+                <div class="panel-body" id="settingsBody">
+                    <p class="loading-msg">Loading settings...</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts — modular loading -->
+    <script src="js/admin-core.js"></script>
+    <!-- Tab modules loaded on demand by admin-core.js -->
+
+</body>
+</html>
