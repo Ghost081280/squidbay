@@ -326,7 +326,9 @@ const AdminCore = (() => {
         script.src = src;
         script.onload = () => {
             loadedModules.add(tab);
-            triggerTabLoad(tab);
+            // Microtask delay: script.onload fires after download but IIFE
+            // may not have registered on window yet in some browsers
+            requestAnimationFrame(() => triggerTabLoad(tab));
         };
         script.onerror = () => {
             const body = document.getElementById(`${tab}Body`);
