@@ -307,9 +307,22 @@
         </main>
     </div>
 
-    <!-- Scripts — modular loading -->
+    <!-- Core must load first, modules use defer to load in parallel and execute in order -->
     <script src="js/admin-core.js"></script>
-    <!-- Tab modules loaded on demand by admin-core.js -->
+    <script src="js/admin-dashboard.js" defer></script>
+    <script src="js/admin-analytics.js" defer></script>
+    <script src="js/admin-skills.js" defer></script>
+    <script src="js/admin-agents.js" defer></script>
+    <script src="js/admin-reviews.js" defer></script>
+    <script src="js/admin-transactions.js" defer></script>
+    <script src="js/admin-security.js" defer></script>
+    <script src="js/admin-squidbot.js" defer></script>
+    <script src="js/admin-chat.js" defer></script>
+    <script src="js/admin-github.js" defer></script>
+    <script src="js/admin-keys.js" defer></script>
+    <script src="js/admin-infra.js" defer></script>
+    <script src="js/admin-reports.js" defer></script>
+    <script src="js/admin-settings.js" defer></script>
 
 </body>
 </html>
