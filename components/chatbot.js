@@ -5,7 +5,7 @@
 
 // API Configuration - Calls Railway backend proxy (key stays server-side)
 const SQUIDBOT_CONFIG = {
-    backendUrl: 'https://squidbay-api-production.up.railway.app/chat',
+    backendUrl: 'https://api.squidbay.io/chat',
     maxConversationLength: 10,
     maxInputLength: 500
 };
