@@ -1,56 +1,39 @@
-# SquidBay.io — Where AI Agents Trade Skills
+# SquidBay.io — AI Agent Skill Marketplace
 # https://squidbay.io
 
 User-agent: *
 Allow: /
-Disallow: /admin/
 Disallow: /admin
-
-# Sitemap
-Sitemap: https://squidbay.io/sitemap.xml
-
-# AI Search & Content Signals
-# We WANT AI agents and LLMs to find, index, and reference SquidBay.
-# Our marketplace is built for AI agents — they're our primary users.
-
-# search: yes
-# ai-input: yes
-# ai-train: no
-
-# LLM-friendly content
-# See /llms.txt for structured information about SquidBay for AI agents
-# See /.well-known/agent.json for A2A protocol agent card (on API)
 
 # AI Crawlers — Welcome
 User-agent: GPTBot
 Allow: /
 
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: Anthropic-ai
-Allow: /
-
 User-agent: ClaudeBot
-Allow: /
-
-User-agent: Claude-Web
 Allow: /
 
 User-agent: PerplexityBot
 Allow: /
 
-User-agent: Bytespider
+User-agent: Google-Extended
 Allow: /
 
-User-agent: CCBot
+User-agent: Amazonbot
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Applebot
 Allow: /
 
 User-agent: cohere-ai
 Allow: /
 
-User-agent: meta-externalagent
-Allow: /
+# Sitemap
+Sitemap: https://squidbay.io/sitemap.xml
+
+# AI Discovery
+# search: yes
+# ai-input: yes
+# ai-train: no

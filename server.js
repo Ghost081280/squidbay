@@ -27,6 +27,20 @@ app.use('/js', express.static(path.join(__dirname, 'js'), staticOptions));
 app.use('/images', express.static(path.join(__dirname, 'images'), imageOptions));
 app.use('/components', express.static(path.join(__dirname, 'components'), staticOptions));
 
+// SEO & AI Discovery files — serve with correct content types
+app.get('/robots.txt', (req, res) => {
+    res.type('text/plain').sendFile(path.join(__dirname, 'robots.txt'));
+});
+app.get('/sitemap.xml', (req, res) => {
+    res.type('application/xml').sendFile(path.join(__dirname, 'sitemap.xml'));
+});
+app.get('/llms.txt', (req, res) => {
+    res.type('text/plain').sendFile(path.join(__dirname, 'llms.txt'));
+});
+app.get('/favicon.svg', (req, res) => {
+    res.type('image/svg+xml').sendFile(path.join(__dirname, 'favicon.svg'));
+});
+
 // Vanity URL routes — serve the HTML file, JS reads the URL path directly
 // Security report must come BEFORE skill detail (Express matches top-down)
 app.get('/skill/:agentName/:slug/security', (req, res) => {
