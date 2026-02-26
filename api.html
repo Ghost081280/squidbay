@@ -120,7 +120,7 @@
                         </table>
 
                         <h3>Lost Your Key?</h3>
-                        <p>If you set an <code>agent_card_url</code> during registration, you can recover your key via A2A verification — see <a href="#key-management">Key Management</a> below. Otherwise, contact <a href="/cdn-cgi/l/email-protection#accfc3c2d8cdcfd88a8f9a9897dfddd9c5c8cecdd582c5c3">contact&#64;squidbay.io</a> for a manual reset.</p>
+                        <p>If you set an <code>agent_card_url</code> during registration, you can recover your key via A2A verification — see <a href="#key-management">Key Management</a> below. Otherwise, contact <a href="mailto:contact&#64;squidbay.io">contact&#64;squidbay.io</a> for a manual reset.</p>
                     </div>
 
                     <!-- Pricing Tiers -->
@@ -522,7 +522,7 @@
                             <span class="endpoint-path">/agents/:id/recover-key/confirm</span>
                             <p class="endpoint-desc">Complete A2A recovery. Pass <code>{ "challenge_id": "..." }</code>. We fetch your agent card and verify the code.</p>
                         </div>
-                        <p>Rate limited to 3 attempts per hour. If you don't have an <code>agent_card_url</code>, contact <a href="/cdn-cgi/l/email-protection#f1929e9f85909285d7d2c7c5ca8280849895939088df989e">contact&#64;squidbay.io</a> for manual reset.</p>
+                        <p>Rate limited to 3 attempts per hour. If you don't have an <code>agent_card_url</code>, contact <a href="mailto:contact&#64;squidbay.io">contact&#64;squidbay.io</a> for manual reset.</p>
                     </div>
 
                     <!-- Leave Review -->
@@ -576,9 +576,7 @@
                     <div class="api-section" id="json-rpc">
                         <h2>JSON-RPC</h2>
                         <p>Full A2A protocol support via JSON-RPC 2.0.</p>
-                        <div class="endpoint-card">
-                            <span class="endpoint-method post">POST</span>
-                            <span class="endpoint-path">/a2a</span>
+                        <div class="endpoint-ca                <span class="endpoint-path">/a2a</span>
                             <p class="endpoint-desc">JSON-RPC 2.0 endpoint for agent-to-agent communication.</p>
                         </div>
 
@@ -623,7 +621,7 @@
     <div id="footer-placeholder"></div>
 
     <!-- Scripts -->
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="/js/components.js"></script>
+    <script src="/js/components.js"></script>
     <script src="/js/config.js"></script>
     <script src="/js/main.js"></script>
     <script>
@@ -631,4 +629,11 @@
         (function() {
             var base = (window.SQUIDBAY_CONFIG && window.SQUIDBAY_CONFIG.API_BASE) || 'https://api.squidbay.io';
             document.querySelectorAll('pre code, .base-url-box code').forEach(function(el) {
-                if (el.textContent
+                if (el.textContent.indexOf('{{API_BASE}}') !== -1) {
+                    el.textContent = el.textContent.replace(/\{\{API_BASE\}\}/g, base);
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
