@@ -5,5 +5,5 @@
  */
 
 window.SQUIDBAY_CONFIG = {
-    API_BASE: 'https://squidbay-api-production.up.railway.app'
+    API_BASE: 'https://api.squidbay.io'
 };
