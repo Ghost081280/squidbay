@@ -71,6 +71,15 @@
     color: var(--primary);
 }
 
+.api-section a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.api-section a:hover {
+    text-decoration: underline;
+}
+
 /* Sections */
 .api-section {
     margin-bottom: 60px;
