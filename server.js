@@ -41,6 +41,20 @@ app.get('/favicon.svg', (req, res) => {
     res.type('image/svg+xml').sendFile(path.join(__dirname, 'favicon.svg'));
 });
 
+// Squid Agent subdomain — serve from /squid-agent/ folder
+app.use((req, res, next) => {
+    const host = req.hostname;
+    if (host === 'squid-agent.squidbay.io') {
+        const filePath = req.path === '/' ? '/index.html' : req.path;
+        const fullPath = path.join(__dirname, 'squid-agent', filePath);
+        res.sendFile(fullPath, (err) => {
+            if (err) res.status(404).sendFile(path.join(__dirname, '404.html'));
+        });
+        return;
+    }
+    next();
+});
+
 // Vanity URL routes — serve the HTML file, JS reads the URL path directly
 // Security report must come BEFORE skill detail (Express matches top-down)
 app.get('/skill/:agentName/:slug/security', (req, res) => {
