@@ -1,153 +1,191 @@
-/* ============================================
-   SQUID AGENT LANDING PAGE JS
-   Contact form (Web3Forms), smooth scroll,
-   scroll-triggered animations
-   ============================================ */
+/**
+ * Squid Agent Landing Page JS
+ * Carousel, contact form, interactions
+ */
 
-document.addEventListener('DOMContentLoaded', () => {
+(function() {
+    'use strict';
 
-    // ===================================
-    // SMOOTH SCROLL FOR ANCHOR LINKS
-    // ===================================
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
-        link.addEventListener('click', (e) => {
-            const target = document.querySelector(link.getAttribute('href'));
-            if (target) {
-                e.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // --------------------------------------------------------------------------
+    // Feature Carousel
+    // --------------------------------------------------------------------------
+
+    function initCarousel() {
+        const track = document.getElementById('carousel-track');
+        const prevBtn = document.getElementById('carousel-prev');
+        const nextBtn = document.getElementById('carousel-next');
+        const dotsContainer = document.getElementById('carousel-dots');
+
+        if (!track || !prevBtn || !nextBtn) return;
+
+        const cards = Array.from(track.children);
+        const totalCards = cards.length;
+        let currentIndex = 0;
+        let autoTimer = null;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        function getVisibleCount() {
+            if (window.innerWidth <= 480) return 1;
+            if (window.innerWidth <= 768) return 2;
+            return 3;
+        }
+
+        function getMaxIndex() {
+            return Math.max(0, totalCards - getVisibleCount());
+        }
+
+        function buildDots() {
+            if (!dotsContainer) return;
+            dotsContainer.innerHTML = '';
+            const maxIdx = getMaxIndex();
+            for (let i = 0; i <= maxIdx; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'carousel-dot' + (i === currentIndex ? ' active' : '');
+                dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+                dot.addEventListener('click', function() { goTo(i); });
+                dotsContainer.appendChild(dot);
             }
-        });
-    });
+        }
 
-    // ===================================
-    // SCROLL-TRIGGERED FADE-IN
-    // ===================================
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -40px 0px'
-    };
+        function updateDots() {
+            if (!dotsContainer) return;
+            dotsContainer.querySelectorAll('.carousel-dot').forEach(function(dot, i) {
+                dot.classList.toggle('active', i === currentIndex);
+            });
+        }
 
-    const fadeObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('sa-visible');
-                fadeObserver.unobserve(entry.target);
+        function goTo(index) {
+            const maxIdx = getMaxIndex();
+            currentIndex = Math.max(0, Math.min(index, maxIdx));
+
+            const card = cards[0];
+            if (!card) return;
+            const cardStyle = getComputedStyle(card);
+            const cardWidth = card.offsetWidth + parseInt(cardStyle.marginRight || 0);
+            // Account for gap
+            const gap = parseInt(getComputedStyle(track).gap) || 16;
+            const slideWidth = card.offsetWidth + gap;
+
+            track.style.transform = 'translateX(-' + (currentIndex * slideWidth) + 'px)';
+            updateDots();
+        }
+
+        function next() {
+            if (currentIndex >= getMaxIndex()) {
+                goTo(0);
+            } else {
+                goTo(currentIndex + 1);
             }
+        }
+
+        function prev() {
+            if (currentIndex <= 0) {
+                goTo(getMaxIndex());
+            } else {
+                goTo(currentIndex - 1);
+            }
+        }
+
+        function startAuto() {
+            stopAuto();
+            autoTimer = setInterval(next, 4000);
+        }
+
+        function stopAuto() {
+            if (autoTimer) {
+                clearInterval(autoTimer);
+                autoTimer = null;
+            }
+        }
+
+        // Buttons
+        prevBtn.addEventListener('click', function() { prev(); startAuto(); });
+        nextBtn.addEventListener('click', function() { next(); startAuto(); });
+
+        // Pause on hover
+        var carouselWrap = track.closest('.sa-carousel');
+        if (carouselWrap) {
+            carouselWrap.addEventListener('mouseenter', stopAuto);
+            carouselWrap.addEventListener('mouseleave', startAuto);
+        }
+
+        // Touch/swipe
+        track.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+            stopAuto();
+        }, { passive: true });
+
+        track.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            var diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) next(); else prev();
+            }
+            startAuto();
+        }, { passive: true });
+
+        // Resize
+        window.addEventListener('resize', function() {
+            goTo(Math.min(currentIndex, getMaxIndex()));
+            buildDots();
         });
-    }, observerOptions);
 
-    // Observe all cards, steps, features
-    const animateTargets = [
-        '.sa-pitch-card',
-        '.sa-feature',
-        '.sa-step',
-        '.sa-spawn-step',
-        '.sa-compare-card',
-        '.sa-support-card',
-        '.sa-math-card'
-    ].join(',');
+        // Init
+        buildDots();
+        goTo(0);
+        startAuto();
+    }
 
-    document.querySelectorAll(animateTargets).forEach((el, i) => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = `opacity 0.5s ease ${i % 4 * 0.08}s, transform 0.5s ease ${i % 4 * 0.08}s`;
-        fadeObserver.observe(el);
-    });
+    // --------------------------------------------------------------------------
+    // Contact Form (Web3Forms)
+    // --------------------------------------------------------------------------
 
-    // Add visible class styles
-    const style = document.createElement('style');
-    style.textContent = `.sa-visible { opacity: 1 !important; transform: translateY(0) !important; }`;
-    document.head.appendChild(style);
+    function initContactForm() {
+        var form = document.getElementById('contactForm');
+        if (!form) return;
 
-    // ===================================
-    // CONTACT FORM — WEB3FORMS
-    // ===================================
-    const form = document.getElementById('saContactForm');
-    const result = document.getElementById('saFormResult');
-
-    if (form) {
-        form.addEventListener('submit', async (e) => {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const btn = form.querySelector('button[type="submit"]');
-            const originalText = btn.textContent;
+            var btn = form.querySelector('button[type="submit"]');
+            var originalText = btn.textContent;
             btn.textContent = 'Sending...';
             btn.disabled = true;
 
             try {
-                const formData = new FormData(form);
-                const response = await fetch('https://api.web3forms.com/submit', {
+                var response = await fetch(form.action, {
                     method: 'POST',
-                    body: formData
+                    body: new FormData(form)
                 });
-
-                const data = await response.json();
-
+                var data = await response.json();
                 if (data.success) {
-                    result.textContent = 'Message sent! We\'ll get back to you soon. 🦑';
-                    result.className = 'sa-form-result success';
                     form.reset();
+                    btn.textContent = 'Sent ✓';
+                    setTimeout(function() { btn.textContent = originalText; btn.disabled = false; }, 3000);
                 } else {
-                    result.textContent = 'Something went wrong. Try again or email contact&#64;squidbay.io';
-                    result.className = 'sa-form-result error';
+                    btn.textContent = 'Error — try again';
+                    setTimeout(function() { btn.textContent = originalText; btn.disabled = false; }, 3000);
                 }
             } catch (err) {
-                result.textContent = 'Network error. Try again or email contact&#64;squidbay.io';
-                result.className = 'sa-form-result error';
+                btn.textContent = 'Error — try again';
+                setTimeout(function() { btn.textContent = originalText; btn.disabled = false; }, 3000);
             }
-
-            btn.textContent = originalText;
-            btn.disabled = false;
-
-            setTimeout(() => {
-                result.textContent = '';
-                result.className = 'sa-form-result';
-            }, 5000);
         });
     }
 
-    // ===================================
-    // HERO BADGE ANIMATION
-    // ===================================
-    const badge = document.querySelector('.sa-hero-badge');
-    if (badge) {
-        badge.style.opacity = '0';
-        badge.style.transform = 'translateY(-10px)';
-        badge.style.transition = 'opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s';
-        requestAnimationFrame(() => {
-            badge.style.opacity = '1';
-            badge.style.transform = 'translateY(0)';
-        });
+    // --------------------------------------------------------------------------
+    // Init
+    // --------------------------------------------------------------------------
+
+    function init() {
+        initCarousel();
+        initContactForm();
     }
 
-    // ===================================
-    // HERO TITLE ANIMATION
-    // ===================================
-    const title = document.querySelector('.sa-hero-title');
-    if (title) {
-        title.style.opacity = '0';
-        title.style.transform = 'translateY(15px)';
-        title.style.transition = 'opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s';
-        requestAnimationFrame(() => {
-            title.style.opacity = '1';
-            title.style.transform = 'translateY(0)';
-        });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
     }
 
-    // ===================================
-    // HERO SUB + CTA ANIMATION
-    // ===================================
-    const heroSub = document.querySelector('.sa-hero-sub');
-    const heroCtas = document.querySelector('.sa-hero-ctas');
-    [heroSub, heroCtas].forEach((el, i) => {
-        if (el) {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(15px)';
-            el.style.transition = `opacity 0.6s ease ${0.6 + i * 0.15}s, transform 0.6s ease ${0.6 + i * 0.15}s`;
-            requestAnimationFrame(() => {
-                el.style.opacity = '1';
-                el.style.transform = 'translateY(0)';
-            });
-        }
-    });
-
-});
+})();
