@@ -42,15 +42,13 @@ app.get('/favicon.svg', (req, res) => {
 });
 
 // Squid Agent subdomain — serve from /squid-agent/ folder
+const squidAgentStatic = express.static(path.join(__dirname, 'squid-agent'), staticOptions);
 app.use((req, res, next) => {
-    const host = req.hostname;
-    if (host === 'squid-agent.squidbay.io') {
-        const filePath = req.path === '/' ? '/index.html' : req.path;
-        const fullPath = path.join(__dirname, 'squid-agent', filePath);
-        res.sendFile(fullPath, (err) => {
-            if (err) res.status(404).sendFile(path.join(__dirname, '404.html'));
+    if (req.hostname === 'squid-agent.squidbay.io') {
+        return squidAgentStatic(req, res, () => {
+            // If static file not found, serve index.html (SPA fallback)
+            res.sendFile(path.join(__dirname, 'squid-agent', 'index.html'));
         });
-        return;
     }
     next();
 });
