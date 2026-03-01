@@ -218,45 +218,61 @@
     <section class="sa-section" id="compare">
         <div class="container">
             <h2 class="sa-section-title">Why Squid Agent?</h2>
-            <p class="sa-section-sub">Two camps dominate. Neither solves the real problem.</p>
+            <p class="sa-section-sub">Two camps dominate AI agents. Neither was built for commerce. Neither scans for security. Neither lets you own anything.</p>
+
             <div class="sa-compare-layout">
+                <!-- SaaS Chatbots — industry-wide problems -->
                 <div class="sa-compare-card sa-compare-them">
                     <h4>SaaS Chatbots</h4>
                     <ul>
-                        <li>$50–2,500/month subscriptions</li>
-                        <li>"Powered by [them]" branding</li>
-                        <li>Per-conversation fees that scale badly</li>
-                        <li>They own your data</li>
-                        <li>Can't resell or customize</li>
+                        <li>$50–2,500/month — enterprise plans reach $3,600/month</li>
+                        <li>Per-conversation fees that spike unpredictably — one user reported bills jumping from $4,000 to $9,000 in a single month</li>
+                        <li>"Powered by [them]" branding on lower plans — your chatbot advertises their company</li>
+                        <li>They own your data — proprietary formats, incomplete exports, exit fees to leave</li>
+                        <li>Vendor lock-in by design — the EU literally passed the Data Act to force SaaS to allow switching</li>
+                        <li>Every channel costs extra — SMS, WhatsApp, email campaigns all billed separately on top of your plan</li>
+                        <li>Can't resell, customize the code, or deploy for others — you rent, you don't own</li>
                     </ul>
                 </div>
+
+                <!-- Open Source Agents — industry-wide problems -->
                 <div class="sa-compare-card sa-compare-them">
                     <h4>Open Source Agents</h4>
                     <ul>
-                        <li>Free but hours to configure</li>
-                        <li>No security scanning — 824+ malicious skills found</li>
-                        <li>No commerce built in</li>
-                        <li>No ops center — CLI only</li>
-                        <li>No revenue model for creators</li>
+                        <li>Free but hours of CLI configuration — reverse proxies, environment files, manual dependency management</li>
+                        <li>No security scanning anywhere — Cisco found 26% of 31,000 agent skills contained at least one vulnerability</li>
+                        <li>Open source malware up 73% year-over-year — supply chain attacks are now industrialized</li>
+                        <li>Plugin marketplaces are unvetted — one major marketplace had 12% of listings confirmed as malware</li>
+                        <li>Credentials stored in plaintext — API keys, OAuth tokens, chat histories sitting unencrypted on disk</li>
+                        <li>No commerce, no payments, no customer profiles — built for developers, not businesses</li>
+                        <li>No ops center — everything runs through terminal commands and config files</li>
+                        <li>No revenue model for skill creators — free skills only, so no incentive to build quality</li>
                     </ul>
                 </div>
             </div>
+
+            <!-- Driving copy -->
+            <p style="text-align:center; color: var(--text-muted); max-width: 640px; margin: -16px auto 32px; font-size: 0.95rem; line-height: 1.7;">SaaS chatbots charge you monthly for something you'll never own. Open source agents give you a repo and a mess of YAML files to figure out yourself. Neither scans skills for malware. Neither has checkout built in. Neither deploys in 3 clicks. We built something different.</p>
+
+            <!-- 🦑 Squid Agent — the answer -->
             <div class="sa-compare-hero">
-                <h3>Squid Agent</h3>
+                <h3>🦑 Squid Agent</h3>
                 <div class="sa-compare-hero-grid">
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>You own the code.</strong> You own the data. Fork it, it's yours.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Ops Center</strong> at admin.yourdomain.com — your backend, not ours.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Chat with your Copilot</strong> to add features. It builds, commits, deploys.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Agent Starter Page</strong> — your public page, chatbot included.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Stripe + Bitcoin Lightning</strong> checkout built in. Commerce-first.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>SOC-grade security:</strong> 13 categories, 161+ patterns. No one else does this.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Skill marketplace</strong> — like plugins if they were actually secure.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Token-locked skills</strong> — no piracy. Creators keep 98%.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Spawn more agents</strong> from your Ops Center. Unlimited.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Core/custom separation</strong> — updates never break your code.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Free scan on every update.</strong> Share with agent, it auto-fixes.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Dual-role agent:</strong> customer support on public side, Copilot on ops side.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>You own the code. You own the data.</strong> Fork it — it's yours forever. No subscriptions, no exit fees, no vendor lock-in.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>3-click deploy:</strong> GitHub → Railway → Cloudflare. Live in under 10 minutes. No CLI, no YAML, no reverse proxy nightmares.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Ops Center</strong> at admin.yourdomain.com — a real visual dashboard, not a terminal. Chat with your agent to add features, manage products, deploy updates.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Customize by conversation.</strong> Tell your agent what you want. It writes the code, commits to GitHub, Railway auto-deploys. No developer needed after setup.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Commerce-first:</strong> Stripe + Bitcoin Lightning checkout built in. Customers browse, ask questions, and buy through the chatbot. Not bolted on — built in.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>SOC-grade security scanner.</strong> 13 categories, 161+ detection patterns. The only agent platform that scans source code — not zip hashes, not vibes. Real analysis.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Clean skill marketplace.</strong> Every skill scanned before it touches your agent. Creators get paid in sats per install — so the incentive is quality, not ads or trackers.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>98/2 revenue split.</strong> Build a skill, list it, keep 98%. Token-locked — no piracy. The marketplace pays creators, not the other way around.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Spawn unlimited agents</strong> from your Ops Center. Each one gets its own repo, domain, and identity. Managed or handed off — your choice.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Agent Starter Page</strong> included — your public site with chatbot built in. Add pages, storefront, galleries by chatting with your agent.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Core/custom separation.</strong> Platform updates never break your code. Free security scan on every update. Share results with your agent — it auto-fixes.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>No ads. No trackers. No "Powered by" branding.</strong> Your agent, your brand, your domain. White-label everything.</p></div>
                 </div>
+
+                <!-- Screenshots -->
                 <div class="sa-compare-screenshots">
                     <div class="sa-screenshot">
                         <div class="sa-screenshot-x">✕</div>
