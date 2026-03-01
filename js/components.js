@@ -1,25 +1,71 @@
 /**
  * SquidBay Components System
  * Loads reusable nav, footer, chatbot, and UI components
+ * Subdomain-aware: rewrites paths when running on subdomains (e.g. agent.squidbay.io)
  */
 
 (function() {
     'use strict';
 
-    // Component paths (absolute — required for Railway server-side routing)
+    // Subdomain detection — anything not squidbay.io or www.squidbay.io is a subdomain
+    const hostname = window.location.hostname;
+    const isSubdomain = hostname !== 'squidbay.io' && hostname !== 'www.squidbay.io' && hostname.endsWith('squidbay.io');
+    const ORIGIN = isSubdomain ? 'https://squidbay.io' : '';
+
+    // Component paths — prefixed with origin when on subdomain
     const COMPONENTS = {
-        nav: '/components/nav.html',
-        footer: '/components/footer.html',
-        chatbot: '/components/chatbot.html'
+        nav: ORIGIN + '/components/nav.html',
+        footer: ORIGIN + '/components/footer.html',
+        chatbot: ORIGIN + '/components/chatbot.html'
     };
     
     // Chatbot assets
-    const CHATBOT_CSS = '/components/chatbot.css';
-    const CHATBOT_JS = '/components/chatbot.js';
+    const CHATBOT_CSS = ORIGIN + '/components/chatbot.css';
+    const CHATBOT_JS = ORIGIN + '/components/chatbot.js';
 
     // Current page detection — handles both clean URLs (/marketplace) and vanity URLs (/agent/squidbot)
     const pathParts = window.location.pathname.replace(/\.html$/, '').split('/').filter(Boolean);
     const currentPage = pathParts[0] || 'index';
+
+    /**
+     * Rewrite relative links to absolute squidbay.io URLs when on subdomain
+     * Only rewrites internal relative links (starting with /), skips anchors (#) and external URLs
+     */
+    function rewriteLinksForSubdomain(container) {
+        if (!isSubdomain || !container) return;
+
+        container.querySelectorAll('a[href]').forEach(link => {
+            const href = link.getAttribute('href');
+            
+            // Skip: external URLs, anchors, javascript:, mailto:, already absolute squidbay URLs
+            if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('javascript:')) return;
+            
+            // Skip pure anchor links (e.g. #contact) — these should work on current page
+            if (href.startsWith('#')) return;
+            
+            // Rewrite relative paths to absolute squidbay.io URLs
+            // Handles: /marketplace, /agents, /about, /faq, /help, /privacy, /terms, /refund, /#contact
+            if (href.startsWith('/')) {
+                link.setAttribute('href', 'https://squidbay.io' + href);
+            }
+        });
+    }
+
+    /**
+     * Update footer: replace API link with 🦑 Agent link
+     */
+    function updateFooterLinks(container) {
+        if (!container) return;
+
+        container.querySelectorAll('a').forEach(link => {
+            const href = link.getAttribute('href');
+            // Find the API link in the Product column and replace with Agent
+            if (href && (href === '/api' || href === 'https://squidbay.io/api') && link.textContent.trim() === 'API') {
+                link.textContent = '🦑 Agent';
+                link.setAttribute('href', 'https://agent.squidbay.io');
+            }
+        });
+    }
 
     /**
      * Load HTML component into placeholder
@@ -36,10 +82,13 @@
             
             // Post-load processing
             if (name === 'nav') {
+                rewriteLinksForSubdomain(target);
                 initNavigation();
                 initMobileMenuLinks();
             }
             if (name === 'footer') {
+                updateFooterLinks(target);
+                rewriteLinksForSubdomain(target);
                 initFooter();
             }
         } catch (error) {
@@ -96,6 +145,9 @@
     function initMobileMenuLinks() {
         const menu = document.getElementById('mobile-menu');
         if (!menu) return;
+        
+        // Rewrite mobile menu links for subdomain too
+        rewriteLinksForSubdomain(menu);
         
         menu.querySelectorAll('a').forEach(function(link) {
             link.addEventListener('click', function() {
@@ -196,8 +248,16 @@
             initScrollProgress();
         }
         
-        // Load chatbot component
-        loadChatbot();
+        // Load chatbot — skip if page already has chatbot elements loaded directly
+        // (agent.squidbay.io loads chatbot via explicit script tags in its HTML)
+        const chatbotAlreadyLoaded = document.getElementById('squidbotBtn') || 
+                                      document.querySelector('script[src*="chatbot.js"]') ||
+                                      document.getElementById('chatbot-placeholder');
+        if (!chatbotAlreadyLoaded) {
+            loadChatbot();
+        } else {
+            console.log('SquidBot: Chatbot already loaded by page, skipping component loader');
+        }
     }
     
     /**
