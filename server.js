@@ -22,6 +22,17 @@ const imageOptions = {
     lastModified: true
 };
 
+// CORS for *.squidbay.io subdomains — allows component fetches from agent.squidbay.io etc.
+app.use('/components', (req, res, next) => {
+    const origin = req.get('Origin');
+    if (origin && origin.endsWith('.squidbay.io')) {
+        res.set('Access-Control-Allow-Origin', origin);
+        res.set('Access-Control-Allow-Methods', 'GET');
+        res.set('Access-Control-Allow-Headers', 'Content-Type');
+    }
+    next();
+});
+
 app.use('/css', express.static(path.join(__dirname, 'css'), staticOptions));
 app.use('/js', express.static(path.join(__dirname, 'js'), staticOptions));
 app.use('/images', express.static(path.join(__dirname, 'images'), imageOptions));
