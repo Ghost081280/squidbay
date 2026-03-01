@@ -41,13 +41,13 @@ app.get('/favicon.svg', (req, res) => {
     res.type('image/svg+xml').sendFile(path.join(__dirname, 'favicon.svg'));
 });
 
-// Squid Agent subdomain — serve from /squid-agent/ folder
-const squidAgentStatic = express.static(path.join(__dirname, 'squid-agent'), staticOptions);
+// Squid Agent subdomain — serve from /agent/ folder
+const squidAgentStatic = express.static(path.join(__dirname, 'agent'), staticOptions);
 app.use((req, res, next) => {
-    if (req.hostname === 'squid-agent.squidbay.io') {
+    if (req.hostname === 'agent.squidbay.io') {
         return squidAgentStatic(req, res, () => {
             // If static file not found, serve index.html (SPA fallback)
-            res.sendFile(path.join(__dirname, 'squid-agent', 'index.html'));
+            res.sendFile(path.join(__dirname, 'agent', 'index.html'));
         });
     }
     next();
