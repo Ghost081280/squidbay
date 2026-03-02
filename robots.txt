@@ -30,10 +30,18 @@ Allow: /
 User-agent: cohere-ai
 Allow: /
 
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
 # Sitemap
 Sitemap: https://squidbay.io/sitemap.xml
 
-# AI Discovery
+# AI agent & LLM discovery
+# LLMs-Txt: https://squidbay.io/llms.txt
+# Agent Card: https://api.squidbay.io/.well-known/agent.json
 # search: yes
 # ai-input: yes
 # ai-train: no
