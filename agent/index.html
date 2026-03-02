@@ -84,7 +84,7 @@
         <div class="container">
             <h2 class="sa-section-title">3-Click Deploy</h2>
             <p class="sa-section-sub">Fork, deploy, protect. Free tiers everywhere.</p>
-            <div class="sa-steps">
+            <div class="sa-steps-flow">
                 <div class="sa-step">
                     <div class="sa-step-num">1</div>
                     <h4>GitHub</h4>
@@ -94,30 +94,35 @@
                         GitHub
                     </a>
                 </div>
+                <div class="sa-step-arrow">→</div>
                 <div class="sa-step">
                     <div class="sa-step-num">2</div>
                     <h4>Railway</h4>
-                    <p>Connect GitHub → Railway auto-deploys. Add your Claude API key and admin password. Agent goes live.</p>
+                    <p>Connect GitHub → auto-deploys. Add Claude API key and admin password. Live.</p>
                     <a href="https://railway.app" class="sa-deploy-btn sa-deploy-btn-railway" target="_blank" rel="noopener">
-                        <span class="sa-btn-dot"></span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M.223 17.765a.476.476 0 0 0 .032.483c.467.72 1.015 1.381 1.633 1.974a.48.48 0 0 0 .486.096l5.835-2.08a44.088 44.088 0 0 0-.38-4.705L.223 17.765Zm17.167-6.128c-.595-3.14-2.157-5.472-4.164-7.452a.478.478 0 0 0-.473-.102L.47 8.888a.48.48 0 0 0-.277.656 11.86 11.86 0 0 0 1.27 2.348.476.476 0 0 0 .534.176l15.393-5.432Z" fill="#7B61FF"/><path d="M23.39 12.734a11.881 11.881 0 0 0-.405-1.474.478.478 0 0 0-.589-.287L9.198 15.281a43.51 43.51 0 0 0 .248 3.728.478.478 0 0 0 .293.38l1.456.607a.478.478 0 0 0 .376-.003l11.644-5.19a.48.48 0 0 0 .274-.587l-.099-.383v-.099Z" fill="#7B61FF"/><path d="M21.573 7.59a.48.48 0 0 0-.254-.628 11.906 11.906 0 0 0-6.65-1.407.479.479 0 0 0-.363.235c1.86 1.87 3.207 4.1 3.727 7.052L21.573 7.59Z" fill="#7B61FF"/></svg>
                         Railway
                     </a>
                 </div>
+                <div class="sa-step-arrow">→</div>
                 <div class="sa-step">
                     <div class="sa-step-num">3</div>
                     <h4>Cloudflare (recommended)</h4>
-                    <p>Zero Trust login protects your Ops Center — your agent walks you through setup. Custom domain? Add in Railway → one-click Cloudflare DNS.</p>
+                    <p>Zero Trust login protects your Ops Center. Custom domain? One-click DNS.</p>
                     <a href="https://dash.cloudflare.com" class="sa-deploy-btn sa-deploy-btn-cloudflare" target="_blank" rel="noopener">
-                        <span class="sa-btn-dot"></span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16.51 15.89l.44-1.53c.14-.48.08-.92-.17-1.24-.23-.3-.6-.46-1.05-.48l-8.28-.11c-.06 0-.11-.03-.14-.07a.16.16 0 0 1-.02-.15.19.19 0 0 1 .17-.13l8.35-.11c1.04-.05 2.17-.9 2.6-1.97l.55-1.37a.3.3 0 0 0 .02-.18 5.57 5.57 0 0 0-10.76-.72 3.38 3.38 0 0 0-5.26 2.36 4.2 4.2 0 0 0 .32 8.4h11.4a.2.2 0 0 0 .19-.13l.64-2.57Z" fill="#F6821F"/><path d="M19.35 10.07v-.29a3.45 3.45 0 0 0-6.75.8.19.19 0 0 0 .18.23l6.12.08c.06 0 .11-.03.14-.07a.16.16 0 0 0 .02-.15l.01-.01-.01-.01.29-.58Z" fill="#FBAD41"/></svg>
                         Cloudflare
                     </a>
                 </div>
             </div>
             <div class="sa-steps-cost">
-                <p><strong>Total cost:</strong> <a href="https://console.anthropic.com/" class="sa-link" target="_blank" rel="noopener">Claude API</a> (~$5/month) + <a href="https://railway.app" class="sa-link" target="_blank" rel="noopener">Railway</a> ($5/month after free trial). Custom domain optional. Everything else is free.</p>
+                <p><strong>Get started:</strong> <a href="https://console.anthropic.com/" class="sa-link" target="_blank" rel="noopener">Claude API</a> (~$5/month) + <a href="https://railway.app" class="sa-link" target="_blank" rel="noopener">Railway</a> ($5/month after 30-day free trial). Optional: <a href="https://squidbay.io" class="sa-link">unlimited security scans</a> ($5/month). Custom domain optional. You pay for hosting and AI — nothing else.</p>
             </div>
             <div class="sa-steps-cost" style="margin-top: 12px;">
-                <p><strong>Your agent name is reserved on SquidBay automatically.</strong> Pick a name, we check availability and hold it. Connect to the marketplace whenever you're ready — or don't.</p>
+                <p><strong>Power users and storefronts:</strong> Scale your Claude API credits and Railway plan as you grow — $20/month covers most serious storefronts. Still cheaper than one month of any SaaS chatbot. Railway scales to enterprise. Claude scales with you.</p>
+            </div>
+            <div class="sa-steps-cost" style="margin-top: 12px;">
+                <p><strong>Your agent name is reserved on SquidBay automatically.</strong> Pick a name, we hold it. Connect to the marketplace whenever you're ready — or don't.</p>
             </div>
         </div>
     </section>
@@ -221,38 +226,49 @@
             <p class="sa-section-sub">Two camps dominate AI agents. Neither was built for commerce. Neither scans for security. Neither lets you own anything.</p>
 
             <div class="sa-compare-layout">
-                <!-- SaaS Chatbots — industry-wide problems -->
                 <div class="sa-compare-card sa-compare-them">
                     <h4>SaaS Chatbots</h4>
                     <ul>
                         <li>$50–2,500/month — enterprise plans reach $3,600/month</li>
-                        <li>Per-conversation fees that spike unpredictably — one user reported bills jumping from $4,000 to $9,000 in a single month</li>
-                        <li>"Powered by [them]" branding on lower plans — your chatbot advertises their company</li>
-                        <li>They own your data — proprietary formats, incomplete exports, exit fees to leave</li>
-                        <li>Vendor lock-in by design — the EU literally passed the Data Act to force SaaS to allow switching</li>
-                        <li>Every channel costs extra — SMS, WhatsApp, email campaigns all billed separately on top of your plan</li>
-                        <li>Can't resell, customize the code, or deploy for others — you rent, you don't own</li>
+                        <li>Per-conversation fees spike unpredictably — bills jumping $4K to $9K in a single month</li>
+                        <li>"Powered by [them]" branding — your chatbot advertises their company</li>
+                        <li>They own your data — proprietary formats, exit fees, vendor lock-in by design</li>
+                        <li>Can't resell, customize the code, or deploy for others — you rent, never own</li>
                     </ul>
                 </div>
-
-                <!-- Open Source Agents — industry-wide problems -->
                 <div class="sa-compare-card sa-compare-them">
                     <h4>Open Source Agents</h4>
                     <ul>
-                        <li>Free but hours of CLI configuration — reverse proxies, environment files, manual dependency management</li>
-                        <li>No security scanning anywhere — Cisco found 26% of 31,000 agent skills contained at least one vulnerability</li>
-                        <li>Open source malware up 73% year-over-year — supply chain attacks are now industrialized</li>
-                        <li>Plugin marketplaces are unvetted — one major marketplace had 12% of listings confirmed as malware</li>
-                        <li>Credentials stored in plaintext — API keys, OAuth tokens, chat histories sitting unencrypted on disk</li>
+                        <li>Free but hours of CLI config — reverse proxies, YAML files, manual dependency management</li>
+                        <li>No security scanning — Cisco found 26% of 31,000 agent skills contained vulnerabilities</li>
+                        <li>Open source malware up 73% YoY — one major marketplace had 12% of listings confirmed malware</li>
                         <li>No commerce, no payments, no customer profiles — built for developers, not businesses</li>
-                        <li>No ops center — everything runs through terminal commands and config files</li>
-                        <li>No revenue model for skill creators — free skills only, so no incentive to build quality</li>
+                        <li>No revenue model for skill creators — free skills only, no incentive to build quality</li>
                     </ul>
                 </div>
             </div>
 
-            <!-- Driving copy -->
-            <p style="text-align:center; color: var(--text-muted); max-width: 640px; margin: -16px auto 32px; font-size: 0.95rem; line-height: 1.7;">SaaS chatbots charge you monthly for something you'll never own. Open source agents give you a repo and a mess of YAML files to figure out yourself. Neither scans skills for malware. Neither has checkout built in. Neither deploys in 3 clicks. We built something different.</p>
+            <!-- Down arrow connector -->
+            <div class="sa-down-arrow">
+                <svg width="24" height="48" viewBox="0 0 24 48" fill="none"><line x1="12" y1="0" x2="12" y2="40" stroke="var(--primary)" stroke-width="2" opacity="0.4"/><path d="M6 34l6 8 6-8" stroke="var(--primary)" stroke-width="2" fill="none" opacity="0.4"/></svg>
+            </div>
+
+            <!-- Styled use-case paragraph -->
+            <div class="use-case-box" style="margin-bottom: 0;">
+                <div class="use-case-label">We Built Something Different</div>
+                <h3>Your agent is your Copilot</h3>
+                <p class="use-case-scenario">
+                    Once installed and connected to Claude, your agent handles the rest. It walks you through the remaining setup. It adds features when you ask. It reads security scan reports and fixes the issues itself. Everything auto-deploys: GitHub → Railway → Cloudflare — we realized these three services auto-connect to each other, so we wired the whole pipeline on top of that. No CLI. No config files. You just chat.
+                </p>
+                <p class="use-case-point">
+                    Commerce built in. Skills scanned for malware. Creators paid in sats. You own everything. That's the difference.
+                </p>
+            </div>
+
+            <!-- Down arrow connector -->
+            <div class="sa-down-arrow">
+                <svg width="24" height="48" viewBox="0 0 24 48" fill="none"><line x1="12" y1="0" x2="12" y2="40" stroke="var(--primary)" stroke-width="2" opacity="0.4"/><path d="M6 34l6 8 6-8" stroke="var(--primary)" stroke-width="2" fill="none" opacity="0.4"/></svg>
+            </div>
 
             <!-- 🦑 Squid Agent — the answer -->
             <div class="sa-compare-hero">
@@ -262,11 +278,11 @@
                     <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>3-click deploy:</strong> GitHub → Railway → Cloudflare. Live in under 10 minutes. No CLI, no YAML, no reverse proxy nightmares.</p></div>
                     <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Ops Center</strong> at admin.yourdomain.com — a real visual dashboard, not a terminal. Chat with your agent to add features, manage products, deploy updates.</p></div>
                     <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Customize by conversation.</strong> Tell your agent what you want. It writes the code, commits to GitHub, Railway auto-deploys. No developer needed after setup.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Commerce-first:</strong> Stripe + Bitcoin Lightning checkout built in. Customers browse, ask questions, and buy through the chatbot. Not bolted on — built in.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>SOC-grade security scanner.</strong> 13 categories, 161+ detection patterns. The only agent platform that scans source code — not zip hashes, not vibes. Real analysis.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Clean skill marketplace.</strong> Every skill scanned before it touches your agent. Creators get paid in sats per install — so the incentive is quality, not ads or trackers.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>98/2 revenue split.</strong> Build a skill, list it, keep 98%. Token-locked — no piracy. The marketplace pays creators, not the other way around.</p></div>
-                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Spawn unlimited agents</strong> from your Ops Center. Each one gets its own repo, domain, and identity. Managed or handed off — your choice.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Commerce-first:</strong> Stripe + Bitcoin Lightning checkout built in. Customers browse, ask questions, and buy through the chatbot.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>SOC-grade security scanner.</strong> 13 categories, 161+ detection patterns. The only agent platform that scans source code — not zip hashes. Real analysis.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Clean skill marketplace.</strong> Every skill scanned before it touches your agent. Creators get paid in sats per install — the incentive is quality, not ads or trackers.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>98/2 revenue split.</strong> Build a skill, list it, keep 98%. Token-locked — no piracy. The marketplace pays creators.</p></div>
+                    <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Spawn unlimited agents</strong> from your Ops Center. Each one gets its own repo, domain, and identity. Managed or handed off.</p></div>
                     <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Agent Starter Page</strong> included — your public site with chatbot built in. Add pages, storefront, galleries by chatting with your agent.</p></div>
                     <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>Core/custom separation.</strong> Platform updates never break your code. Free security scan on every update. Share results with your agent — it auto-fixes.</p></div>
                     <div class="sa-compare-point"><span class="sa-compare-check">✓</span><p><strong>No ads. No trackers. No "Powered by" branding.</strong> Your agent, your brand, your domain. White-label everything.</p></div>
@@ -469,7 +485,7 @@
                 </div>
             </div>
             <div class="sa-spawn-note" style="margin-top: 24px;">
-                <p><strong>The endgame:</strong> No Shopify. No Squarespace. No WordPress. Your agent builds the site, runs the store, manages customers, and deploys updates — all from a conversation. You just talk.</p>
+                <p><strong>The endgame:</strong> No Shopify. No Squarespace. No WordPress. Your agent builds the site, runs the store, manages customers, and deploys updates — all from a conversation. You just chat.</p>
             </div>
         </div>
     </section>

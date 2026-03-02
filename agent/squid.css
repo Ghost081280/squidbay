@@ -365,38 +365,62 @@
 .sa-feature a { color: var(--primary); text-decoration: none; }
 
 /* ===================================
-   STEPS (3-Click Deploy)
+   STEPS (3-Click Deploy) — compact with arrows
    =================================== */
-.sa-steps {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+.sa-steps-flow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
     margin-bottom: 32px;
+    flex-wrap: wrap;
 }
 
 .sa-step {
-    padding: 28px;
+    padding: 24px 20px;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 12px;
+    flex: 1;
+    max-width: 280px;
+    min-width: 200px;
+}
+
+.sa-step-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 40px;
+    color: var(--primary);
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    width: 40px;
 }
 
 .sa-step-num {
-    width: 36px; height: 36px; border-radius: 50%;
+    width: 32px; height: 32px; border-radius: 50%;
     background: linear-gradient(135deg, var(--primary), #00ffcc);
-    color: var(--dark); font-family: var(--font-display); font-weight: 700; font-size: 1rem;
-    display: flex; align-items: center; justify-content: center; margin-bottom: 14px;
+    color: var(--dark); font-family: var(--font-display); font-weight: 700; font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
 }
 
-.sa-step h4 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--white); margin-bottom: 8px; }
-.sa-step p { font-size: 1rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px; }
+.sa-step h4 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; color: var(--white); margin-bottom: 6px; }
+.sa-step p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px; }
 
 .sa-steps-cost {
     text-align: center; padding: 16px;
     background: rgba(0, 217, 255, 0.04); border: 1px solid rgba(0, 217, 255, 0.1); border-radius: 8px;
 }
-.sa-steps-cost p { color: var(--text-muted); font-size: 1rem; }
+.sa-steps-cost p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
 .sa-steps-cost strong { color: var(--primary); }
+
+/* Down-arrow connector between sections */
+.sa-down-arrow {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
+.sa-down-arrow svg { color: var(--primary); opacity: 0.5; }
 
 /* ===================================
    COMPARISON
@@ -621,7 +645,9 @@
 @media (max-width: 768px) {
     .sa-hero { padding: 100px 0 40px; }
     .sa-hero-stats { gap: 20px; }
-    .sa-steps { grid-template-columns: 1fr; }
+    .sa-steps-flow { flex-direction: column; align-items: center; }
+    .sa-step { max-width: 100%; }
+    .sa-step-arrow { padding-top: 0; transform: rotate(90deg); width: auto; padding: 8px 0; }
     .sa-compare-layout { grid-template-columns: 1fr; }
     .sa-compare-screenshots { grid-template-columns: 1fr; }
     .sa-spawn-grid { grid-template-columns: 1fr; }
