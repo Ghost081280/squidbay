@@ -220,6 +220,54 @@
     };
 
     /**
+     * Initialize abyss bubbles — ambient background effect site-wide
+     * Creates the container div and spawns rising bubbles continuously
+     */
+    function initAbyssBubbles() {
+        // Skip if already present (e.g. page created its own container)
+        if (document.getElementById('abyssBubbles')) return;
+
+        var container = document.createElement('div');
+        container.className = 'abyss-bubbles';
+        container.id = 'abyssBubbles';
+        document.body.prepend(container);
+
+        function createBubble() {
+            var bubble = document.createElement('div');
+            bubble.className = 'abyss-bubble';
+
+            var size = 4 + Math.random() * 28;
+            var left = Math.random() * 100;
+            var duration = 6 + Math.random() * 12;
+            var delay = Math.random() * 0.5;
+            var drift = -40 + Math.random() * 80;
+            var driftEnd = drift + (-20 + Math.random() * 40);
+            var scaleEnd = 0.6 + Math.random() * 0.5;
+
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.left = left + '%';
+            bubble.style.animationDuration = duration + 's';
+            bubble.style.animationDelay = delay + 's';
+            bubble.style.setProperty('--drift', drift + 'px');
+            bubble.style.setProperty('--drift-end', driftEnd + 'px');
+            bubble.style.setProperty('--scale-end', scaleEnd);
+
+            container.appendChild(bubble);
+
+            setTimeout(function() {
+                if (bubble.parentNode) bubble.remove();
+            }, (duration + delay) * 1000 + 200);
+        }
+
+        for (var i = 0; i < 12; i++) {
+            setTimeout(createBubble, i * 250);
+        }
+
+        setInterval(createBubble, 1000);
+    }
+
+    /**
      * Initialize all components on DOM ready
      */
     function init() {
@@ -247,6 +295,9 @@
             document.body.prepend(progressBar);
             initScrollProgress();
         }
+
+        // Initialize abyss bubbles on every page
+        initAbyssBubbles();
         
         // Load chatbot — skip if page already has chatbot elements loaded directly
         // (agent.squidbay.io loads chatbot via explicit script tags in its HTML)
