@@ -79,11 +79,16 @@ app.get('/agent/:name', (req, res) => {
 });
 
 // Clean page URLs (no .html needed)
-const pages = ['marketplace', 'agents', 'about', 'faq', 'help', 'privacy', 'terms', 'thanks', 'api', 'refund'];
+const pages = ['marketplace', 'register', 'about', 'faq', 'help', 'privacy', 'terms', 'thanks', 'api', 'refund'];
 pages.forEach(page => {
     app.get(`/${page}`, (req, res) => {
         res.sendFile(path.join(__dirname, `${page}.html`));
     });
+});
+
+// Legacy redirect — /agents moved to /register
+app.get('/agents', (req, res) => {
+    res.redirect(301, '/register');
 });
 
 // Static HTML files (direct access still works)
