@@ -44,7 +44,7 @@
             if (href.startsWith('#')) return;
             
             // Rewrite relative paths to absolute squidbay.io URLs
-            // Handles: /marketplace, /agents, /about, /faq, /help, /privacy, /terms, /refund, /#contact
+            // Handles: /marketplace, /register, /about, /faq, /help, /privacy, /terms, /refund, /#contact
             if (href.startsWith('/')) {
                 link.setAttribute('href', 'https://squidbay.io' + href);
             }
