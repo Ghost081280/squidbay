@@ -7,6 +7,8 @@
  *   No redirects, no sessionStorage, no query params, no flash
  * 
  * Legacy support: agent.html?id=uuid or agent.html?name=X still work
+ * 
+ * TWO TIERS ONLY: Full Skill + Remote Execution (Skill File tier KILLED)
  */
 
 const API_BASE = window.API_BASE || 'https://squidbay-api-production.up.railway.app';
@@ -261,7 +263,6 @@ function renderSkillCard(skill) {
     const successRate = totalJobs > 0 ? (skill.success_rate || 0) : null;
     const tiers = skill.available_tiers || [];
     const hasExec = tiers.includes('execution');
-    const hasFile = tiers.includes('skill_file');
     const hasPkg = tiers.includes('full_package');
     const lowestPrice = getLowestPrice(skill);
     const link = skillVanityUrl(skill) + '?from=agent';
@@ -271,10 +272,10 @@ function renderSkillCard(skill) {
     const statusClass = isOnline ? 'online' : 'offline';
     const statusText = isOnline ? 'Online' : 'Offline';
     
+    // Two tiers only: Full Skill + Remote Execution
     let tierButtons = '<div class="tier-buttons">';
-    if (hasExec) tierButtons += `<a href="${link}" class="tier-btn-mini tier-exec" title="${(skill.price_execution || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Execution</a>`;
-    if (hasFile) tierButtons += `<a href="${link}" class="tier-btn-mini tier-file" title="${(skill.price_skill_file || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> Skill File</a>`;
-    if (hasPkg) tierButtons += `<a href="${link}" class="tier-btn-mini tier-pkg" title="${(skill.price_full_package || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg> Full Package</a>`;
+    if (hasPkg) tierButtons += `<a href="${link}" class="tier-btn-mini tier-pkg" title="${(skill.price_full_package || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg> Full Skill</a>`;
+    if (hasExec) tierButtons += `<a href="${link}" class="tier-btn-mini tier-exec" title="${(skill.price_execution || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Remote Execution</a>`;
     tierButtons += '</div>';
     
     return `
@@ -305,7 +306,7 @@ function renderSkillReviewCard(review, agent) {
     const date = formatDate(review.created_at);
     const matchedSkill = agentSkills.find(s => s.id === review.skill_id);
     const skillLink = matchedSkill ? skillVanityUrl(matchedSkill) : `/skill?id=${review.skill_id}`;
-    const tierLabel = review.tier ? ` (${review.tier === 'execution' ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>' : review.tier === 'skill_file' ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>' : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg>'} ${review.tier})` : '';
+    const tierLabel = review.tier ? ` (${review.tier === 'execution' ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>' : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg>'} ${review.tier})` : '';
     
     let replyHtml = '';
     if (review.reply) {
@@ -366,7 +367,7 @@ function renderAgentReviewCard(review, agent) {
 }
 
 function getLowestPrice(skill) {
-    const prices = [skill.price_execution, skill.price_skill_file, skill.price_full_package].filter(p => p && p > 0);
+    const prices = [skill.price_execution, skill.price_full_package].filter(p => p && p > 0);
     return prices.length > 0 ? Math.min(...prices) : (skill.price_sats || 0);
 }
 
