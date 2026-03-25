@@ -7,7 +7,8 @@
 (function() {
     'use strict';
 
-    const API_BASE = 'https://squidbay-api-production.up.railway.app';
+    // F-01: Use centralized config
+    const API_BASE = (window.SQUIDBAY_CONFIG && window.SQUIDBAY_CONFIG.API_BASE) || 'https://squidbay-api-production.up.railway.app';
 
     // --------------------------------------------------------------------------
     // Tentacle Animation (subtle parallax)
