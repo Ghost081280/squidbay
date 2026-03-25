@@ -7,14 +7,16 @@
  *   No redirects, no sessionStorage, no flash
  * 
  * Legacy support: skill.html?id=uuid still works
+ * 
+ * TWO TIERS ONLY: Full Skill (full_package) + Remote Execution (execution)
+ * Skill File tier KILLED.
  */
 
 const API_BASE = window.API_BASE || 'https://squidbay-api-production.up.railway.app';
 
-// Tier SVG icons — consistent site-wide
+// Tier SVG icons — two tiers only
 const TIER_SVG = {
     exec: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
-    file: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>',
     pkg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>'
 };
 
@@ -261,14 +263,15 @@ function agentVanityUrl(skill) {
 /**
  * N-F02: Build tier HTML — active tiers render normally, disabled tiers render compact at bottom
  * N-F03: Jobs always show the number. 0 is 0.
+ * TWO TIERS ONLY: Full Skill + Remote Execution
  */
 function buildTierHtml(tierKey, icon, label, isAvailable, isOnline, skill, version, rating, ratingCount, jobs, model, description, features, btnText, offlineText) {
-    const priceKey = tierKey === 'execution' ? 'price_execution' : tierKey === 'skill_file' ? 'price_skill_file' : 'price_full_package';
+    const priceKey = tierKey === 'execution' ? 'price_execution' : 'price_full_package';
     const price = skill[priceKey];
-    const upgradeKey = tierKey === 'skill_file' ? 'upgrade_price_skill_file' : tierKey === 'full_package' ? 'upgrade_price_full_package' : null;
+    const upgradeKey = tierKey === 'full_package' ? 'upgrade_price_full_package' : null;
     const upgradePrice = upgradeKey ? skill[upgradeKey] : null;
     const jobsDisplay = `${jobs} jobs`;
-    const btnClass = tierKey === 'execution' ? 'buy-btn-exec' : tierKey === 'skill_file' ? 'buy-btn-file' : 'buy-btn-pkg';
+    const btnClass = tierKey === 'execution' ? 'buy-btn-exec' : 'buy-btn-pkg';
     
     if (!isAvailable) {
         // N-F02: Disabled tiers — compact, at visual bottom via CSS order
@@ -364,20 +367,15 @@ async function fetchAndRenderScanBadge(skillId) {
 
 function renderSkillPage(skill, reviews, reviewStats) {
     const hasExec = skill.available_tiers ? skill.available_tiers.includes('execution') : skill.price_execution > 0;
-    const hasFile = skill.available_tiers ? skill.available_tiers.includes('skill_file') : (skill.price_skill_file > 0 && (skill.transfer_endpoint || skill.delivery_mode === 'github_managed'));
     const hasPkg = skill.available_tiers ? skill.available_tiers.includes('full_package') : (skill.price_full_package > 0 && (skill.transfer_endpoint || skill.delivery_mode === 'github_managed'));
     const isOnline = skill.agent_online !== false;
     const statusClass = isOnline ? 'online' : 'offline';
     const statusText = isOnline ? 'Online' : 'Offline';
     const versionExec = skill.version_execution || skill.version || '1.0.0';
-    const versionFile = skill.version_skill_file || skill.version || '1.0.0';
     const versionPkg = skill.version_full_package || skill.version || '1.0.0';
     const execRating = skill.rating_execution || 0;
     const execRatingCount = skill.rating_count_execution || 0;
     const execJobs = skill.jobs_execution || 0;
-    const fileRating = skill.rating_skill_file || 0;
-    const fileRatingCount = skill.rating_count_skill_file || 0;
-    const fileJobs = skill.jobs_skill_file || 0;
     const pkgRating = skill.rating_full_package || 0;
     const pkgRatingCount = skill.rating_count_full_package || 0;
     const pkgJobs = skill.jobs_full_package || 0;
@@ -418,7 +416,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
                             <div class="review-header">
                                 <span class="review-author">${esc(r.reviewer_name || 'Anonymous')}</span>
                                 <span class="review-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
-                                ${r.tier ? `<span class="review-tier">${r.tier === 'execution' ? TIER_SVG.exec : r.tier === 'skill_file' ? TIER_SVG.file : TIER_SVG.pkg} ${r.tier}</span>` : ''}
+                                ${r.tier ? `<span class="review-tier">${r.tier === 'execution' ? TIER_SVG.exec : TIER_SVG.pkg} ${r.tier === 'execution' ? 'execution' : 'full skill'}</span>` : ''}
                                 <span class="review-date">${formatDate(r.created_at)}</span>
                             </div>
                             ${r.comment ? `<p class="review-comment">${esc(r.comment)}</p>` : ''}
@@ -432,10 +430,8 @@ function renderSkillPage(skill, reviews, reviewStats) {
                     <div class="pricing-header"><h3>${TIER_SVG.exec} Invoke This Skill</h3><p class="pricing-subhead">Pay with any Lightning wallet. Your agent handles the rest.</p></div>
                     <div class="pricing-tiers">
                         ${[
-                            { key: 'skill_file', svg: TIER_SVG.file, label: 'Skill File', avail: hasFile, ver: versionFile, rat: fileRating, ratC: fileRatingCount, jobs: fileJobs, model: 'own forever',
-                              desc: 'Get the blueprint. Step-by-step instructions your AI agent can follow to build it.', feats: ['Own forever', 'Your AI implements it', 'No ongoing costs'], btn: TIER_SVG.file + ' Invoke Skill' },
-                            { key: 'full_package', svg: TIER_SVG.pkg, label: 'Full Package', avail: hasPkg, ver: versionPkg, rat: pkgRating, ratC: pkgRatingCount, jobs: pkgJobs, model: 'own forever',
-                              desc: 'Everything included. Blueprint + all code, configs, and templates. One-click deploy to your infrastructure.', feats: ['Own forever', 'Complete source code', 'Deploy on your infra'], btn: TIER_SVG.pkg + ' Invoke Skill' },
+                            { key: 'full_package', svg: TIER_SVG.pkg, label: 'Full Skill', avail: hasPkg, ver: versionPkg, rat: pkgRating, ratC: pkgRatingCount, jobs: pkgJobs, model: 'own forever',
+                              desc: 'Everything included. SKILL.md + personality + guide + tools + README. Token-locked to your agent. Deploy on your infrastructure.', feats: ['Own forever', 'Complete source code', 'Deploy on your infra'], btn: TIER_SVG.pkg + ' Invoke Skill' },
                             { key: 'execution', svg: TIER_SVG.exec, label: 'Remote Execution', avail: hasExec, ver: versionExec, rat: execRating, ratC: execRatingCount, jobs: execJobs, model: 'per call',
                               desc: "Pay per use. Your agent calls the seller's agent and gets results back instantly.", feats: ['Instant execution', 'No setup required', 'Pay only when used'], btn: TIER_SVG.exec + ' Invoke Skill' }
                         ].sort((a, b) => (b.avail ? 1 : 0) - (a.avail ? 1 : 0))
@@ -447,7 +443,7 @@ function renderSkillPage(skill, reviews, reviewStats) {
                     <div class="agent-tx-icon">🤖</div>
                     <p><strong>How it works:</strong> Click Invoke, pay the Lightning invoice from any wallet (Cash App, Phoenix, Alby), and receive your skill right here. Running a local agent? Copy the handoff to teach it SquidBay — it'll buy autonomously after that.</p>
                 </div>
-                ${skill.transfer_type ? `<div class="transfer-info-card"><h4>How Transfer Works</h4>${skill.transfer_type === 'execution_only' ? `<p>This skill is <strong>execution only</strong>. Your agent calls the seller's agent and receives results. No files are transferred.</p>` : skill.transfer_type === 'full_transfer' ? `<p>This skill offers <strong>full transfer</strong>. After payment, the seller's agent sends the files directly to your agent.</p>` : `<p>This skill offers <strong>multiple options</strong>. Choose execution for pay-per-use, or buy the files to own forever.</p>`}</div>` : ''}
+                ${skill.transfer_type ? `<div class="transfer-info-card"><h4>How Transfer Works</h4>${skill.transfer_type === 'execution_only' ? `<p>This skill is <strong>execution only</strong>. Your agent calls the seller's agent and receives results. No files are transferred.</p>` : skill.transfer_type === 'full_transfer' ? `<p>This skill offers <strong>full transfer</strong>. After payment, the seller's agent sends the complete skill files directly to your agent.</p>` : `<p>This skill offers <strong>multiple options</strong>. Choose execution for pay-per-use, or buy the full skill to own forever.</p>`}</div>` : ''}
             </div>
         </div>
     `;
@@ -470,10 +466,9 @@ async function buySkill(skillId, tier, price) {
 function showInvoiceModal(data, tier, price) {
     const invoice = data.payment_request || data.invoice;
     const svgExec = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>';
-    const svgFile = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
     const svgPkg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg>';
-    const tierNames = { 'execution': svgExec + ' Remote Execution', 'skill_file': svgFile + ' Skill File', 'full_package': svgPkg + ' Full Package' };
-    const tierIcons = { 'execution': svgExec, 'skill_file': svgFile, 'full_package': svgPkg };
+    const tierNames = { 'execution': svgExec + ' Remote Execution', 'full_package': svgPkg + ' Full Skill' };
+    const tierIcons = { 'execution': svgExec, 'full_package': svgPkg };
     const sellerEmoji = currentSkill?.agent_avatar_emoji || '🤖';
     const sellerName = currentSkill?.agent_name || 'Seller';
     const handoffPayload = generateHandoffPayload(data, tier, price, invoice);
@@ -493,7 +488,7 @@ function showInvoiceModal(data, tier, price) {
             <div class="agent-node buyer"><div class="agent-icon">🤖</div><div class="agent-label">Your Agent</div></div>
             <div class="flow-arrow"><div class="flow-line"></div><div class="flow-data" id="flow-data-1">💰</div></div>
             <div class="agent-node store"><div class="agent-icon">🦑</div><div class="agent-label">SquidBay</div></div>
-            <div class="flow-arrow"><div class="flow-line"></div><div class="flow-data" id="flow-data-2">${tierIcons[tier]}</div></div>
+            <div class="flow-arrow"><div class="flow-line"></div><div class="flow-data" id="flow-data-2">${tierIcons[tier] || svgPkg}</div></div>
             <div class="agent-node seller"><div class="agent-icon">${sellerEmoji}</div><div class="agent-label">${esc(sellerName)}</div></div>
         </div>
         <div class="handoff-section" style="background:linear-gradient(135deg,rgba(0,217,255,0.05) 0%,rgba(0,255,136,0.05) 100%);border:1px solid rgba(0,217,255,0.2);border-radius:12px;padding:20px;margin:16px 0;">
@@ -564,11 +559,11 @@ function generateHandoffPayload(data, tier, price, invoice) {
     const txId = data.transaction_id;
     const API = API_BASE;
     const skillPageUrl = currentSkill ? skillVanityUrl(currentSkill) : '';
-    let payload = `# SquidBay Skill Purchase — Action Required\n\nYour human just initiated a skill purchase from SquidBay.io.\n\n## THIS PURCHASE\n- **Skill:** ${skillName}\n- **Seller:** ${sellerName}\n- **Tier:** ${tier}\n- **Price:** ${price} sats\n- **Transaction ID:** ${txId}\n- **Skill Page:** https://squidbay.io${skillPageUrl}\n\n## STEP 1: Pay the Lightning Invoice\n\`\`\`\n${invoice}\n\`\`\`\n\n## STEP 2: Confirm Payment\n\`\`\`\nGET ${API}/invoke/${txId}\n\`\`\``;
+    let payload = `# SquidBay Skill Purchase — Action Required\n\nYour human just initiated a skill purchase from SquidBay.io.\n\n## THIS PURCHASE\n- **Skill:** ${skillName}\n- **Seller:** ${sellerName}\n- **Tier:** ${tier === 'full_package' ? 'Full Skill' : 'Remote Execution'}\n- **Price:** ${price} sats\n- **Transaction ID:** ${txId}\n- **Skill Page:** https://squidbay.io${skillPageUrl}\n\n## STEP 1: Pay the Lightning Invoice\n\`\`\`\n${invoice}\n\`\`\`\n\n## STEP 2: Confirm Payment\n\`\`\`\nGET ${API}/invoke/${txId}\n\`\`\``;
     if (tier === 'execution') {
         payload += `\n\n## STEP 3: Get Result\nWhen status is "complete", the result field contains your data.\n\nFor repeat calls:\n\`\`\`\nPOST ${API}/invoke\n{"skill_id": "${currentSkill?.id}", "tier": "execution"}\n\`\`\``;
     } else {
-        payload += `\n\n## STEP 3: Pick Up Your ${tier === 'skill_file' ? 'Skill File' : 'Full Package'}\n\`\`\`\nPOST ${API}/invoke/${txId}/pickup\n{"transfer_token": "{from_step_2}"}\n\`\`\``;
+        payload += `\n\n## STEP 3: Pick Up Your Full Skill\n\`\`\`\nPOST ${API}/invoke/${txId}/pickup\n{"transfer_token": "{from_step_2}"}\n\`\`\``;
     }
     payload += `\n\n## STEP 4: Review the Skill\n\`\`\`\nPOST ${API}/skills/${currentSkill?.id}/review\n{"transaction_id": "${txId}", "rating": 1-5, "comment": "...", "reviewer_name": "Your Agent", "tier": "${tier}"}\n\`\`\`\n\n## STEP 5 (Optional): Review the Agent\n\`\`\`\nPOST ${API}/agents/${currentSkill?.agent_id}/review\n{"rating": 1-5, "comment": "Reliability, communication...", "reviewer_name": "Your Agent"}\n\`\`\`\n\n---\n## LEARN SQUIDBAY\n\`\`\`\nGET ${API}/skills\nGET ${API}/skills?category=data\nPOST ${API}/invoke {skill_id, tier}\nPOST ${API}/invoke/{tx_id}/pickup {transfer_token}\nPOST ${API}/agents {agent_name, description, lightning_address}\nPOST ${API}/register {name, description, price_execution, category, endpoint}\n\`\`\`\n\n*Generated by SquidBay.io — Where agents trade skills for sats.*`;
     return payload;
@@ -612,7 +607,8 @@ function showTransactionComplete(tier, transactionId, data) {
         content.innerHTML = `<div class="transaction-complete"><div class="complete-header"><div class="complete-icon">⚡</div><h3 class="complete-title">✅ Skill Executed!</h3></div><div class="execution-result" style="margin:16px 0;"><h4>⚡ Execution Result</h4><pre style="background:#0a0e14;border:1px solid #2a3540;border-radius:8px;padding:12px;font-size:0.8rem;overflow-x:auto;max-height:300px;overflow-y:auto;color:#00ff88;white-space:pre-wrap;">${esc(resultStr)}</pre></div><button onclick="copyToClipboard(document.querySelector('.execution-result pre').textContent)" style="width:100%;padding:12px;background:linear-gradient(135deg,#00d9ff 0%,#00a8cc 100%);color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer;margin-bottom:8px;">📋 Copy Result</button><div id="pickupCopyConfirm" style="display:none;text-align:center;color:#00ff88;font-size:0.8rem;">✓ Copied!</div><button class="btn-done" onclick="window.SquidBaySkill.closeModal()">Done</button></div>`;
         return;
     }
-    content.innerHTML = `<div class="transaction-complete"><div class="complete-header"><div class="complete-icon">${tier === 'skill_file' ? TIER_SVG.file : TIER_SVG.pkg}</div><h3 class="complete-title">✅ Payment Confirmed!</h3></div><div id="pickup-status" style="text-align:center;padding:20px;color:#8899aa;"><p>Picking up your ${tier === 'skill_file' ? 'skill file' : 'full package'}...</p></div><div id="pickup-content" style="display:none;"></div><button class="btn-done" onclick="window.SquidBaySkill.closeModal()" style="margin-top:12px;">Done</button></div>`;
+    // Full Skill tier — pickup flow
+    content.innerHTML = `<div class="transaction-complete"><div class="complete-header"><div class="complete-icon">${TIER_SVG.pkg}</div><h3 class="complete-title">✅ Payment Confirmed!</h3></div><div id="pickup-status" style="text-align:center;padding:20px;color:#8899aa;"><p>Picking up your full skill...</p></div><div id="pickup-content" style="display:none;"></div><button class="btn-done" onclick="window.SquidBaySkill.closeModal()" style="margin-top:12px;">Done</button></div>`;
     autoPickup(transactionId, data.transfer_token, tier);
 }
 
@@ -627,7 +623,7 @@ async function autoPickup(transactionId, transferToken, tier) {
         window._pickupContent = contentStr;
         statusEl.innerHTML = `<p style="color:#00ff88;font-weight:600;">✅ Retrieved successfully!</p>`;
         contentEl.style.display = 'block';
-        contentEl.innerHTML = `<div style="margin:12px 0;"><h4>${tier === 'skill_file' ? TIER_SVG.file + ' Your Skill File' : TIER_SVG.pkg + ' Your Full Package'}</h4><pre style="background:#0a0e14;border:1px solid #2a3540;border-radius:8px;padding:12px;font-size:0.75rem;max-height:300px;overflow-y:auto;color:#c0c0c0;white-space:pre-wrap;">${esc(contentStr)}</pre></div><button onclick="copyToClipboard(window._pickupContent)" style="width:100%;padding:12px;background:linear-gradient(135deg,#00d9ff 0%,#00a8cc 100%);color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy</button><div id="pickupCopyConfirm" style="display:none;text-align:center;color:#00ff88;font-size:0.8rem;">✓ Copied!</div>`;
+        contentEl.innerHTML = `<div style="margin:12px 0;"><h4>${TIER_SVG.pkg} Your Full Skill</h4><pre style="background:#0a0e14;border:1px solid #2a3540;border-radius:8px;padding:12px;font-size:0.75rem;max-height:300px;overflow-y:auto;color:#c0c0c0;white-space:pre-wrap;">${esc(contentStr)}</pre></div><button onclick="copyToClipboard(window._pickupContent)" style="width:100%;padding:12px;background:linear-gradient(135deg,#00d9ff 0%,#00a8cc 100%);color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy</button><div id="pickupCopyConfirm" style="display:none;text-align:center;color:#00ff88;font-size:0.8rem;">✓ Copied!</div>`;
     } catch (err) {
         statusEl.innerHTML = `<p style="color:#ffbd2e;">⚠️ ${esc(err.message)}</p>`;
         const instructions = `POST ${API_BASE}/invoke/${transactionId}/pickup\n{"transfer_token": "${transferToken}"}`;
