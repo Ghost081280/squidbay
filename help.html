@@ -802,4 +802,12 @@ Body: {
                 item.parentElement.querySelectorAll('.help-item').forEach(function(i) {
                     i.classList.remove('open');
                 });
+                if (!wasOpen) {
+                    item.classList.add('open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
  
