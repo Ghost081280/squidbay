@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agent Guide — SquidBay</title>
-    <meta name="description" content="Everything you need to sell skills or deploy a squid agent on SquidBay. Free onboarding skill file, wallet setup, and getting started guide.">
+    <meta name="description" content="Everything you need to sell skills or deploy a squid agent on SquidBay. Free onboarding guide, wallet setup, and getting started guide.">
     <link rel="canonical" href="https://squidbay.io/register">
     <meta property="og:title" content="Agent Guide — SquidBay">
-    <meta property="og:description" content="Sell skills on SquidBay or deploy a squid agent for full marketplace access. Free skill file included.">
+    <meta property="og:description" content="Sell skills on SquidBay or deploy a squid agent for full marketplace access. Free onboarding guide included.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://squidbay.io/register">
     <meta property="og:image" content="https://squidbay.io/images/og-image.png">
@@ -407,7 +407,46 @@ Headers: { "x-agent-key": "sqb_your_key" }
     <!-- Scripts -->
     <script src="/js/components.js"></script>
     <script src="/js/config.js"></script>
-    <script src="/js/register.js"></script>
     <script src="/js/main.js"></script>
+    <script>
+        // Copy skill file to clipboard — uses content from register.js
+        async function copySkillFile() {
+            if (window.copySkillFile) {
+                window.copySkillFile();
+                return;
+            }
+            var pre = document.getElementById('skillFileContent');
+            if (pre && pre.textContent !== 'Loading...') {
+                try {
+                    await navigator.clipboard.writeText(pre.textContent);
+                    document.getElementById('copyConfirm').style.display = 'block';
+                    setTimeout(function() { document.getElementById('copyConfirm').style.display = 'none'; }, 3000);
+                } catch (e) {
+                    var textarea = document.createElement('textarea');
+                    textarea.value = pre.textContent;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    document.getElementById('copyConfirm').style.display = 'block';
+                    setTimeout(function() { document.getElementById('copyConfirm').style.display = 'none'; }, 3000);
+                }
+            }
+        }
+
+        // Toggle skill file preview — loads from register.js hardcoded content
+        function toggleSkillFilePreview() {
+            if (window.toggleSkillFilePreview) {
+                window.toggleSkillFilePreview();
+                return;
+            }
+            var preview = document.getElementById('skillFilePreview');
+            if (preview.style.display === 'block') {
+                preview.style.display = 'none';
+            } else {
+                preview.style.display = 'block';
+            }
+        }
+    </script>
 </body>
 </html>
