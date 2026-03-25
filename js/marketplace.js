@@ -2,6 +2,7 @@
  * SquidBay Marketplace - JavaScript
  * Connected to Railway Backend API
  * With Tiered Pricing Support + Vanity URLs
+ * TWO TIERS ONLY: Full Skill + Remote Execution (Skill File tier KILLED)
  * ================================
  */
 
@@ -109,9 +110,6 @@
         
         if (!grid) return;
         
-        // Inject tier legend if not already present
-        injectTierLegend();
-        
         try {
             const response = await fetch(API_BASE + '/skills?limit=200');
             const data = await response.json();
@@ -186,13 +184,12 @@
     };
 
     // --------------------------------------------------------------------------
-    // Tiered Pricing Helpers
+    // Tiered Pricing Helpers — TWO TIERS ONLY
     // --------------------------------------------------------------------------
     
     function getLowestPrice(skill) {
         const prices = [
             skill.price_execution,
-            skill.price_skill_file,
             skill.price_full_package
         ].filter(p => p && p > 0);
         return prices.length > 0 ? Math.min(...prices) : (skill.price_sats || 0);
@@ -205,11 +202,8 @@
         if (tiers.includes('execution') || (!tiers.length && skill.price_execution > 0)) {
             badges += '<span class="tier-badge-mini tier-badge-exec" title="Remote Execution"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>';
         }
-        if (tiers.includes('skill_file') || (!tiers.length && skill.price_skill_file)) {
-            badges += '<span class="tier-badge-mini tier-badge-file" title="Skill File"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>';
-        }
         if (tiers.includes('full_package') || (!tiers.length && skill.price_full_package)) {
-            badges += '<span class="tier-badge-mini tier-badge-pkg" title="Full Package"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg></span>';
+            badges += '<span class="tier-badge-mini tier-badge-pkg" title="Full Skill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg></span>';
         }
         
         return badges;
@@ -218,12 +212,11 @@
     function getTransferLabel(skill) {
         const tiers = skill.available_tiers || [];
         const hasExec = tiers.includes('execution');
-        const hasFile = tiers.includes('skill_file');
         const hasPkg = tiers.includes('full_package');
         
-        if (hasPkg && hasFile && hasExec) {
+        if (hasPkg && hasExec) {
             return '<span class="transfer-label transfer-label-all">All Options</span>';
-        } else if (hasPkg || hasFile) {
+        } else if (hasPkg) {
             return '<span class="transfer-label transfer-label-own">Own It</span>';
         }
         return '';
@@ -275,16 +268,7 @@
     }
 
     // --------------------------------------------------------------------------
-    // Inject Tier Legend at top of marketplace
-    // --------------------------------------------------------------------------
-    
-    function injectTierLegend() {
-        // Removed — Buying Options legend no longer shown on marketplace
-        return;
-    }
-
-    // --------------------------------------------------------------------------
-    // Render Skill Card (with Tier Buttons + Vanity URLs)
+    // Render Skill Card (TWO TIERS: Full Skill + Remote Execution)
     // --------------------------------------------------------------------------
     
     function renderSkillCard(skill) {
@@ -312,26 +296,22 @@
         const statusClass = isOnline ? 'online' : 'offline';
         const statusText = isOnline ? 'Online' : 'Offline';
         
-        // Tiered pricing - check what's available using API's available_tiers
+        // TWO TIERS ONLY: Full Skill (full_package) + Remote Execution (execution)
         const tiers = skill.available_tiers || [];
         const hasExec = tiers.includes('execution');
-        const hasFile = tiers.includes('skill_file');
         const hasPkg = tiers.includes('full_package');
         const lowestPrice = getLowestPrice(skill);
         
         // Vanity URLs for skill page
         const skillLink = skillUrl(skill);
         
-        // Build tier buttons - compact pills that link to skill page with vanity URLs
+        // Build tier buttons — two tiers only
         let tierButtons = '<div class="tier-buttons">';
-        if (hasExec) {
-            tierButtons += `<a href="${skillTierUrl(skill, 'execution')}" class="tier-btn tier-exec" title="${(skill.price_execution || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Execution</a>`;
-        }
-        if (hasFile) {
-            tierButtons += `<a href="${skillTierUrl(skill, 'skill_file')}" class="tier-btn tier-file" title="${skill.price_skill_file.toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> Skill File</a>`;
-        }
         if (hasPkg) {
-            tierButtons += `<a href="${skillTierUrl(skill, 'full_package')}" class="tier-btn tier-pkg" title="${skill.price_full_package.toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg> Full Package</a>`;
+            tierButtons += `<a href="${skillTierUrl(skill, 'full_package')}" class="tier-btn tier-pkg" title="${skill.price_full_package.toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg> Full Skill</a>`;
+        }
+        if (hasExec) {
+            tierButtons += `<a href="${skillTierUrl(skill, 'execution')}" class="tier-btn tier-exec" title="${(skill.price_execution || 0).toLocaleString()} sats"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Remote Execution</a>`;
         }
         tierButtons += '</div>';
         
@@ -361,7 +341,7 @@
                 <span class="skill-category">${category}</span>
                 <p class="skill-description">${escapeHtml(skill.description)}</p>
                 
-                <!-- Tier Buttons -->
+                <!-- Tier Buttons — Two Tiers Only -->
                 ${tierButtons}
                 
                 <a href="${agentLink}" class="skill-agent" style="text-decoration: none; color: inherit;" onclick="event.stopPropagation()">
