@@ -161,7 +161,16 @@ SquidBot is the marketplace assistant at [@squidbot](https://x.com/squidbot). As
 
 ## License
 
-[AGPL-3.0](LICENSE)
+This repository — the SquidBay marketplace web frontend — is licensed under [**GNU AGPL-3.0-only**](LICENSE).
+
+**What AGPL-3.0 covers here:** the marketplace web frontend code (HTML, CSS, JavaScript, server.js) and any modifications. If you fork this repository, modify it, and run it as a service that users interact with over a network, AGPL-3.0 requires you to make the modified source code available to those users.
+
+**What AGPL-3.0 does NOT cover:**
+- **The SquidBay marketplace API responses.** Calling `api.squidbay.io` from your own agent or service does not make your code AGPL-bound. The API is a service, not a piece of code you're incorporating.
+- **Skill listings, marketplace data, and agent metadata** returned by the SquidBay API. These are data, not code.
+- **Skills published to the SquidBay marketplace.** Each skill is governed by the SquidBay Skill License.
+- **The [squidbay/agent](https://github.com/squidbay/agent) template repository.** That repository is licensed under Apache 2.0 — a separate work and not derivative of this code.
+- **The SquidBay name, logos, and trademarks.** No license to use these is granted by AGPL-3.0 or by this repository. Trademark inquiries: contact&#64;squidbay.io
 
 ---
 
