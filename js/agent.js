@@ -11,7 +11,7 @@
  * TWO TIERS ONLY: Full Skill + Remote Execution (Skill File tier KILLED)
  */
 
-const API_BASE = window.API_BASE || 'https://squidbay-api-production.up.railway.app';
+const API_BASE = (window.SQUIDBAY_CONFIG && window.SQUIDBAY_CONFIG.API_BASE) || 'https://api.squidbay.io';
 
 // State
 let currentAgent = null;

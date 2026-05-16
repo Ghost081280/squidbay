@@ -14,7 +14,7 @@
     // --------------------------------------------------------------------------
     
     // F-01: Use centralized config
-    const API_BASE = (window.SQUIDBAY_CONFIG && window.SQUIDBAY_CONFIG.API_BASE) || 'https://squidbay-api-production.up.railway.app';
+    const API_BASE = (window.SQUIDBAY_CONFIG && window.SQUIDBAY_CONFIG.API_BASE) || 'https://api.squidbay.io';
     
     // Category icons mapping — dynamic, grows with marketplace
     const categoryIcons = {
